@@ -269,11 +269,26 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .drag-handle {
   cursor: grab; color: var(--text3); padding: 0.25rem;
   display: flex; align-items: center;
+  touch-action: none; /* allow touch drag */
+  -webkit-user-select: none; user-select: none;
 }
 .drag-handle:active { cursor: grabbing; }
 .drag-handle svg { display: block; }
 .row-dragging { opacity: 0.4; }
 .row-drag-over { border-top: 2px solid var(--orange) !important; }
+/* Touch drag ghost */
+.touch-drag-ghost {
+  position: fixed; pointer-events: none; z-index: 9999;
+  opacity: 0.85; transform: scale(1.02);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  border-radius: var(--radius);
+  background: linear-gradient(135deg,rgba(8,90,110,0.95) 0%,rgba(10,105,120,0.92) 100%);
+  border: 1px solid rgba(15,175,175,0.5);
+  padding: 0.6rem 0.85rem;
+  font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.9rem;
+  color: white; white-space: nowrap;
+  min-width: 180px;
+}
 
 /* ── Card list ── */
 .card-row {
@@ -628,6 +643,11 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 /* ── Mobile responsive ── */
 @media (max-width: 600px) {
 
+  /* Prevent text selection on draggable rows */
+  .stop-row-main, .substop-row, .card-row, .partner-row, .tour-row {
+    -webkit-user-select: none; user-select: none;
+  }
+
   /* Prevent ALL horizontal overflow */
   #main, #main > .section, .panel, .panel-body, .form-grid,
   .stop-row-main, .card-row, .partner-row, .tour-row,
@@ -891,10 +911,10 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
       <!-- Single action row: settings+partners on left, add buttons on right -->
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;">
         <div style="display:flex;gap:0.5rem;">
-          <button class="btn btn-secondary btn-sm" onclick="showSection('tour-edit')" style="display:flex;align-items:center;gap:0.35rem;background:rgba(26,111,181,0.18);border-color:rgba(26,111,181,0.35);color:rgba(150,200,255,0.95);">
+          <button class="btn btn-secondary btn-sm" onclick="showSection('tour-edit')" style="display:flex;align-items:center;gap:0.35rem;background:rgba(26,111,181,0.28);border-color:rgba(26,111,181,0.6);color:rgba(200,225,255,1);">
             Tour Settings
           </button>
-          <button class="btn btn-secondary btn-sm" onclick="loadAndShowAllPartners()" style="display:flex;align-items:center;gap:0.35rem;background:rgba(120,60,200,0.18);border-color:rgba(120,60,200,0.35);color:rgba(200,150,255,0.95);">
+          <button class="btn btn-secondary btn-sm" onclick="loadAndShowAllPartners()" style="display:flex;align-items:center;gap:0.35rem;background:rgba(120,60,200,0.28);border-color:rgba(120,60,200,0.6);color:rgba(220,185,255,1);">
             Partners
           </button>
         </div>
@@ -1711,6 +1731,8 @@ function renderStops() {
   const orangeArrowSvg = `<svg width="16" height="28" viewBox="0 0 18 28" fill="none" stroke="#ff6b35" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="20"/><polyline points="4 15 9 21 14 15"/></svg>`;
   const outerConnector = `<div class="stop-group-connector">${orangeArrowSvg}</div>`;
   el.innerHTML = startBlock + outerConnector + el.innerHTML + outerConnector + finishBlock;
+  el.querySelectorAll('.stop-row-main[data-id]').forEach(row => initTouchDrag(row, 'stop'));
+  el.querySelectorAll('.substop-row[data-id]').forEach(row => initTouchDrag(row, 'substop'));
 }
 
 function newStop() {
@@ -1806,6 +1828,110 @@ function updateSidebarStop() {
 }
 
 // ── Drag & Drop (stops) ──
+// ── Touch drag support (iOS Safari) ──
+let _touchDragEl = null;
+let _touchDragGhost = null;
+let _touchDragContext = null;
+let _touchDragSrcIndex = null;
+let _touchDragStartY = 0;
+let _touchDragMoved = false;
+
+function initTouchDrag(el, context) {
+  el.addEventListener('touchstart', (e) => {
+    // Only start drag if touch begins on the drag handle
+    const handle = e.target.closest('.drag-handle');
+    if (!handle) return;
+    e.preventDefault();
+    _touchDragEl = el;
+    _touchDragContext = context;
+    _touchDragSrcIndex = parseInt(el.dataset.pos);
+    _touchDragMoved = false;
+    _touchDragStartY = e.touches[0].clientY;
+    // Create ghost
+    _touchDragGhost = document.createElement('div');
+    _touchDragGhost.className = 'touch-drag-ghost';
+    const nameEl = el.querySelector('.stop-name, .card-preview, .partner-name, .tour-name');
+    _touchDragGhost.textContent = nameEl ? nameEl.textContent : 'Moving…';
+    document.body.appendChild(_touchDragGhost);
+    _positionGhost(e.touches[0]);
+    el.classList.add('row-dragging');
+  }, { passive: false });
+
+  el.addEventListener('touchmove', (e) => {
+    if (!_touchDragGhost) return;
+    e.preventDefault();
+    _touchDragMoved = true;
+    _wasDragging = true;
+    _positionGhost(e.touches[0]);
+    // Find element under touch
+    _touchDragGhost.style.display = 'none';
+    const under = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY);
+    _touchDragGhost.style.display = '';
+    const targetRow = under?.closest('[data-pos]');
+    document.querySelectorAll('.row-drag-over').forEach(r => r.classList.remove('row-drag-over'));
+    if (targetRow && targetRow !== _touchDragEl) targetRow.classList.add('row-drag-over');
+  }, { passive: false });
+
+  el.addEventListener('touchend', (e) => {
+    if (!_touchDragGhost) return;
+    _touchDragGhost.remove(); _touchDragGhost = null;
+    _touchDragEl?.classList.remove('row-dragging');
+    document.querySelectorAll('.row-drag-over').forEach(r => r.classList.remove('row-drag-over'));
+    if (!_touchDragMoved) { _touchDragEl = null; return; }
+    // Find drop target
+    const touch = e.changedTouches[0];
+    _touchDragGhost = null;
+    const under = document.elementFromPoint(touch.clientX, touch.clientY);
+    const targetRow = under?.closest('[data-pos]');
+    if (targetRow && targetRow !== _touchDragEl) {
+      const destIndex = parseInt(targetRow.dataset.pos);
+      dragSrcIndex = _touchDragSrcIndex;
+      // Simulate drop based on context
+      if (_touchDragContext === 'card') _touchDropCard(destIndex);
+      else if (_touchDragContext === 'substop-card') _touchDropSubstopCard(destIndex);
+      else if (_touchDragContext === 'stop' || _touchDragContext === 'substop') _touchDropStop(destIndex);
+    }
+    setTimeout(() => { _wasDragging = false; }, 300);
+    _touchDragEl = null; _touchDragContext = null;
+  });
+}
+
+function _positionGhost(touch) {
+  if (!_touchDragGhost) return;
+  _touchDragGhost.style.left = (touch.clientX - 90) + 'px';
+  _touchDragGhost.style.top = (touch.clientY - 20) + 'px';
+}
+
+async function _touchDropCard(destIndex) {
+  const arr = [...state.cards];
+  const [moved] = arr.splice(dragSrcIndex, 1);
+  arr.splice(destIndex, 0, moved);
+  state.cards = arr; renderCards();
+  await Promise.all(arr.map((c,i) => sb.from('cards').update({position:i+1}).eq('id',c.id)));
+  toast('Card order saved','success');
+}
+async function _touchDropSubstopCard(destIndex) {
+  const arr = [...state.substopCards];
+  const [moved] = arr.splice(dragSrcIndex, 1);
+  arr.splice(destIndex, 0, moved);
+  state.substopCards = arr; renderSubstopCards();
+  await Promise.all(arr.map((c,i) => sb.from('cards').update({position:i+1}).eq('id',c.id)));
+  toast('Card order saved','success');
+}
+async function _touchDropStop(destIndex) {
+  const arr = buildStopsList();
+  const [moved] = arr.splice(dragSrcIndex, 1);
+  arr.splice(destIndex, 0, moved);
+  // Recalculate stop_numbers and re-render
+  const stopUpdates = [];
+  let stopNum = 1;
+  arr.forEach(item => { if(item.type==='stop') stopUpdates.push({id:item.data.id, stop_number:stopNum++}); });
+  state.stops = stopUpdates.map(u=>({...state.stops.find(x=>x.id===u.id),stop_number:u.stop_number}));
+  renderStops();
+  await Promise.all(stopUpdates.map(u=>sb.from('stops').update({stop_number:u.stop_number}).eq('id',u.id)));
+  toast('Stop order saved','success');
+}
+
 let dragSrcIndex = null;
 let dragContext = null;
 
@@ -2037,6 +2163,8 @@ function renderCards() {
       </div>
     </div>`;
   }).join(`<div style="display:flex;justify-content:center;margin:1px 0;"><svg width="14" height="22" viewBox="0 0 18 28" fill="none" stroke="#ff6b35" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="18"/><polyline points="4 13 9 19 14 13"/></svg></div>`);
+  // Wire touch drag for iOS
+  el.querySelectorAll('.card-row[data-id]').forEach(row => initTouchDrag(row, 'card'));
 }
 
 async function dropCard(e) {
@@ -2708,6 +2836,7 @@ function renderSubstopCards() {
       </div>
     </div>`;
   }).join(`<div style="display:flex;justify-content:center;margin:1px 0;"><svg width="14" height="22" viewBox="0 0 18 28" fill="none" stroke="#ff6b35" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="18"/><polyline points="4 13 9 19 14 13"/></svg></div>`);
+  el.querySelectorAll('.card-row[data-id]').forEach(row => initTouchDrag(row, 'substop-card'));
 }
 
 async function dropSubstopCard(e) {
