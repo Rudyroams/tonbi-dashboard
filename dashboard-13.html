@@ -1,0 +1,3370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tonbi · Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0e0e11;
+  --surface: #16161a;
+  --surface2: #1e1e24;
+  --surface3: #26262e;
+  --border: rgba(255,255,255,0.08);
+  --border-hover: rgba(255,255,255,0.15);
+  --text: #f0f0f5;
+  --text2: #8e8e99;
+  --text3: #5a5a66;
+  --orange: #ff6b35;
+  --orange-grad: linear-gradient(160deg, #ff3b30 0%, #ff6b35 45%, #ffcc00 100%);
+  --nav-grad: linear-gradient(135deg, #0f9b8e 0%, #1a6fb5 60%, #2d3faa 100%);
+  --rainbow: linear-gradient(160deg, #0d4a52 0%, #0a3d5c 55%, #0d3348 100%);
+  --green: #34c759;
+  --red: #ff3b30;
+  --blue: #2d6be4;
+  --yellow: #ffcc00;
+  --radius: 14px;
+  --radius-sm: 9px;
+  --header-h: 56px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+/* ── Header ── */
+#header {
+  height: var(--header-h);
+  background: linear-gradient(135deg, #083d5c 0%, #0a5a72 60%, #0a6e6e 100%);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  display: flex;
+  align-items: center;
+  padding: 0 1.25rem;
+  gap: 1rem;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+}
+.header-logo {
+  display: flex; align-items: center; gap: 0.6rem;
+  font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.1rem;
+  color: var(--text); text-decoration: none;
+}
+.header-logo-mark {
+  width: 30px; height: 30px; border-radius: 8px;
+  background: var(--orange-grad);
+  display: flex; align-items: center; justify-content: center;
+}
+.header-logo-mark svg { width: 16px; height: 16px; }
+.header-sep { color: var(--text3); font-size: 1.2rem; font-weight: 300; }
+#breadcrumb { display: flex; align-items: center; gap: 0.5rem; font-size: 0.95rem; color: var(--text2); }
+#breadcrumb span { cursor: pointer; transition: color 0.15s; font-weight: 500; }
+#breadcrumb span:hover { color: var(--text); }
+#breadcrumb span.active { color: var(--text); font-weight: 700; }
+.bc-arrow { color: var(--text3); font-size: 0.7rem; }
+.header-right { margin-left: auto; display: flex; align-items: center; gap: 0.75rem; }
+.conn-status { display: flex; align-items: center; gap: 0.4rem; font-size: 0.75rem; color: var(--text2); }
+.conn-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text3); transition: background 0.3s; }
+.conn-dot.connected { background: var(--green); box-shadow: 0 0 6px rgba(52,199,89,0.5); }
+.conn-dot.error { background: var(--red); }
+
+/* ── Layout ── */
+
+
+/* ── Sidebar ── */
+.sidebar-section { padding: 0 0.75rem; margin-bottom: 1.5rem; }
+.sidebar-label {
+  font-size: 0.6rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--text3);
+  padding: 0 0.5rem; margin-bottom: 0.4rem;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 0.6rem;
+  padding: 0.55rem 0.75rem; border-radius: var(--radius-sm);
+  cursor: pointer; font-size: 0.85rem; color: var(--text2);
+  transition: background 0.15s, color 0.15s;
+  user-select: none;
+}
+.nav-item:hover { background: var(--surface2); color: var(--text); }
+.nav-item.active { background: var(--surface3); color: var(--text); font-weight: 500; }
+.nav-item svg { flex-shrink: 0; opacity: 0.6; }
+.nav-item.active svg { opacity: 1; }
+.nav-item .nav-badge {
+  margin-left: auto; font-size: 0.65rem; background: var(--surface3);
+  padding: 0.1rem 0.45rem; border-radius: 99px; color: var(--text3);
+}
+
+/* ── Main ── */
+#main {
+  width: 100%;
+  margin-top: var(--header-h);
+  min-height: calc(100vh - var(--header-h));
+  background: linear-gradient(160deg, #063040 0%, #084a5a 30%, #085858 60%, #063d50 100%);
+}
+#main > .section {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem;
+  box-sizing: border-box;
+  min-height: calc(100vh - var(--header-h));
+}
+
+/* ── Cards / Panels ── */
+.panel {
+  background: rgba(22,22,26,0.72);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 1.25rem;
+}
+.panel-header {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 0.75rem;
+}
+.panel-title { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 1rem; color: var(--text); }
+.panel-subtitle { font-size: 0.78rem; color: var(--text2); margin-top: 0.1rem; }
+.panel-body { padding: 1.25rem; }
+.panel-footer {
+  padding: 0.9rem 1.25rem;
+  border-top: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: flex-end; gap: 0.75rem;
+  background: rgba(0,0,0,0.15);
+}
+
+/* ── Page header ── */
+.page-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 1.75rem;
+}
+.page-title { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.6rem; color: var(--text); }
+.page-subtitle { font-size: 0.82rem; color: var(--text2); margin-top: 0.2rem; }
+
+/* ── Buttons ── */
+.btn {
+  display: inline-flex; align-items: center; gap: 0.45rem;
+  padding: 0.6rem 1.1rem; border-radius: var(--radius-sm);
+  font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.85rem;
+  cursor: pointer; border: none; transition: all 0.15s; text-decoration: none;
+  white-space: nowrap;
+}
+.btn-primary { background: var(--orange-grad); color: white; box-shadow: 0 4px 16px rgba(255,107,53,0.3); }
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(255,107,53,0.4); }
+.btn-secondary { background: var(--surface2); color: var(--text2); border: 1px solid var(--border); }
+.btn-secondary:hover { background: var(--surface3); color: var(--text); border-color: var(--border-hover); }
+.btn-ghost { background: transparent; color: var(--text2); padding: 0.5rem 0.75rem; }
+.btn-ghost:hover { background: var(--surface2); color: var(--text); }
+.btn-danger { background: rgba(255,59,48,0.12); color: var(--red); border: 1px solid rgba(255,59,48,0.2); }
+.btn-danger:hover { background: rgba(255,59,48,0.2); }
+.btn-sm { padding: 0.4rem 0.75rem; font-size: 0.78rem; }
+.btn-icon { padding: 0.5rem; width: 34px; height: 34px; justify-content: center; }
+.btn[disabled] { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+
+/* ── Forms ── */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.form-grid.cols-1 { grid-template-columns: 1fr; }
+.form-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+.form-full { grid-column: 1 / -1; }
+.field { display: flex; flex-direction: column; gap: 0.4rem; }
+.field label {
+  font-size: 0.73rem; font-weight: 600; color: var(--text2);
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+.field input, .field textarea, .field select {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 0.65rem 0.85rem;
+  font-family: 'DM Sans', sans-serif; font-size: 0.88rem; color: var(--text);
+  outline: none; transition: border-color 0.15s;
+  width: 100%;
+}
+.field input:focus, .field textarea:focus, .field select:focus {
+  border-color: var(--orange);
+}
+.field textarea { resize: vertical; min-height: 80px; line-height: 1.55; }
+.field input::placeholder, .field textarea::placeholder { color: var(--text3); }
+.field select option { background: var(--surface2); }
+.field-hint { font-size: 0.72rem; color: var(--text3); margin-top: 0.1rem; }
+.toggle-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.75rem 0; border-bottom: 1px solid var(--border);
+}
+.toggle-row:last-child { border-bottom: none; }
+.toggle-label { font-size: 0.88rem; color: var(--text); }
+.toggle-desc { font-size: 0.75rem; color: var(--text2); margin-top: 0.1rem; }
+.toggle {
+  position: relative; width: 44px; height: 26px;
+  background: var(--surface3); border-radius: 99px; cursor: pointer;
+  transition: background 0.2s; flex-shrink: 0;
+  border: none; outline: none;
+}
+.toggle.on { background: var(--green); }
+.toggle::after {
+  content: ''; position: absolute;
+  top: 3px; left: 3px; width: 20px; height: 20px;
+  background: white; border-radius: 50%;
+  transition: transform 0.2s; box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+.toggle.on::after { transform: translateX(18px); }
+
+/* ── Tour list ── */
+.tour-row {
+  display: flex; align-items: center; gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(135deg,rgba(10,28,58,0.65) 0%,rgba(13,32,64,0.6) 100%);
+  border: 1px solid rgba(26,111,181,0.25);
+  border-radius: var(--radius);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.22);
+  margin-bottom: 0.5rem;
+  transition: background 0.12s;
+  cursor: pointer;
+}
+.tour-row:last-child { margin-bottom: 0; }
+.tour-row:hover { background: linear-gradient(135deg,rgba(14,36,72,0.8) 0%,rgba(18,40,78,0.75) 100%); }
+.tour-thumb {
+  width: 52px; height: 52px; border-radius: 10px;
+  object-fit: cover; background: var(--surface3); flex-shrink: 0;
+  border: 1px solid var(--border);
+}
+.tour-thumb-placeholder {
+  width: 52px; height: 52px; border-radius: 10px;
+  background: var(--surface3); flex-shrink: 0;
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+}
+.tour-info { flex: 1; min-width: 0; }
+.tour-name { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tour-meta { font-size: 0.75rem; color: var(--text2); margin-top: 0.15rem; display: flex; align-items: center; gap: 0.5rem; }
+.status-pill {
+  display: inline-flex; align-items: center; gap: 0.3rem;
+  padding: 0.15rem 0.5rem; border-radius: 99px; font-size: 0.68rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.05em;
+}
+.status-pill.published { background: rgba(52,199,89,0.15); color: var(--green); }
+.status-pill.draft { background: rgba(255,255,255,0.06); color: var(--text3); border: 1px solid rgba(255,255,255,0.1); }
+.status-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+
+/* ── Stop list ── */
+.stop-row {
+  display: flex; align-items: center; gap: 0.85rem;
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer; transition: background 0.12s;
+}
+.stop-row:last-child { border-bottom: none; }
+.stop-row:hover { background: var(--surface2); }
+.stop-num {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--orange-grad); color: white;
+  font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 0.8rem;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.stop-info { flex: 1; min-width: 0; }
+.stop-name { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.9rem; }
+.stop-tagline { font-size: 0.75rem; color: rgba(255,255,255,0.65); margin-top: 0.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.drag-handle {
+  cursor: grab; color: var(--text3); padding: 0.25rem;
+  display: flex; align-items: center;
+}
+.drag-handle:active { cursor: grabbing; }
+.drag-handle svg { display: block; }
+.row-dragging { opacity: 0.4; }
+.row-drag-over { border-top: 2px solid var(--orange) !important; }
+
+/* ── Card list ── */
+.card-row {
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg,rgba(6,65,82,0.72) 0%,rgba(8,58,88,0.68) 100%);
+  border: 1px solid rgba(15,155,175,0.32);
+  border-radius: var(--radius-sm);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  margin-bottom: 0.35rem;
+  transition: background 0.12s;
+}
+.card-row:last-child { margin-bottom: 0; }
+.card-row:hover { background: linear-gradient(135deg,rgba(8,82,102,0.85) 0%,rgba(10,72,105,0.8) 100%); }
+.card-type-pill {
+  padding: 0.2rem 0.6rem; border-radius: 6px;
+  font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.04em; flex-shrink: 0; min-width: 72px; text-align: center;
+  white-space: nowrap;
+}
+.ct-transition { background: rgba(45,63,170,0.25); color: #7b8ff7; }
+.ct-nav       { background: rgba(15,155,142,0.25); color: #4ecdc4; }
+.ct-desc      { background: rgba(45,107,228,0.25); color: #6fa8f5; }
+.ct-rudy      { background: rgba(255,107,53,0.2);  color: #ff9a70; }
+.ct-photo     { background: rgba(52,199,89,0.18);  color: #5dd97a; }
+.ct-quiz      { background: rgba(255,204,0,0.2);   color: #ffd740; }
+.ct-partner   { background: rgba(175,82,222,0.2);  color: #d47ef8; }
+.ct-game      { background: rgba(255,59,48,0.18);  color: #ff7b72; }
+.ct-finish    { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.5); }
+.card-preview { flex: 1; font-size: 0.8rem; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.card-pos { font-size: 0.88rem; color: #ff6b35; font-weight: 800; width: 22px; text-align: center; flex-shrink: 0; }
+
+/* ── Tabs ── */
+.tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 1.25rem; }
+.tab {
+  padding: 0.65rem 1rem; font-size: 0.83rem; font-weight: 600;
+  color: var(--text2); cursor: pointer; border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s; margin-bottom: -1px;
+}
+.tab:hover { color: var(--text); }
+.tab.active { color: var(--orange); border-bottom-color: var(--orange); }
+
+/* ── Modal ── */
+#modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+  z-index: 500; display: none; align-items: center; justify-content: center;
+  padding: 1.5rem;
+  backdrop-filter: blur(4px);
+}
+#modal-overlay.open { display: flex; }
+#modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  width: 100%; max-width: 600px;
+  max-height: calc(100vh - 3rem);
+  display: flex; flex-direction: column;
+  animation: modalIn 0.18s ease;
+}
+@keyframes modalIn { from { opacity:0; transform:scale(0.96) translateY(8px); } to { opacity:1; transform:none; } }
+#modal-header {
+  padding: 1.1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+#modal-title { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 1rem; }
+#modal-body { padding: 1.25rem; overflow-y: auto; flex: 1; }
+#modal-footer {
+  padding: 0.9rem 1.25rem;
+  border-top: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: flex-end; gap: 0.75rem;
+  background: rgba(0,0,0,0.15);
+}
+
+/* ── Toast ── */
+#toast-container {
+  position: fixed; bottom: 1.5rem; right: 1.5rem;
+  z-index: 9999; display: flex; flex-direction: column; gap: 0.5rem;
+}
+.toast {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 0.75rem 1rem;
+  font-size: 0.83rem; color: var(--text);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  display: flex; align-items: center; gap: 0.6rem;
+  animation: toastIn 0.2s ease;
+  max-width: 300px;
+}
+@keyframes toastIn { from { opacity:0; transform:translateX(16px); } to { opacity:1; transform:none; } }
+.toast.success { border-left: 3px solid var(--green); }
+.toast.error { border-left: 3px solid var(--red); }
+.toast.info { border-left: 3px solid var(--blue); }
+
+/* ── Sections ── */
+.section { display: none !important; }
+.section.active { display: block !important; }
+
+/* ── Empty state ── */
+.empty-state {
+  text-align: center; padding: 3rem 1.5rem; color: var(--text3);
+}
+.empty-state-icon { font-size: 2.5rem; margin-bottom: 0.75rem; opacity: 0.4; }
+.empty-state-text { font-size: 0.9rem; line-height: 1.6; }
+
+/* ── Settings ── */
+.settings-section { margin-bottom: 2rem; }
+.settings-section-title {
+  font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.9rem;
+  color: var(--text); margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem; border-bottom: 1px solid var(--border);
+}
+
+/* ── Type picker ── */
+.type-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; }
+.type-option {
+  background: var(--surface2); border: 1.5px solid var(--border);
+  border-radius: var(--radius); padding: 0.85rem 0.65rem;
+  cursor: pointer; text-align: center; transition: all 0.15s;
+}
+.type-option:hover { border-color: var(--border-hover); background: var(--surface3); }
+.type-option.selected { border-color: var(--orange); background: rgba(255,107,53,0.08); }
+.type-option-name { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.78rem; color: var(--text); margin-top: 0.4rem; }
+.type-option-desc { font-size: 0.67rem; color: var(--text2); margin-top: 0.15rem; line-height: 1.35; }
+
+/* ── Cfid preview ── */
+.cf-preview {
+  margin-top: 0.5rem; border-radius: var(--radius-sm); overflow: hidden;
+  background: var(--surface3); height: 60px;
+  display: flex; align-items: center; justify-content: center;
+}
+.cf-preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cf-preview-placeholder { font-size: 0.72rem; color: var(--text3); }
+
+/* ── Quiz options ── */
+.quiz-opt-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; }
+.quiz-opt-row input[type=radio] { flex-shrink: 0; accent-color: var(--orange); width: 16px; height: 16px; }
+.quiz-opt-row input[type=text] { flex: 1; }
+
+/* ── Partner list ── */
+.partner-row {
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg,rgba(80,45,115,0.7) 0%,rgba(65,40,105,0.65) 100%);
+  border: 1px solid rgba(160,120,220,0.35);
+  border-radius: var(--radius);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  transition: background 0.12s;
+}
+.partner-row:hover { background: linear-gradient(135deg,rgba(95,55,135,0.82) 0%,rgba(78,50,125,0.76) 100%); }
+.partner-thumb {
+  width: 52px; height: 52px; border-radius: 8px;
+  object-fit: cover; background: var(--surface3); flex-shrink: 0;
+}
+.partner-info { flex: 1; min-width: 0; }
+.partner-name { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.88rem; }
+.partner-type { font-size: 0.73rem; color: rgba(255,255,255,0.65); }
+
+/* ── Loading ── */
+.spinner {
+  width: 20px; height: 20px; border: 2px solid var(--border);
+  border-top-color: var(--orange); border-radius: 50%;
+  animation: spin 0.7s linear infinite; flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.loading-row {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0.75rem; padding: 2rem; color: var(--text2); font-size: 0.85rem;
+}
+
+/* ── Divider ── */
+.divider { height: 1px; background: var(--border); margin: 1.25rem 0; }
+
+/* ── Config screen ── */
+#config-screen {
+  position: fixed; inset: 0; background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 999; padding: 2rem;
+}
+.config-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 2.5rem;
+  width: 100%; max-width: 420px;
+}
+.config-logo {
+  display: flex; align-items: center; gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+.config-logo-mark {
+  width: 44px; height: 44px; border-radius: 12px;
+  background: var(--orange-grad);
+  display: flex; align-items: center; justify-content: center;
+}
+.config-logo-mark svg { width: 22px; height: 22px; }
+.config-wordmark { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.4rem; }
+.config-sub { font-size: 0.78rem; color: var(--text2); }
+.config-title { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 1.1rem; margin-bottom: 0.35rem; }
+.config-desc { font-size: 0.82rem; color: var(--text2); margin-bottom: 1.5rem; line-height: 1.55; }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 99px; }
+
+.row-actions { display: flex; align-items: center; gap: 0.25rem; flex-shrink: 0; }
+
+/* ── Media upload fields ── */
+.media-upload-wrap { display: flex; flex-direction: column; gap: 0.5rem; }
+
+/* Primary upload button — orange, prominent */
+.media-upload-primary {
+  display: flex; align-items: center; justify-content: center; gap: 0.65rem;
+  padding: 0.8rem 1.25rem; width: 100%; box-sizing: border-box;
+  background: linear-gradient(160deg,#ff3b30 0%,#ff6b35 45%,#ffcc00 100%);
+  border: none; border-radius: var(--radius-sm); cursor: pointer;
+  color: white; font-size: 0.88rem; font-weight: 800;
+  font-family: 'Nunito', sans-serif;
+  box-shadow: 0 3px 12px rgba(255,107,53,0.35);
+  transition: opacity 0.15s, transform 0.1s;
+}
+.media-upload-primary:hover { opacity: 0.92; transform: translateY(-1px); }
+.media-upload-primary:active { transform: translateY(0); }
+.media-upload-wrap.drag-over .media-upload-primary {
+  opacity: 0.8; transform: scale(0.99);
+  box-shadow: 0 0 0 3px rgba(255,107,53,0.4);
+}
+
+/* URL/ID fallback — subtle link below button */
+.media-url-toggle {
+  background: none; border: none; cursor: pointer;
+  font-size: 0.72rem; color: var(--text3); text-align: center;
+  padding: 0; text-decoration: underline; text-underline-offset: 2px;
+  width: 100%;
+}
+.media-url-toggle:hover { color: var(--text2); }
+.media-url-row { display: none; gap: 0.4rem; align-items: center; }
+.media-url-row.visible { display: flex; }
+.media-url-row input { flex: 1; min-width: 0; font-size: 0.8rem; }
+
+/* Preview */
+.media-preview {
+  border-radius: 8px; overflow: hidden;
+  display: none; position: relative; background: var(--surface3);
+}
+.media-preview img { width: 100%; height: auto; display: block; }
+.media-preview iframe { width: 100%; aspect-ratio: 16/9; border: none; display: block; }
+.media-preview-remove {
+  position: absolute; top: 0.5rem; right: 0.5rem;
+  background: rgba(0,0,0,0.65); border: none; border-radius: 50%;
+  width: 26px; height: 26px; cursor: pointer; color: white;
+  font-size: 0.75rem; display: flex; align-items: center; justify-content: center;
+}
+.media-preview-remove:hover { background: rgba(180,0,0,0.85); }
+
+/* Progress */
+.media-progress { display: none; flex-direction: column; gap: 0.3rem; }
+.media-progress-bar-wrap {
+  background: var(--surface3); border-radius: 99px; height: 5px; overflow: hidden;
+}
+.media-progress-bar {
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg,#ff3b30,#ff6b35,#ffcc00);
+  transition: width 0.25s; border-radius: 99px;
+}
+.media-status { font-size: 0.72rem; color: var(--text3); }
+.media-uploading { opacity: 0.65; pointer-events: none; }
+
+/* Legacy aliases */
+.img-upload-wrap { } .vid-upload-wrap { }
+.img-uploading { opacity: 0.65; pointer-events: none; }
+/* ── Stop groups ── */
+.stop-group {
+  /* Just a logical grouping — no visual wrapper */
+  background: none;
+  border: none;
+  overflow: visible;
+}
+/* Orange arrow connector between stop groups */
+.stop-group-connector {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 0.35rem 0;
+}
+/* Sub-stop area — inset on the left */
+.substop-area {
+  background: none;
+  padding: 0 0 0.5rem 2rem;
+  display: flex; flex-direction: column; gap: 0.5rem;
+}
+/* Sub-stop row — floating mini card */
+.substop-row {
+  display: flex; align-items: center; gap: 0.65rem;
+  padding: 0.5rem 0.75rem;
+  background: linear-gradient(135deg,rgba(6,70,88,0.72) 0%,rgba(8,82,100,0.68) 50%,rgba(6,66,84,0.72) 100%);
+  border: 1px solid rgba(15,165,165,0.28);
+  border-radius: var(--radius);
+  box-shadow: 0 1px 6px rgba(0,0,0,0.18);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  transition: background 0.12s;
+  cursor: pointer;
+}
+.substop-row:hover { background: linear-gradient(135deg,rgba(8,88,108,0.82) 0%,rgba(10,98,118,0.78) 100%); }
+/* Route column: dot */
+.substop-route {
+  width: 2.25rem; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  align-self: stretch; position: relative;
+}
+.substop-route-line {
+  position: absolute; left: 50%; top: 0; bottom: 0;
+  width: 2px; background: rgba(255,107,53,0.15);
+  transform: translateX(-50%);
+}
+.substop-route-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: rgba(255,107,53,0.5); border: 1.5px solid rgba(255,107,53,0.7);
+  position: relative; z-index: 1; flex-shrink: 0;
+}
+
+.substop-badge { display: none; }
+.substop-indent { display: none; }
+/* Main stop row — sits at bottom of card, full width, distinct bg */
+.stop-row-main {
+  display: flex; align-items: center;
+  background: linear-gradient(135deg,rgba(8,90,110,0.75) 0%,rgba(10,105,120,0.7) 50%,rgba(8,85,100,0.75) 100%);
+  border: 1px solid rgba(15,175,175,0.35);
+  border-radius: var(--radius) !important;
+  box-shadow: 0 2px 14px rgba(0,0,0,0.28);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  overflow: hidden;
+  transition: background 0.12s;
+}
+.stop-row-main:hover { background: linear-gradient(135deg,rgba(10,108,130,0.88) 0%,rgba(12,118,135,0.84) 100%); }
+/* Thumbnails */
+.stop-thumb {
+  width: 40px; height: 40px; border-radius: 6px;
+  object-fit: cover; flex-shrink: 0; background: var(--surface3);
+}
+.stop-thumb-placeholder {
+  width: 40px; height: 40px; border-radius: 6px;
+  background: var(--surface3); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.stop-num-destination {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: linear-gradient(160deg,#ff3b30 0%,#ff6b35 45%,#ffcc00 100%);
+  color: white; font-family: 'Nunito', sans-serif;
+  font-weight: 900; font-size: 0.8rem;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(255,107,53,0.35);
+}
+
+/* ── Mobile responsive ── */
+@media (max-width: 600px) {
+
+  /* Header — tighter, breadcrumb smaller */
+  #header { padding: 0 0.75rem; gap: 0.5rem; }
+  .header-logo { font-size: 0.95rem; }
+  .header-logo-mark { width: 26px; height: 26px; }
+  #breadcrumb { font-size: 0.78rem; gap: 0.3rem; }
+  .conn-status span { display: none; } /* hide connection label */
+
+  /* Main section — less padding */
+  #main > .section { padding: 1rem 0.85rem; }
+
+  /* Form grids — single column on mobile */
+  .form-grid { grid-template-columns: 1fr !important; }
+
+  /* Panels — less padding */
+  .panel-body { padding: 0.85rem; }
+  .panel-header { padding: 0.75rem 0.85rem; }
+  .panel-footer { padding: 0.75rem 0.85rem; flex-wrap: wrap; gap: 0.5rem; }
+
+  /* Page header — stack vertically */
+  .page-header { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+
+  /* Stops page action row — stack */
+  .page-header > div { width: 100%; }
+
+  /* Buttons in action rows — wrap */
+  .page-header > div[style*="display:flex"] { flex-wrap: wrap; }
+
+  /* Stop/card rows — tighter */
+  .stop-row-main { padding: 0.6rem 0.65rem; gap: 0.5rem; }
+  .substop-row { padding: 0.5rem 0.65rem; gap: 0.5rem; }
+  .card-row { padding: 0.6rem 0.65rem; gap: 0.5rem; }
+  .partner-row { padding: 0.6rem 0.65rem; gap: 0.5rem; }
+
+  /* Partner thumbnail — slightly smaller on mobile */
+  .partner-thumb { width: 42px; height: 42px; }
+
+  /* Row actions — always visible, no hover needed */
+  .row-actions { display: flex; gap: 0.35rem; flex-shrink: 0; }
+
+  /* Modal — full width on mobile */
+  #modal { max-width: 100%; margin: 0; border-radius: 16px 16px 0 0; }
+  #modal-overlay { align-items: flex-end; padding: 0; }
+
+  /* Type grid — 2 columns on mobile instead of 3 */
+  .type-grid { grid-template-columns: repeat(2, 1fr); }
+
+  /* Stops page title — smaller on mobile */
+  #stops-title { font-size: 1.8rem !important; }
+
+  /* Cards/stops page centred title */
+  .page-title { font-size: 1.6rem !important; }
+
+  /* Breadcrumb arrows — hide middle ones if too long */
+  .bc-arrow { font-size: 0.6rem; }
+
+  /* Stop group connector arrows — centred */
+  .stop-group-connector { margin: 2px auto; }
+
+  /* Image upload preview */
+  .media-preview img { max-height: 160px; }
+
+  /* Hide connection dot label */
+  #conn-label { display: none !important; }
+}
+
+@media (max-width: 400px) {
+  #main > .section { padding: 0.85rem 0.65rem; }
+  .header-logo { font-size: 0.85rem; }
+  #breadcrumb { font-size: 0.7rem; }
+  .type-grid { grid-template-columns: repeat(2, 1fr); gap: 0.4rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- Config screen (shown if no Supabase credentials) -->
+<div id="config-screen">
+  <div class="config-card">
+    <div class="config-logo">
+      <div class="config-logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </div>
+      <div>
+        <div class="config-wordmark">Tonbi</div>
+        <div class="config-sub">Tour Builder Dashboard</div>
+      </div>
+    </div>
+    <div class="config-title">Connect to Supabase</div>
+    <div class="config-desc">Enter your Supabase project credentials. These are saved in your browser and never sent anywhere else.</div>
+    <div class="field" style="margin-bottom:1rem;">
+      <label>Supabase URL</label>
+      <input type="text" id="cfg-url" placeholder="https://xxxx.supabase.co">
+    </div>
+    <div class="field" style="margin-bottom:1.5rem;">
+      <label>Anon Key</label>
+      <input type="text" id="cfg-key" placeholder="eyJ...">
+    </div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="saveConfig()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+      Connect
+    </button>
+    <div id="cfg-error" style="color:var(--red);font-size:0.78rem;margin-top:0.75rem;display:none;"></div>
+  </div>
+</div>
+
+<!-- Header -->
+<div id="header">
+  <div class="header-logo" style="cursor:pointer;" onclick="showSection('tours')">
+    <div class="header-logo-mark">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    </div>
+    Tonbi
+  </div>
+  <div id="breadcrumb" style="margin-left:0.5rem;">
+    <span class="active" onclick="showSection('tours')">Tours</span>
+  </div>
+
+  <div class="header-right">
+    <div class="conn-status">
+      <div class="conn-dot" id="conn-dot"></div>
+<span id="conn-label" style="display:none;"></span>
+    </div>
+    <button class="btn btn-ghost btn-sm" onclick="showSection('settings')" title="Settings">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- Layout -->
+<div id="main">
+
+    <!-- TOURS section -->
+    <div class="section active" id="section-tours">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Tours</div>
+          <div class="page-subtitle">All tours in the platform</div>
+        </div>
+        <button class="btn btn-primary" onclick="newTour()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New Tour
+        </button>
+      </div>
+      <div id="tours-list" style="display:flex;flex-direction:column;gap:0;">
+        <div class="loading-row"><div class="spinner"></div> Loading tours…</div>
+      </div>
+    </div>
+
+    <!-- TOUR EDIT section -->
+    <div class="section" id="section-tour-edit">
+      <div class="page-header">
+        <div>
+          <div class="page-title" id="te-page-title">Edit Tour</div>
+          <div class="page-subtitle">Tour settings and metadata</div>
+        </div>
+      </div>
+      <form id="tour-form" onsubmit="saveTour(event)">
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">Basic Info</div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="form-grid" style="margin-bottom:1rem;">
+              <div class="field">
+                <label>Tour Title</label>
+                <input type="text" id="tf-title" placeholder="e.g. Filmmaker's Rotterdam" required>
+              </div>
+              <div class="field">
+                <label>City</label>
+                <input type="text" id="tf-city" placeholder="e.g. Rotterdam">
+              </div>
+            </div>
+            <div class="form-grid cols-1" style="margin-bottom:1rem;">
+              <div class="field">
+                <label>Short Description</label>
+                <textarea id="tf-description" rows="3" placeholder="One or two sentences about this tour…"></textarea>
+              </div>
+            </div>
+            <div class="form-grid" style="margin-bottom:1rem;">
+              <div class="field">
+                <label>Price (€)</label>
+                <input type="number" id="tf-price" placeholder="0.00" step="0.01" min="0">
+              </div>
+              <div class="field">
+                <label>Access Code</label>
+                <input type="text" id="tf-access-code" placeholder="e.g. qqq">
+                <div class="field-hint">Leave blank for free/open access</div>
+              </div>
+            </div>
+            <div class="form-grid cols-1">
+              <div class="field">
+                <label>Thumbnail Image</label>
+                <input type="url" id="tf-img" placeholder="https://…">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">Author Voice</div>
+          </div>
+          <div class="panel-body">
+            <div class="field">
+              <label>Author Card Label</label>
+              <input type="text" id="tf-author-label" placeholder="e.g. Rudy's Notes, Marco's Tips, Local Secrets">
+              <div class="field-hint">This label appears on personal notes / author voice cards throughout the tour. Defaults to "Author's Notes" if left blank.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">Publishing</div>
+          </div>
+          <div class="panel-body">
+            <div class="toggle-row">
+              <div>
+                <div class="toggle-label">Published</div>
+                <div class="toggle-desc">Make this tour visible to the public</div>
+              </div>
+              <button type="button" class="toggle" id="tf-published" onclick="this.classList.toggle('on')"></button>
+            </div>
+          </div>
+          <div class="panel-footer">
+            <button type="button" class="btn btn-secondary" onclick="showSection('tours')">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="tour-save-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Save Tour
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- STOPS section -->
+    <div class="section" id="section-stops">
+      <!-- Centred title area -->
+      <div style="text-align:center;margin-bottom:1.25rem;">
+        <div id="stops-title" style="font-family:'Nunito',sans-serif;font-size:2.4rem;font-weight:900;color:white;line-height:1.05;margin-bottom:0.2rem;"></div>
+        <div style="font-family:'Nunito',sans-serif;font-size:0.9rem;font-weight:800;background:linear-gradient(160deg,#ff3b30 0%,#ff6b35 45%,#ffcc00 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-transform:uppercase;letter-spacing:0.14em;margin-bottom:0.3rem;">Tour Flow</div>
+        <div style="display:flex;justify-content:center;"><svg width="16" height="22" viewBox="0 0 18 28" fill="none" stroke="#ff6b35" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="18"/><polyline points="4 13 9 19 14 13"/></svg></div>
+        <div id="stops-subtitle" style="font-size:0.82rem;color:var(--text3);margin-top:0.15rem;"></div>
+      </div>
+      <!-- Single action row: settings+partners on left, add buttons on right -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;">
+        <div style="display:flex;gap:0.5rem;">
+          <button class="btn btn-secondary btn-sm" onclick="showSection('tour-edit')" style="display:flex;align-items:center;gap:0.35rem;background:rgba(26,111,181,0.18);border-color:rgba(26,111,181,0.35);color:rgba(150,200,255,0.95);">
+            Tour Settings
+          </button>
+          <button class="btn btn-secondary btn-sm" onclick="loadAndShowAllPartners()" style="display:flex;align-items:center;gap:0.35rem;background:rgba(120,60,200,0.18);border-color:rgba(120,60,200,0.35);color:rgba(200,150,255,0.95);">
+            Partners
+          </button>
+        </div>
+        <div style="display:flex;gap:0.5rem;">
+          <button class="btn btn-primary btn-sm" onclick="newSubstop()" style="background:linear-gradient(160deg,#ff3b30 0%,#ff6b35 45%,#ffcc00 100%);">+ Sub-stop</button>
+          <button class="btn btn-primary btn-sm" onclick="newStop()" style="background:linear-gradient(160deg,#ff3b30 0%,#ff6b35 45%,#ffcc00 100%);">+ Add Stop</button>
+        </div>
+      </div>
+      <div id="stops-list" style="padding:0 0 0.5rem 0;">
+        <div class="loading-row"><div class="spinner"></div> Loading stops…</div>
+      </div>
+    </div>
+
+    <!-- STOP EDIT section -->
+    <div class="section" id="section-stop-edit">
+      <div class="page-header">
+        <div>
+          <div class="page-title" id="se-page-title">Edit Stop</div>
+          <div class="page-subtitle">Stop details and location</div>
+        </div>
+      </div>
+      <form id="stop-form" onsubmit="saveStop(event)">
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Identity</div></div>
+          <div class="panel-body">
+            <div class="form-grid" style="margin-bottom:1rem;">
+              <div class="field">
+                <label>Stop Name</label>
+                <input type="text" id="sf-name" placeholder="e.g. Erasmus Bridge" required>
+              </div>
+              <div class="field">
+                <label>Local / Dutch Name</label>
+                <input type="text" id="sf-dutch" placeholder="e.g. Erasmusbrug">
+              </div>
+            </div>
+            <div class="field form-full" style="margin-bottom:1rem;">
+              <label>Tagline</label>
+              <input type="text" id="sf-tagline" placeholder="One punchy line about this stop">
+            </div>
+            <div class="field form-full">
+              <label>Cover Image</label>
+              <input type="url" id="sf-img" placeholder="https://… or upload ↑">
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Location</div></div>
+          <div class="panel-body">
+            <div class="form-grid" style="margin-bottom:1rem;">
+              <div class="field">
+                <label>Address</label>
+                <input type="text" id="sf-address" placeholder="Street, postcode, city">
+              </div>
+              <div class="field">
+                <label>Google Maps URL</label>
+                <input type="url" id="sf-map-url" placeholder="https://maps.google.com/?q=…">
+              </div>
+            </div>
+            <div class="form-grid cols-3">
+              <div class="field">
+                <label>Longitude</label>
+                <input type="number" id="sf-lng" placeholder="4.4871" step="0.0001">
+              </div>
+              <div class="field">
+                <label>Latitude</label>
+                <input type="number" id="sf-lat" placeholder="51.9090" step="0.0001">
+              </div>
+              <div class="field">
+                <label>Stop Order</label>
+                <input type="number" id="sf-position" placeholder="1" min="1">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Stop Opener Video</div></div>
+          <div class="panel-body">
+            <div class="field">
+              <label>Cloudflare Video ID</label>
+              <input type="text" id="sf-transition-cf-id" placeholder="Cloudflare video ID">
+              <div class="field-hint">A cinematic intro video shown as the very first card when entering this stop. Optional. Add description videos via the Cards section.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Content</div></div>
+          <div class="panel-body">
+            <div class="field" style="margin-bottom:1rem;">
+              <label>Description (shown on desc card)</label>
+              <textarea id="sf-desc" rows="4" placeholder="The main descriptive text for this stop…"></textarea>
+            </div>
+            <div class="field">
+              <label id="sf-rudy-label">Author Notes (shown on author voice card)</label>
+              <textarea id="sf-rudy" rows="4" placeholder="Personal notes, filmmaker observations, tips for visitors…"></textarea>
+            </div>
+          </div>
+          <div class="panel-footer">
+            <button type="button" class="btn btn-secondary" onclick="returnToStops()">Cancel</button>
+            <button type="submit" class="btn btn-primary">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Save Stop
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- CARDS section -->
+    <div class="section" id="section-cards">
+      <!-- Stop title centred -->
+      <div style="text-align:center;margin-bottom:1.25rem;">
+        <div class="page-title" id="cards-subtitle" style="font-size:2.4rem;font-weight:900;color:white;line-height:1.05;margin-bottom:0.2rem;">Cards for this stop</div>
+        <div style="font-family:'Nunito',sans-serif;font-size:0.85rem;font-weight:800;background:linear-gradient(160deg,#ff3b30 0%,#ff6b35 45%,#ffcc00 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-transform:uppercase;letter-spacing:0.14em;margin-bottom:0.3rem;">Card Flow</div>
+        <div style="display:flex;justify-content:center;"><svg width="14" height="22" viewBox="0 0 18 28" fill="none" stroke="#ff6b35" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="18"/><polyline points="4 13 9 19 14 13"/></svg></div>
+      </div>
+      <!-- Action row: Details + Stops left, Add Card right -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;">
+        <div style="display:flex;gap:0.5rem;">
+          <button class="btn btn-secondary btn-sm" onclick="if(state.currentStop)editStop(state.currentStop.id)" style="background:rgba(26,111,181,0.18);border-color:rgba(26,111,181,0.35);color:rgba(150,200,255,0.95);">Details</button>
+          <button class="btn btn-secondary btn-sm" onclick="if(state.currentTour){loadStops().then(()=>showSection('stops'))}" style="background:rgba(26,111,181,0.18);border-color:rgba(26,111,181,0.35);color:rgba(150,200,255,0.95);">← Stops</button>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="openAddCardModal()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Card
+        </button>
+      </div>
+      <div id="cards-list" style="display:flex;flex-direction:column;">
+        <div class="loading-row"><div class="spinner"></div> Loading cards…</div>
+      </div>
+    </div>
+
+    <!-- PARTNERS section -->
+    <div class="section" id="section-partners">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Partners</div>
+          <div class="page-subtitle" id="partners-subtitle">Partners linked to this stop</div>
+        </div>
+        <button class="btn btn-primary" onclick="openPartnerModal()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Partner
+        </button>
+      </div>
+      <div class="panel">
+        <div id="partners-list">
+          <div class="loading-row"><div class="spinner"></div> Loading partners…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUBSTOP EDIT section -->
+    <div class="section" id="section-substop-edit">
+      <div class="page-header">
+        <div>
+          <div class="page-title" id="sse-page-title">Edit Sub-stop</div>
+          <div class="page-subtitle" id="sse-page-subtitle">Sub-stop details</div>
+        </div>
+        <div style="display:flex;gap:0.5rem;">
+          <button class="btn btn-secondary btn-sm" onclick="loadAndShowSubstopCards()" style="background:rgba(15,155,142,0.18);border-color:rgba(15,155,142,0.35);color:rgba(100,220,210,0.95);">Cards</button>
+          <button class="btn btn-secondary btn-sm" onclick="if(state.currentTour){loadStops().then(()=>showSection('stops'))}" style="background:rgba(26,111,181,0.18);border-color:rgba(26,111,181,0.35);color:rgba(150,200,255,0.95);">← Stops</button>
+        </div>
+      </div>
+      <form id="substop-form" onsubmit="saveSubstop(event)">
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Identity</div></div>
+          <div class="panel-body">
+            <div class="form-grid" style="margin-bottom:1rem;">
+              <div class="field"><label>Name</label><input type="text" id="ssf-name" placeholder="e.g. Blaak Station" required></div>
+              <div class="field"><label>Tagline</label><input type="text" id="ssf-tagline" placeholder="One punchy line"></div>
+            </div>
+            <div class="field"><label>Cover Image</label><input type="url" id="ssf-img" placeholder="https://… or upload ↑"></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Location</div></div>
+          <div class="panel-body">
+            <div class="form-grid" style="margin-bottom:1rem;">
+              <div class="field"><label>Google Maps URL</label><input type="url" id="ssf-map-url" placeholder="https://maps.google.com/?q=…"></div>
+            </div>
+            <div class="form-grid cols-3">
+              <div class="field"><label>Longitude</label><input type="number" id="ssf-lng" placeholder="4.4871" step="0.0001"></div>
+              <div class="field"><label>Latitude</label><input type="number" id="ssf-lat" placeholder="51.9090" step="0.0001"></div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Content</div></div>
+          <div class="panel-body">
+            <div class="field" style="margin-bottom:1rem;">
+              <label id="ssf-rudy-label">Author Notes</label>
+              <textarea id="ssf-rudy" rows="4" placeholder="Personal notes for this waypoint…"></textarea>
+            </div>
+          </div>
+          <div class="panel-footer">
+            <button type="button" class="btn btn-secondary" onclick="returnToStops()">Cancel</button>
+            <button type="submit" class="btn btn-primary">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Save Sub-stop
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+    <!-- SUBSTOP CARDS section -->
+    <div class="section" id="section-substop-cards">
+      <!-- Sub-stop title centred -->
+      <div style="text-align:center;margin-bottom:1.25rem;">
+        <div class="page-title" id="substop-cards-subtitle" style="font-size:2.4rem;font-weight:900;color:white;line-height:1.05;margin-bottom:0.2rem;">Cards for this sub-stop</div>
+        <div style="font-family:'Nunito',sans-serif;font-size:0.85rem;font-weight:800;background:linear-gradient(160deg,#ff3b30 0%,#ff6b35 45%,#ffcc00 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-transform:uppercase;letter-spacing:0.14em;margin-bottom:0.3rem;">Card Flow</div>
+        <div style="display:flex;justify-content:center;"><svg width="14" height="22" viewBox="0 0 18 28" fill="none" stroke="#ff6b35" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="18"/><polyline points="4 13 9 19 14 13"/></svg></div>
+      </div>
+      <!-- Action row: Details + Stops left, Add Card right -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;">
+        <div style="display:flex;gap:0.5rem;">
+          <button class="btn btn-secondary btn-sm" onclick="if(state.currentSubstop)editSubstop(state.currentSubstop.id)" style="background:rgba(26,111,181,0.18);border-color:rgba(26,111,181,0.35);color:rgba(150,200,255,0.95);">Details</button>
+          <button class="btn btn-secondary btn-sm" onclick="if(state.currentTour){loadStops().then(()=>showSection('stops'))}" style="background:rgba(26,111,181,0.18);border-color:rgba(26,111,181,0.35);color:rgba(150,200,255,0.95);">← Stops</button>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="openAddSubstopCardModal()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Card
+        </button>
+      </div>
+      <div id="substop-cards-list" style="display:flex;flex-direction:column;">
+        <div class="loading-row"><div class="spinner"></div> Loading cards…</div>
+      </div>
+    </div>
+    <!-- SUBSTOP PARTNERS section -->
+    <div class="section" id="section-substop-partners">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Partners</div>
+          <div class="page-subtitle" id="substop-partners-subtitle">Partners for this sub-stop</div>
+        </div>
+        <button class="btn btn-primary" onclick="openSubstopPartnerModal()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Partner
+        </button>
+      </div>
+      <div class="panel">
+        <div id="substop-partners-list">
+          <div class="loading-row"><div class="spinner"></div> Loading partners…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOUR START section -->
+    <div class="section" id="section-tour-start">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Tour Start</div>
+          <div class="page-subtitle">Meeting point and intro screen content</div>
+        </div>
+      </div>
+      <form id="tour-start-form" onsubmit="saveTourStart(event)">
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Meeting Point</div></div>
+          <div class="panel-body">
+            <div class="field" style="margin-bottom:1rem;">
+              <label>Location Name</label>
+              <input type="text" id="ts-meeting-name" placeholder="e.g. De Boeg Monument">
+            </div>
+            <div class="field" style="margin-bottom:1rem;">
+              <label>Address</label>
+              <input type="text" id="ts-meeting-address" placeholder="Street address shown on intro screen">
+            </div>
+            <div class="field">
+              <label>Google Maps URL</label>
+              <input type="url" id="ts-meeting-map-url" placeholder="https://maps.google.com/?q=…">
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Intro Screen</div></div>
+          <div class="panel-body">
+            <div class="field">
+              <label>Tour Introduction</label>
+              <textarea id="ts-intro-desc" rows="4" placeholder="A brief description shown on the intro screen before the tour begins…"></textarea>
+              <div class="field-hint">Keep it short and atmospheric — one or two sentences.</div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Safety Guidelines</div></div>
+          <div class="panel-body">
+            <div class="field-hint" style="margin-bottom:1rem;">Tonbi's standard safety guidelines are always shown. Add any tour-specific notes below — terrain, climate, physical requirements etc.</div>
+            <div class="field">
+              <label>Your Safety Notes (optional)</label>
+              <textarea id="ts-safety-notes" rows="4" placeholder="e.g. This tour includes cobblestone streets. Wear sturdy shoes. Some sections may not be suitable for pushchairs."></textarea>
+            </div>
+          </div>
+          <div class="panel-footer">
+            <button type="button" class="btn btn-secondary" onclick="returnToStops()">Cancel</button>
+            <button type="submit" class="btn btn-primary">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Save
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- TOUR FINISH section -->
+    <div class="section" id="section-tour-finish">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Tour Finish</div>
+          <div class="page-subtitle">Shown when the tour is completed</div>
+        </div>
+      </div>
+      <form id="tour-finish-form" onsubmit="saveTourFinish(event)">
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Finish Message</div></div>
+          <div class="panel-body">
+            <div class="field">
+              <label>Completion Message</label>
+              <textarea id="tf-finish-message" rows="6" placeholder="Congratulations on completing the tour! …"></textarea>
+              <div class="field-hint">Shown on the final screen when the traveller finishes the tour. HTML supported.</div>
+            </div>
+          </div>
+          <div class="panel-footer">
+            <button type="button" class="btn btn-secondary" onclick="returnToStops()">Cancel</button>
+            <button type="submit" class="btn btn-primary">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Save
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- ALL PARTNERS section -->
+    <div class="section" id="section-all-partners">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Partners</div>
+          <div class="page-subtitle">All partners across this tour</div>
+        </div>
+        <div style="display:flex;gap:0.5rem;align-items:center;">
+          <button class="btn btn-secondary btn-sm" onclick="if(state.currentTour){loadStops().then(()=>showSection('stops'))}" style="background:rgba(26,111,181,0.18);border-color:rgba(26,111,181,0.35);color:rgba(150,200,255,0.95);">← Stops</button>
+          <button class="btn btn-primary btn-sm" onclick="openPartnerModal()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Partner
+          </button>
+        </div>
+      </div>
+      <div id="all-partners-list" style="display:flex;flex-direction:column;gap:0.5rem;">
+        <div class="loading-row"><div class="spinner"></div> Loading partners…</div>
+      </div>
+    </div>
+
+    <!-- SETTINGS section -->
+    <div class="section" id="section-settings">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Settings</div>
+          <div class="page-subtitle">Dashboard configuration</div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header"><div class="panel-title">Supabase Connection</div></div>
+        <div class="panel-body">
+          <div class="field" style="margin-bottom:1rem;">
+            <label>Supabase URL</label>
+            <input type="text" id="settings-url" placeholder="https://xxxx.supabase.co">
+          </div>
+          <div class="field" style="margin-bottom:1.5rem;">
+            <label>Anon Key</label>
+            <input type="text" id="settings-key" placeholder="eyJ…">
+          </div>
+        </div>
+        <div class="panel-footer">
+          <button class="btn btn-danger btn-sm" onclick="clearConfig()">Clear &amp; Reconnect</button>
+          <button class="btn btn-primary" onclick="updateConfig()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Save Settings
+          </button>
+        </div>
+      </div>
+    </div>
+
+</div><!-- /main -->
+
+<!-- Modal -->
+<div id="modal-overlay">
+  <div id="modal">
+    <div id="modal-header">
+      <div id="modal-title">Modal</div>
+      <button class="btn btn-ghost btn-icon" onclick="closeModalDirect()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div id="modal-body"></div>
+    <div id="modal-footer"></div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div id="toast-container"></div>
+
+<script>
+// ── Supabase client (CDN) ──
+const SUPA_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';
+
+// ── State ──
+let sb = null;
+let state = {
+  tours: [],
+  currentTour: null,
+  currentStop: null,
+  stops: [],
+  allSubstops: [],
+  currentSubstop: null,
+  cards: [],
+  partners: [],
+  substopCards: [],
+  substopPartners: [],
+};
+
+// ── Config ──
+function getConfig() {
+  return {
+    url: localStorage.getItem('tonbi_sb_url') || '',
+    key: localStorage.getItem('tonbi_sb_key') || '',
+  };
+}
+function setConfig(url, key) {
+  localStorage.setItem('tonbi_sb_url', url.trim());
+  localStorage.setItem('tonbi_sb_key', key.trim());
+}
+
+async function saveConfig() {
+  const url = document.getElementById('cfg-url').value.trim();
+  const key = document.getElementById('cfg-key').value.trim();
+  const err = document.getElementById('cfg-error');
+  err.style.display = 'none';
+  if (!url || !key) { err.textContent = 'Both fields are required.'; err.style.display = 'block'; return; }
+  setConfig(url, key);
+  await initSupabase();
+}
+function clearConfig() {
+  localStorage.removeItem('tonbi_sb_url');
+  localStorage.removeItem('tonbi_sb_key');
+  location.reload();
+}
+function updateConfig() {
+  const url = document.getElementById('settings-url').value.trim();
+  const key = document.getElementById('settings-key').value.trim();
+  if (!url || !key) { toast('Both URL and key are required', 'error'); return; }
+  setConfig(url, key);
+  toast('Settings saved — reconnecting…', 'info');
+  setTimeout(() => location.reload(), 800);
+}
+
+// ── Bootstrap ──
+async function boot() {
+  // Load Supabase CDN
+  await new Promise((res, rej) => {
+    if (window.supabase) return res();
+    const s = document.createElement('script');
+    s.src = SUPA_CDN; s.onload = res; s.onerror = rej;
+    document.head.appendChild(s);
+  });
+
+  const cfg = getConfig();
+  if (!cfg.url || !cfg.key) {
+    document.getElementById('config-screen').style.display = 'flex';
+    return;
+  }
+  document.getElementById('config-screen').style.display = 'none';
+  await initSupabase();
+}
+
+async function initSupabase() {
+  const cfg = getConfig();
+  try {
+    sb = window.supabase.createClient(cfg.url, cfg.key);
+    // Quick connection test
+    const { error } = await sb.from('tours').select('id').limit(1);
+    if (error) throw error;
+    setConnStatus(true);
+    document.getElementById('config-screen').style.display = 'none';
+    // Populate settings fields
+    document.getElementById('settings-url').value = cfg.url;
+    document.getElementById('settings-key').value = cfg.key;
+    loadTours();
+  } catch(e) {
+    setConnStatus(false);
+    const errEl = document.getElementById('cfg-error');
+    if (errEl) { errEl.textContent = 'Could not connect: ' + e.message; errEl.style.display = 'block'; }
+    toast('Connection failed: ' + e.message, 'error');
+  }
+}
+
+function setConnStatus(ok) {
+  document.getElementById('conn-dot').className = 'conn-dot ' + (ok ? 'connected' : 'error');
+  document.getElementById('conn-label').textContent = ok ? 'Connected' : 'Error';
+}
+
+// ── Navigation ──
+const SECTIONS = ['tours', 'tour-edit', 'stops', 'stop-edit', 'cards', 'partners', 'substop-edit', 'substop-cards', 'substop-partners', 'tour-start', 'tour-finish', 'all-partners', 'settings'];
+
+function showSection(name) {
+  SECTIONS.forEach(s => {
+    document.getElementById('section-' + s).classList.toggle('active', s === name);
+  });
+  // Nav highlight
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  const target = document.getElementById('nav-' + name) || document.getElementById('nav-' + name.replace('-edit','').replace('-',''));
+  if (target) target.classList.add('active');
+  // Breadcrumb
+  updateBreadcrumb(name);
+}
+
+function updateBreadcrumb(section) {
+  const bc = document.getElementById('breadcrumb');
+  const t = state.currentTour;
+  const toFlow = `if(state.currentTour){loadStops().then(()=>showSection('stops'));}`;
+  let html = '';
+
+  const toursLink = `<span onclick="showSection('tours')" style="cursor:pointer;">Tours</span>`;
+  const arrow = `<span class="bc-arrow">›</span>`;
+  const stopsLink = `<span onclick="${toFlow}" style="cursor:pointer;">Stops</span>`;
+  if (!t || section === 'tours') {
+    html = `<span style="color:var(--text);font-weight:600;">Tours</span>`;
+  } else if (section === 'stops') {
+    html = toursLink + arrow + `<span style="color:var(--text);font-weight:700;">Stops</span>`;
+  } else if (section === 'tour-edit') {
+    html = toursLink + arrow + stopsLink + arrow + `<span>Tour Settings</span>`;
+  } else if (section === 'all-partners') {
+    html = toursLink + arrow + stopsLink + arrow + `<span>Partners</span>`;
+  } else if (['stop-edit','cards','partners'].includes(section)) {
+    const sName = state.currentStop?.name || 'Stop';
+    html = toursLink + arrow + stopsLink + arrow + `<span>${escHtml(sName)}</span>`;
+  } else if (['substop-edit','substop-cards','substop-partners'].includes(section)) {
+    const ssName = state.currentSubstop?.name || 'Sub-stop';
+    html = toursLink + arrow + stopsLink + arrow + `<span>${escHtml(ssName)}</span>`;
+  } else if (section === 'tour-start') {
+    html = toursLink + arrow + stopsLink + arrow + `<span>Tour Start</span>`;
+  } else if (section === 'tour-finish') {
+    html = toursLink + arrow + stopsLink + arrow + `<span>Tour Finish</span>`;
+  } else if (section === 'settings') {
+    html = toursLink + arrow + `<span>Settings</span>`;
+  }
+  bc.innerHTML = html;
+}
+
+// ── Tours ──
+async function loadTours() {
+  const { data, error } = await sb.from('tours').select('*').order('created_at');
+  if (error) { toast('Error loading tours', 'error'); return; }
+  state.tours = data || [];
+  renderTours();
+}
+
+function renderTours() {
+  const el = document.getElementById('tours-list');
+  if (!state.tours.length) {
+    el.innerHTML = `<div class="empty-state">
+      <div class="empty-state-icon">🗺</div>
+      <div class="empty-state-text">No tours yet.<br>Create your first tour to get started.</div>
+    </div>`;
+    return;
+  }
+  el.innerHTML = state.tours.map(t => `
+    <div class="tour-row" onclick="if(!_wasDragging)openStops('${t.id}')" style="cursor:pointer;">
+      ${t.photo_url ? `<img class="tour-thumb" src="${escHtml(t.photo_url)}" loading="lazy">` :
+        `<div class="tour-thumb-placeholder"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg></div>`}
+      <div class="tour-info">
+        <div class="tour-name">${escHtml(t.title)}</div>
+        <div class="tour-meta">
+          ${t.city ? `<span>${escHtml(t.city)}</span> ·` : ''}
+          <span class="status-pill ${t.published ? 'published' : 'draft'}">
+            <span class="status-dot"></span>${t.published ? 'Published' : 'Draft'}
+          </span>
+          ${t.base_price ? `· €${Number(t.base_price).toFixed(2)}` : '· Free'}
+        </div>
+      </div>
+      <div class="row-actions">
+        <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();editTour('${t.id}')" style="background:rgba(12,58,95,0.7);border-color:rgba(26,111,181,0.45);color:rgba(160,215,255,0.95);">Edit</button>
+        <button class="btn btn-ghost btn-icon btn-sm" title="Delete" onclick="deleteTour('${t.id}')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff6b35" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function newTour() {
+  state.currentTour = null;
+  document.getElementById('te-page-title').textContent = 'New Tour';
+  clearForm('tour-form');
+  document.getElementById('tf-published').classList.remove('on');
+
+  showSection('tour-edit');
+}
+
+function editTour(id) {
+  const t = state.tours.find(x => x.id === id);
+  if (!t) return;
+  state.currentTour = t;
+  updateSidebarTour();
+  document.getElementById('te-page-title').textContent = 'Edit Tour';
+  document.getElementById('tf-title').value = t.title || '';
+  document.getElementById('tf-city').value = t.city || '';
+  document.getElementById('tf-description').value = t.description || '';
+  document.getElementById('tf-price').value = t.base_price || '';
+  document.getElementById('tf-access-code').value = t.access_code || '';
+  document.getElementById('tf-img').value = t.photo_url || '';
+  document.getElementById('tf-author-label').value = t.author_card_label || '';
+  document.getElementById('tf-published').classList.toggle('on', !!t.published);
+  showSection('tour-edit');
+  setTimeout(() => makeImageField('tf-img', 'tours'), 30);
+}
+
+async function saveTour(e) {
+  e.preventDefault();
+  const btn = document.getElementById('tour-save-btn');
+  btn.disabled = true;
+  const payload = {
+    title: document.getElementById('tf-title').value.trim(),
+    city: document.getElementById('tf-city').value.trim(),
+    photo_url: document.getElementById('tf-img').value.trim() || null,
+    description: document.getElementById('tf-description').value.trim(),
+    base_price: parseFloat(document.getElementById('tf-price').value) || 0,
+    access_code: document.getElementById('tf-access-code').value.trim(),
+    author_card_label: document.getElementById('tf-author-label').value.trim(),
+    published: document.getElementById('tf-published').classList.contains('on'),
+  };
+
+  let error;
+  if (state.currentTour) {
+    ({ error } = await sb.from('tours').update(payload).eq('id', state.currentTour.id));
+  } else {
+    let data;
+    ({ data, error } = await sb.from('tours').insert(payload).select().single());
+    if (data) state.currentTour = data;
+  }
+  btn.disabled = false;
+  if (error) { toast('Save failed: ' + error.message, 'error'); return; }
+  toast('Tour saved', 'success');
+  await loadTours();
+  if (state.currentTour) {
+    state.currentTour = state.tours.find(x => x.id === state.currentTour.id) || state.currentTour;
+    updateSidebarTour();
+  }
+  showSection('tours');
+}
+
+async function deleteTour(id) {
+  if (!confirm('Delete this tour? This will also delete all its stops and cards.')) return;
+  const { error } = await sb.from('tours').delete().eq('id', id);
+  if (error) { toast('Delete failed', 'error'); return; }
+  toast('Tour deleted', 'info');
+  await loadTours();
+}
+
+function updateSidebarTour() {
+  // Sidebar removed — no-op
+}
+
+// ── Stops ──
+async function openStops(tourId) {
+  const t = state.tours.find(x => x.id === tourId);
+  if (!t) return;
+  state.currentTour = t;
+  updateSidebarTour();
+  document.getElementById('stops-title').textContent = t.title;
+  document.getElementById('stops-subtitle').textContent = '';
+  const htt = document.getElementById('header-tour-title');
+  if(htt){ htt.textContent = t.title; htt.style.display = 'block'; }
+  await loadStops();
+  showSection('stops');
+}
+
+async function loadStops() {
+  if (!state.currentTour) return;
+  const [stopsRes, substopsRes] = await Promise.all([
+    sb.from('stops').select('*').eq('tour_id', state.currentTour.id).order('stop_number'),
+    (async () => { const stopIds = []; const {data:s} = await sb.from('stops').select('id').eq('tour_id', state.currentTour.id); (s||[]).forEach(x=>stopIds.push(x.id)); if(!stopIds.length) return {data:[],error:null}; return sb.from('substops').select('*').in('stop_id',stopIds).order('global_position'); })()
+  ]);
+  if (stopsRes.error) { toast('Error loading stops', 'error'); return; }
+  state.stops = stopsRes.data || [];
+  state.allSubstops = substopsRes.data || [];
+  renderStops();
+}
+
+function buildStopsList() {
+  // Interleave stops and substops by position
+  // Substops appear before their parent main stop (they lead to it)
+  const items = [];
+  state.stops.forEach(s => {
+    // Find substops whose parent is this stop
+    const subs = state.allSubstops.filter(ss => ss.stop_id === s.id)
+      .sort((a, b) => a.global_position - b.global_position);
+    subs.forEach(ss => items.push({ type: 'substop', data: ss, parentStop: s }));
+    items.push({ type: 'stop', data: s });
+  });
+  return items;
+}
+
+function renderStops() {
+  const el = document.getElementById('stops-list');
+  const startBlock = `
+    <div class="stop-group tour-start-finish-block" style="background:linear-gradient(135deg,rgba(15,155,142,0.18),rgba(45,63,170,0.18));border:1px solid rgba(15,155,142,0.35);border-radius:var(--radius);overflow:hidden;backdrop-filter:blur(12px);cursor:pointer;transition:background 0.15s,border-color 0.15s;" onclick="editTourStart()" onmouseenter="this.style.background='linear-gradient(135deg,rgba(15,175,162,0.28),rgba(55,73,190,0.28))'" onmouseleave="this.style.background='linear-gradient(135deg,rgba(15,155,142,0.18),rgba(45,63,170,0.18))'">
+      <div style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem 0.85rem;">
+        <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#0f9b8e,#2d3faa);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:0.9rem;font-weight:700;color:var(--text);">Tour Start</div>
+          <div style="font-size:0.75rem;color:rgba(255,255,255,0.65);">${escHtml(state.currentTour?.meeting_point_name || 'Click to set meeting point & intro')}</div>
+        </div>
+        <div style="font-size:0.75rem;color:rgba(255,255,255,0.65);">Edit →</div>
+      </div>
+    </div>`;
+
+  const finishBlock = `
+    <div class="stop-group tour-start-finish-block" style="background:linear-gradient(135deg,rgba(15,155,142,0.18),rgba(45,63,170,0.18));border:1px solid rgba(15,155,142,0.35);border-radius:var(--radius);overflow:hidden;backdrop-filter:blur(12px);cursor:pointer;transition:background 0.15s,border-color 0.15s;" onclick="editTourFinish()" onmouseenter="this.style.background='linear-gradient(135deg,rgba(15,175,162,0.28),rgba(55,73,190,0.28))'" onmouseleave="this.style.background='linear-gradient(135deg,rgba(15,155,142,0.18),rgba(45,63,170,0.18))'">
+      <div style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem 0.85rem;">
+        <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#0f9b8e,#2d3faa);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:0.9rem;font-weight:700;color:var(--text);">Tour Finish</div>
+          <div style="font-size:0.75rem;color:rgba(255,255,255,0.65);">${escHtml(state.currentTour?.finish_message ? state.currentTour.finish_message.slice(0,60)+'…' : 'Click to set finish message')}</div>
+        </div>
+        <div style="font-size:0.75rem;color:rgba(255,255,255,0.65);">Edit →</div>
+      </div>
+    </div>`;
+
+  if (!state.stops.length) {
+    el.innerHTML = startBlock + `<div class="stop-group-connector">${'<svg width="16" height="28" viewBox="0 0 18 28" fill="none" stroke="#ff6b35" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="20"/><polyline points="4 15 9 21 14 15"/></svg>'}</div>` + `<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;text-align:center;color:var(--text3);font-size:0.88rem;">No stops yet. Add the first stop for this tour.</div>` + `<div class="stop-group-connector">${'<svg width="16" height="28" viewBox="0 0 18 28" fill="none" stroke="#ff6b35" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="20"/><polyline points="4 15 9 21 14 15"/></svg>'}</div>` + finishBlock;
+    return;
+  }
+  const items = buildStopsList();
+  // Build grouped blocks — each main stop + its substops in one floating card
+  const groups = [];
+  state.stops.forEach(s => {
+    const subs = state.allSubstops.filter(ss => ss.stop_id === s.id)
+      .sort((a, b) => a.global_position - b.global_position);
+    groups.push({ stop: s, substops: subs });
+  });
+
+  // Flat item list for drag indices
+  const flatItems = [];
+  groups.forEach(g => {
+    g.substops.forEach(ss => flatItems.push({ type: 'substop', data: ss }));
+    flatItems.push({ type: 'stop', data: g.stop });
+  });
+
+  const dragHandle = `<div class="drag-handle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg></div>`;
+  const trashIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff6b35" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>`;
+  const deleteBtn = (fn) => `<button class="btn btn-ghost btn-icon btn-sm" onclick="event.stopPropagation();${fn}">${trashIcon}</button>`;
+  // Orange downward arrow SVG reused for connectors
+  const orangeArrow = (size=18) => `<svg width="${size}" height="${Math.round(size*1.6)}" viewBox="0 0 18 28" fill="none" stroke="#ff6b35" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="20"/><polyline points="4 15 9 21 14 15"/></svg>`;
+
+  el.innerHTML = groups.map((group, gi) => {
+    const s = group.stop;
+    const isLast = gi === groups.length - 1;
+    const stopIdx = flatItems.findIndex(x => x.type === 'stop' && x.data.id === s.id);
+    const hasSubs = group.substops.length > 0;
+
+    // Thumbnail helper
+    const thumb = (url) => url
+      ? `<img class="stop-thumb" src="${escHtml(url)}" loading="lazy" onerror="this.style.display='none'">`
+      : `<div class="stop-thumb-placeholder"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.5" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>`;
+
+    const subsRowsHtml = group.substops.map((ss, ssi) => {
+      const ssIdx = flatItems.findIndex(x => x.type === 'substop' && x.data.id === ss.id);
+      return `
+        <div class="substop-row" draggable="true" data-id="${ss.id}" data-pos="${ssIdx}" data-type="substop"
+          ondragstart="dragStart(event,'substop')" ondragover="dragOver(event)" ondrop="dropStopItem(event)" ondragleave="dragLeave(event)"
+          onclick="if(!_wasDragging)openSubstopCards('${ss.id}')">
+          ${dragHandle}
+          ${thumb(ss.photo_url)}
+          <div class="stop-info" style="flex:1;min-width:0;">
+            <div class="stop-name" style="font-size:0.82rem;color:var(--text);">${escHtml(ss.name || 'Unnamed sub-stop')}</div>
+            <div class="stop-tagline">${escHtml(ss.tagline || '')}</div>
+          </div>
+          <div class="row-actions">
+            <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();editSubstop('${ss.id}')" style="background:rgba(12,58,95,0.7);border-color:rgba(26,111,181,0.45);color:rgba(160,215,255,0.95);">Details</button>
+            <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();openSubstopCards('${ss.id}')" style="background:rgba(6,62,82,0.7);border-color:rgba(15,155,175,0.45);color:rgba(120,220,240,0.95);">Cards</button>
+            ${deleteBtn(`deleteSubstop('${ss.id}')`)}
+          </div>
+        </div>`;
+    }).join('');
+
+    const subsHtml = hasSubs ? `<div class="substop-area">${subsRowsHtml}</div>` : '';
+
+    // Main stop row
+    const stopHtml = `
+      <div class="stop-row stop-row-main" draggable="true" data-id="${s.id}" data-pos="${stopIdx}" data-type="stop"
+        ondragstart="dragStart(event,'stop')" ondragover="dragOver(event,true)" ondrop="dropStopItem(event)" ondragleave="dragLeave(event)"
+        onclick="if(!_wasDragging)openCards('${s.id}')" style="cursor:pointer;display:flex;align-items:center;gap:0.75rem;padding:0.6rem 0.85rem 0.6rem 0.75rem;">
+        ${dragHandle}
+        <div class="stop-num-destination">${s.stop_number || gi+1}</div>
+        ${thumb(s.photo_url)}
+        <div class="stop-info" style="flex:1;min-width:0;">
+          <div class="stop-name">${escHtml(s.name)}</div>
+          <div class="stop-tagline">${escHtml(s.tagline || '')}</div>
+        </div>
+        <div class="row-actions">
+          <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();editStop('${s.id}')" style="background:rgba(12,58,95,0.7);border-color:rgba(26,111,181,0.45);color:rgba(160,215,255,0.95);">Details</button>
+          <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();openCards('${s.id}')" style="background:rgba(6,62,82,0.7);border-color:rgba(15,155,175,0.45);color:rgba(120,220,240,0.95);">Cards</button>
+          ${deleteBtn(`deleteStop('${s.id}')`)}
+        </div>
+      </div>`;
+
+    // Orange arrow connector between groups
+    const connectorHtml = isLast ? '' : `
+      <div class="stop-group-connector">${orangeArrow(16)}</div>`;
+
+    return `<div class="stop-group">${subsHtml}${stopHtml}</div>${connectorHtml}`;
+  }).join('');
+
+  const orangeArrowSvg = `<svg width="16" height="28" viewBox="0 0 18 28" fill="none" stroke="#ff6b35" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="20"/><polyline points="4 15 9 21 14 15"/></svg>`;
+  const outerConnector = `<div class="stop-group-connector">${orangeArrowSvg}</div>`;
+  el.innerHTML = startBlock + outerConnector + el.innerHTML + outerConnector + finishBlock;
+}
+
+function newStop() {
+  state.currentStop = null;
+  document.getElementById('se-page-title').textContent = 'New Stop';
+  document.getElementById('sidebar-stop-section').style.display = 'none';
+  clearForm('stop-form');
+  // Set default position
+  document.getElementById('sf-position').value = state.stops.length + 1;
+  // Update author label
+  updateAuthorLabel();
+  showSection('stop-edit');
+}
+
+function editStop(id) {
+  const s = state.stops.find(x => x.id === id);
+  if (!s) return;
+  state.currentStop = s;
+  updateSidebarStop();
+  document.getElementById('se-page-title').textContent = 'Edit Stop';
+  document.getElementById('sf-name').value = s.name || '';
+  document.getElementById('sf-dutch').value = s.dutch_name || '';
+  document.getElementById('sf-tagline').value = s.tagline || '';
+  document.getElementById('sf-img').value = s.photo_url || '';
+  document.getElementById('sf-address').value = s.address || '';
+  document.getElementById('sf-map-url').value = s.map_url || '';
+  document.getElementById('sf-lng').value = s.longitude || '';
+  document.getElementById('sf-lat').value = s.latitude || '';
+  document.getElementById('sf-position').value = s.stop_number || '';
+  document.getElementById('sf-transition-cf-id').value = s.opener_cloudflare_id || '';
+  document.getElementById('sf-desc').value = s.description || '';
+  document.getElementById('sf-rudy').value = s.rudy_notes || '';
+  updateAuthorLabel();
+  showSection('stop-edit');
+  setTimeout(() => { makeImageField('sf-img', 'stops'); makeVideoField('sf-transition-cf-id'); }, 30);
+}
+
+function updateAuthorLabel() {
+  const label = state.currentTour?.author_card_label || "Author's Notes";
+  document.getElementById('sf-rudy-label').textContent = label + ' (shown on author voice card)';
+}
+
+async function saveStop(e) {
+  e.preventDefault();
+  const lng = parseFloat(document.getElementById('sf-lng').value);
+  const lat = parseFloat(document.getElementById('sf-lat').value);
+  const payload = {
+    tour_id: state.currentTour.id,
+    name: document.getElementById('sf-name').value.trim(),
+    dutch_name: document.getElementById('sf-dutch').value.trim(),
+    tagline: document.getElementById('sf-tagline').value.trim(),
+    photo_url: document.getElementById('sf-img').value.trim(),
+    address: document.getElementById('sf-address').value.trim(),
+    map_url: document.getElementById('sf-map-url').value.trim(),
+    longitude: lng || null,
+    latitude: lat || null,
+    stop_number: parseInt(document.getElementById('sf-position').value) || 1,
+    opener_cloudflare_id: document.getElementById('sf-transition-cf-id').value.trim() || null,
+    description: document.getElementById('sf-desc').value.trim(),
+    rudy_notes: document.getElementById('sf-rudy').value.trim(),
+  };
+
+  let error;
+  if (state.currentStop) {
+    ({ error } = await sb.from('stops').update(payload).eq('id', state.currentStop.id));
+  } else {
+    let data;
+    ({ data, error } = await sb.from('stops').insert(payload).select().single());
+    if (data) state.currentStop = data;
+  }
+  if (error) { toast('Save failed: ' + error.message, 'error'); return; }
+  toast('Stop saved', 'success');
+  await loadStops();
+  if (state.currentStop) {
+    state.currentStop = state.stops.find(x => x.id === state.currentStop.id) || state.currentStop;
+    updateSidebarStop();
+  }
+  showSection('stops');
+}
+
+async function deleteStop(id) {
+  if (!confirm('Delete this stop and all its cards?')) return;
+  const { error } = await sb.from('stops').delete().eq('id', id);
+  if (error) { toast('Delete failed', 'error'); return; }
+  toast('Stop deleted', 'info');
+  state.stops = state.stops.filter(x => x.id !== id);
+  state.allSubstops = state.allSubstops.filter(x => x.stop_id !== id);
+  renderStops();
+}
+
+function updateSidebarStop() {
+  // Sidebar stop section removed — navigation is via stop row buttons
+}
+
+// ── Drag & Drop (stops) ──
+let dragSrcIndex = null;
+let dragContext = null;
+
+let _wasDragging = false;
+function dragStart(e, context) {
+  dragContext = context;
+  dragSrcIndex = parseInt(e.currentTarget.dataset.pos);
+  e.currentTarget.classList.add('row-dragging');
+  e.dataTransfer.effectAllowed = 'move';
+  _wasDragging = true;
+  setTimeout(() => { _wasDragging = false; }, 300);
+}
+function dragOver(e, isStopTarget) {
+  e.preventDefault();
+  // When dragging a substop onto a main stop, show a stronger highlight
+  if (dragContext === 'substop' && isStopTarget) {
+    e.currentTarget.style.outline = '2px solid var(--orange)';
+    e.currentTarget.style.outlineOffset = '-2px';
+  } else if (dragContext !== 'substop') {
+    e.currentTarget.classList.add('row-drag-over');
+  }
+}
+function dragLeave(e) {
+  e.currentTarget.classList.remove('row-drag-over');
+  e.currentTarget.style.outline = '';
+  e.currentTarget.style.outlineOffset = '';
+}
+async function dropStopItem(e) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('row-drag-over');
+  e.currentTarget.style.outline = '';
+  e.currentTarget.style.outlineOffset = '';
+  document.querySelectorAll('.row-dragging').forEach(el => el.classList.remove('row-dragging'));
+  const destIndex = parseInt(e.currentTarget.dataset.pos);
+  const destType = e.currentTarget.dataset.type;
+  if (dragSrcIndex === null || dragSrcIndex === destIndex) return;
+
+  // Special case: substop dropped ON a main stop — reassign parent, place before that stop
+  if (dragContext === 'substop' && destType === 'stop') {
+    const items = buildStopsList();
+    const movedItem = items[dragSrcIndex];
+    const targetStop = items[destIndex];
+    if (!movedItem || movedItem.type !== 'substop') { dragSrcIndex = null; return; }
+    // Place substop just before the target stop
+    items.splice(dragSrcIndex, 1);
+    const newDestIndex = items.findIndex(x => x.type === 'stop' && x.data.id === targetStop.data.id);
+    items.splice(newDestIndex, 0, movedItem);
+    // Recompute positions
+    let stopNum = 1;
+    const stopUpdates = [], substopUpdates = [];
+    items.forEach((item, i) => {
+      if (item.type === 'stop') { stopUpdates.push({ id: item.data.id, stop_number: stopNum++ }); }
+      else {
+        const nextStop = items.slice(i + 1).find(x => x.type === 'stop');
+        substopUpdates.push({ id: item.data.id, global_position: i + 0.5, stop_id: nextStop?.data.id || item.data.parentStop?.id });
+      }
+    });
+    state.stops = stopUpdates.map(u => ({ ...state.stops.find(x => x.id === u.id), stop_number: u.stop_number }));
+    state.allSubstops = substopUpdates.map(u => ({ ...state.allSubstops.find(x => x.id === u.id), global_position: u.global_position, stop_id: u.stop_id }));
+    renderStops();
+    await Promise.all([
+      ...stopUpdates.map(u => sb.from('stops').update({ stop_number: u.stop_number }).eq('id', u.id)),
+      ...substopUpdates.map(u => sb.from('substops').update({ global_position: u.global_position, stop_id: u.stop_id }).eq('id', u.id)),
+    ]);
+    toast('Sub-stop moved', 'success');
+    dragSrcIndex = null;
+    return;
+  }
+
+  // Build the interleaved list, reorder, then derive new positions
+  const items = buildStopsList();
+  const [moved] = items.splice(dragSrcIndex, 1);
+
+  // Don't allow substop to be dropped after the last main stop (it must lead somewhere)
+  const remaining = items.slice(destIndex);
+  const hasStopBelow = remaining.some(x => x.type === 'stop');
+  if (moved.type === 'substop' && !hasStopBelow && destIndex >= items.length) {
+    toast('A sub-stop must come before a main stop', 'info');
+    renderStops();
+    dragSrcIndex = null;
+    return;
+  }
+
+  items.splice(destIndex, 0, moved);
+
+  // Derive new stop_numbers and substop global_positions + parent stop_id from order
+  let stopNum = 1;
+  let lastStopId = null;
+  const stopUpdates = [];
+  const substopUpdates = [];
+
+  items.forEach((item, i) => {
+    if (item.type === 'stop') {
+      stopUpdates.push({ id: item.data.id, stop_number: stopNum++ });
+      lastStopId = item.data.id;
+    } else {
+      // Substop parent = next main stop below it
+      const nextStop = items.slice(i + 1).find(x => x.type === 'stop');
+      const parentId = nextStop ? nextStop.data.id : lastStopId;
+      substopUpdates.push({ id: item.data.id, global_position: i + 0.5, stop_id: parentId });
+    }
+  });
+
+  // Update state
+  state.stops = stopUpdates.map(u => {
+    const s = state.stops.find(x => x.id === u.id);
+    return { ...s, stop_number: u.stop_number };
+  });
+  state.allSubstops = substopUpdates.map(u => {
+    const ss = state.allSubstops.find(x => x.id === u.id);
+    return { ...ss, global_position: u.global_position, stop_id: u.stop_id };
+  });
+  renderStops();
+
+  // Save to DB
+  await Promise.all([
+    ...stopUpdates.map(u => sb.from('stops').update({ stop_number: u.stop_number }).eq('id', u.id)),
+    ...substopUpdates.map(u => sb.from('substops').update({ global_position: u.global_position, stop_id: u.stop_id }).eq('id', u.id)),
+  ]);
+  toast('Order saved', 'success');
+  dragSrcIndex = null;
+}
+
+// ── Cards ──
+async function openCards(stopId) {
+  const s = state.stops.find(x => x.id === stopId);
+  if (!s) return;
+  state.currentStop = s;
+  state.currentSubstop = null;
+  updateSidebarStop();
+  document.getElementById('cards-subtitle').textContent = s.name;
+  await Promise.all([loadCards(), ensurePartnersLoaded()]);
+  showSection('cards');
+}
+
+async function loadCards() {
+  if (!state.currentStop) return;
+  const { data, error } = await sb.from('cards').select('*').eq('stop_id', state.currentStop.id).order('position');
+  if (error) { toast('Error loading cards', 'error'); return; }
+  state.cards = data || [];
+  document.getElementById('nb-cards')&&(document.getElementById('nb-cards').textContent = state.cards.length);
+  renderCards();
+}
+
+const CARD_TYPE_LABELS = {
+  transition: 'Transition',
+  nav: 'Navigation',
+  desc: 'Video',
+  rudy: 'Author',
+  photo: 'Photo',
+  quiz: 'Quiz',
+  partner: 'Partner',
+  game: 'Game',
+  finish: 'Finish',
+};
+
+function cardPreviewText(card) {
+  switch (card.card_type) {
+    case 'transition': return card.caption ? card.caption : (card.cloudflare_id ? 'Transition video' : 'No video set');
+    case 'nav': { const navStop = state.stops.find(s => s.id === card.stop_id); return navStop ? `Navigate to ${navStop.name}${navStop.address ? ' · ' + navStop.address : ''}` : 'Navigation card'; }
+    case 'desc': return card.caption ? card.caption : (card.cloudflare_id ? 'Video (no caption)' : 'No video set');
+    case 'rudy': return truncate(card.body || '', 60) || 'No text yet';
+    case 'photo': return card.photo_title ? `Challenge: ${card.photo_title}` : 'No challenge set';
+    case 'quiz': return card.quiz_question ? truncate(card.quiz_question, 60) : 'No question set';
+    case 'partner': return 'Partner card';
+    case 'partner': {
+      const tourPartners = state.partners || [];
+      const partnerOptions = tourPartners.length
+        ? `<option value="">— select a partner —</option>` + tourPartners.map(p => `<option value="${p.id}" ${card.partner_id===p.id?'selected':''}>${escHtml(p.name)}</option>`).join('')
+        : `<option value="">No partners yet — create one below</option>`;
+      fields = `
+        <div class="field" style="margin-bottom:1rem;">
+          <label>Linked Partner</label>
+          <select id="cd-partner-id">${partnerOptions}</select>
+          <div class="field-hint">The partner whose info will be shown on this card.</div>
+        </div>
+        <div class="field" style="margin-bottom:1.5rem;">
+          <label>Caption (optional)</label>
+          <input type="text" id="cd-caption" value="${escHtml(card.caption||'')}">
+          <div class="field-hint">Short intro text shown above the partner card.</div>
+        </div>
+        <div style="border-top:1px solid var(--border);padding-top:1.25rem;">
+          <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:0.88rem;margin-bottom:0.5rem;">Or create a new partner</div>
+          <button type="button" class="btn btn-secondary btn-sm" style="background:rgba(120,60,200,0.18);border-color:rgba(120,60,200,0.35);color:rgba(200,150,255,0.95);"
+            onclick="_pendingPartnerCardId='${card.id}';closeModalDirect();openPartnerModal();">
+            + New Partner
+          </button>
+          <div style="font-size:0.72rem;color:var(--text3);margin-top:0.4rem;">The new partner will be automatically selected for this card.</div>
+        </div>`;
+      break;
+    }
+    case 'game': return card.game_type ? `Game: ${card.game_type}` : 'No game type set';
+    case 'finish': return card.finish_message ? truncate(card.finish_message, 60) : 'Tour end card';
+    default: return '';
+  }
+}
+
+function renderCards() {
+  const el = document.getElementById('cards-list');
+  if (!state.cards.length) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🃏</div><div class="empty-state-text">No cards yet. Add cards to build this stop's experience.</div></div>`;
+    return;
+  }
+  el.innerHTML = state.cards.map((c, i) => {
+    const linkedPartner = c.card_type === 'partner' && c.partner_id
+      ? (state.partners||[]).find(p => p.id === c.partner_id) : null;
+    const partnerImg = linkedPartner?.photo_url || '';
+    const imgUrl = c.image_url || c.quiz_image_url || partnerImg || '';
+    const cfThumb = (c.card_type === 'desc' || c.card_type === 'transition') && c.cloudflare_id
+      ? `https://customer-umijtu8zknmpubqb.cloudflarestream.com/${c.cloudflare_id}/thumbnails/thumbnail.jpg` : '';
+    const thumbSrc = imgUrl || cfThumb;
+    const thumbHtml = thumbSrc ? `<img src="${escHtml(thumbSrc)}" style="width:36px;height:36px;border-radius:5px;object-fit:cover;flex-shrink:0;" onerror="this.style.display='none'">` : '';
+    const partnerName = linkedPartner ? `<span style="font-size:0.78rem;font-weight:700;color:rgba(200,150,255,0.9);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px;">${escHtml(linkedPartner.name)}</span>` : '';
+    return `
+    <div class="card-row" draggable="true" data-id="${c.id}" data-pos="${i}"
+      ondragstart="dragStart(event,'card')" ondragover="dragOver(event)" ondrop="dropCard(event)" ondragleave="dragLeave(event)"
+      onclick="if(!_wasDragging)editCard('${c.id}')" style="cursor:pointer;">
+      <div class="drag-handle">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
+      </div>
+      <span class="card-pos">${i + 1}</span>
+      <span class="card-type-pill ct-${c.card_type}">${CARD_TYPE_LABELS[c.card_type] || c.card_type}</span>
+      ${thumbHtml}
+      ${partnerName}
+      <span class="card-preview">${escHtml(cardPreviewText(c))}</span>
+      <div class="row-actions">
+        <button class="btn btn-secondary btn-sm" onclick="editCard('${c.id}')" style="background:rgba(6,62,82,0.7);border-color:rgba(15,155,175,0.45);color:rgba(120,220,240,0.95);">Edit</button>
+        <button class="btn btn-ghost btn-icon btn-sm" onclick="event.stopPropagation();deleteCard('${c.id}')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff6b35" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        </button>
+      </div>
+    </div>`;
+  }).join(`<div style="display:flex;justify-content:center;margin:1px 0;"><svg width="14" height="22" viewBox="0 0 18 28" fill="none" stroke="#ff6b35" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="18"/><polyline points="4 13 9 19 14 13"/></svg></div>`);
+}
+
+async function dropCard(e) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('row-drag-over');
+  document.querySelectorAll('.row-dragging').forEach(el => el.classList.remove('row-dragging'));
+  const destIndex = parseInt(e.currentTarget.dataset.pos);
+  if (dragSrcIndex === null || dragSrcIndex === destIndex) return;
+  const arr = [...state.cards];
+  const [moved] = arr.splice(dragSrcIndex, 1);
+  arr.splice(destIndex, 0, moved);
+  state.cards = arr;
+  renderCards();
+  await Promise.all(arr.map((c, i) => sb.from('cards').update({ position: i + 1 }).eq('id', c.id)));
+  toast('Card order saved', 'success');
+  dragSrcIndex = null;
+}
+
+// ── Add card modal ──
+function openAddCardModal() {
+  const types = [
+    { type: 'transition', icon: '▶', name: 'Transition', desc: 'Cinematic intro video' },
+    { type: 'nav',        icon: '📍', name: 'Navigation', desc: 'Map & walking directions' },
+    { type: 'desc',       icon: '🎬', name: 'Video',      desc: 'Cloudflare video with caption' },
+    { type: 'rudy',       icon: '🎙', name: 'Author',     desc: state.currentTour?.author_card_label || "Author's Notes" },
+    { type: 'photo',      icon: '📷', name: 'Photo',      desc: 'Photo challenge' },
+    { type: 'quiz',       icon: '❓', name: 'Quiz',       desc: 'Multiple choice question' },
+    { type: 'partner',    icon: '🤝', name: 'Partner',    desc: 'Restaurant or partner' },
+    { type: 'game',       icon: '🎮', name: 'Game',       desc: 'Mini-game' },
+    { type: 'finish',     icon: '🏁', name: 'Finish',     desc: 'Tour end card' },
+  ];
+
+  openModal('Add Card', `
+    <p style="font-size:0.82rem;color:var(--text2);margin-bottom:1.25rem;">Choose the card type to add to this stop.</p>
+    <div class="type-grid" id="type-grid">
+      ${(() => {
+        const colours = { 'transition': ['rgba(45,63,170,0.22)','#7b8ff7','rgba(45,63,170,0.45)'], 'nav': ['rgba(15,155,142,0.22)','#4ecdc4','rgba(15,155,142,0.45)'], 'desc': ['rgba(45,107,228,0.22)','#6fa8f5','rgba(45,107,228,0.45)'], 'rudy': ['rgba(255,107,53,0.2)','#ff9a70','rgba(255,107,53,0.4)'], 'photo': ['rgba(52,199,89,0.18)','#5dd97a','rgba(52,199,89,0.38)'], 'quiz': ['rgba(255,204,0,0.2)','#ffd740','rgba(255,204,0,0.4)'], 'partner': ['rgba(175,82,222,0.2)','#d47ef8','rgba(175,82,222,0.4)'], 'game': ['rgba(255,59,48,0.18)','#ff7b72','rgba(255,59,48,0.38)'], 'finish': ['rgba(255,255,255,0.08)','rgba(255,255,255,0.6)','rgba(255,255,255,0.18)'] };
+        return types.map(t => {
+          const [bg, col, border] = colours[t.type] || ['var(--surface2)','var(--text)','var(--border)'];
+          return `
+            <div class="type-option" onclick="selectCardType('${t.type}')" data-type="${t.type}"
+              style="background:${bg};border-color:${border};transition:all 0.15s;"
+              onmouseenter="this.style.background='${border}'"
+              onmouseleave="if(!this.classList.contains('selected'))this.style.background='${bg}'">
+              <div style="font-size:1.4rem;">${t.icon}</div>
+              <div class="type-option-name" style="color:${col}">${t.name}</div>
+              <div class="type-option-desc">${t.desc}</div>
+            </div>`;
+        }).join('');
+      })()}
+    </div>
+  `, [
+    { label: 'Cancel', cls: 'btn-secondary', action: 'closeModalDirect()' },
+    { label: 'Add Card', cls: 'btn-primary', action: 'confirmAddCard()', id: 'add-card-confirm-btn', disabled: true },
+  ]);
+}
+
+let selectedCardType = null;
+let _pendingPartnerCardId = null; // set when creating a partner from within a card editor
+function selectCardType(type) {
+  selectedCardType = type;
+  document.querySelectorAll('#type-grid .type-option').forEach(el => {
+    const isSelected = el.dataset.type === type;
+    el.classList.toggle('selected', isSelected);
+    // Brighten selected, restore others to their type colour
+    if (isSelected) {
+      el.style.outline = '2px solid rgba(255,107,53,0.7)';
+      el.style.outlineOffset = '1px';
+    } else {
+      el.style.outline = 'none';
+    }
+  });
+  document.getElementById('add-card-confirm-btn').disabled = false;
+}
+
+async function confirmAddCard() {
+  if (!selectedCardType) return;
+  const pos = state.cards.length + 1;
+  const { data, error } = await sb.from('cards').insert({
+    stop_id: state.currentStop.id,
+    card_type: selectedCardType,
+    position: pos,
+
+  }).select().single();
+  if (error) { toast('Error creating card', 'error'); return; }
+  closeModalDirect();
+  toast('Card added', 'success');
+  await loadCards();
+  // Open editor immediately
+  editCard(data.id);
+}
+
+// ── Edit card modal ──
+async function editCard(id) {
+  const card = state.cards.find(x => x.id === id);
+  if (!card) return;
+  if (card.card_type === 'partner') await ensurePartnersLoaded();
+  const authorLabel = state.currentTour?.author_card_label || "Author's Notes";
+  const opts = card.quiz_options || [];
+
+  let fields = '';
+  switch (card.card_type) {
+    case 'transition':
+      fields = `
+        <div class="field">
+          <label>Cloudflare Video ID</label>
+          <input type="text" id="cd-cf-id" value="${escHtml(card.cloudflare_id||'')}" oninput="updateCfPreview('cd-cf-preview',this.value)">
+
+        </div>`;
+      break;
+    case 'nav':
+      fields = `
+        <div class="field">
+          <label>Google Maps URL</label>
+          <input type="url" id="cd-nav-map-url" value="${escHtml(card.nav_map_url||'')}">
+        </div>`;
+      break;
+    case 'desc':
+      fields = `
+        <div class="field" style="margin-bottom:1rem;">
+          <label>Cloudflare Video ID</label>
+          <input type="text" id="cd-cf-id" value="${escHtml(card.cloudflare_id||'')}" oninput="updateCfPreview('cd-cf-preview',this.value)">
+
+        </div>
+        <div class="field">
+          <label>Caption</label>
+          <textarea id="cd-caption" rows="4">${escHtml(card.caption||'')}</textarea>
+        </div>`;
+      break;
+    case 'rudy':
+      fields = `
+        <div style="font-size:0.72rem;color:var(--text3);margin-bottom:1rem;line-height:1.6;">
+          All fields are optional — only filled sections will appear in the card. Leave blank to skip.
+        </div>
+
+        <div style="border-bottom:1px solid var(--border);padding-bottom:1.25rem;margin-bottom:1.25rem;">
+          <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:0.88rem;margin-bottom:0.75rem;">Hero Image</div>
+          <div class="field"><label>Image 1 (hero, shown at top)</label>
+            <input type="url" id="cd-image-url" value="${escHtml(card.image_url||'')}" placeholder="Paste URL or upload ↑">
+          </div>
+        </div>
+
+        <div style="border-bottom:1px solid var(--border);padding-bottom:1.25rem;margin-bottom:1.25rem;">
+          <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:0.88rem;margin-bottom:0.75rem;">Text Block 1 — Main Note</div>
+          <div class="field"><label>${escHtml(authorLabel)} Note</label>
+            <textarea id="cd-body" rows="5" placeholder="Your main note for this stop…">${escHtml(card.body||'')}</textarea>
+            <div class="field-hint">HTML supported: use &lt;em&gt; for italics, &lt;br&gt; for line breaks</div>
+          </div>
+        </div>
+
+        <div style="border-bottom:1px solid var(--border);padding-bottom:1.25rem;margin-bottom:1.25rem;">
+          <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:0.88rem;margin-bottom:0.75rem;">Image 2 (optional, shown after first text block)</div>
+          <div class="field"><label>Image 2</label>
+            <input type="url" id="cd-image-url-2" value="${escHtml(card.image_url_2||'')}" placeholder="Paste URL or upload ↑">
+          </div>
+        </div>
+
+        <div style="border-bottom:1px solid var(--border);padding-bottom:1.25rem;margin-bottom:1.25rem;">
+          <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:0.88rem;margin-bottom:0.75rem;">Text Block 2 — Filmmaker's Eye (optional)</div>
+          <div class="field"><label>Filmmaker tip or visual observation</label>
+            <textarea id="cd-body-2" rows="4" placeholder="A tip about framing, light, or perspective at this spot…">${escHtml(card.body_2||'')}</textarea>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:0.88rem;margin-bottom:0.75rem;">Text Block 3 — Local Knowledge (optional)</div>
+          <div class="field"><label>Insider tip or local context</label>
+            <textarea id="cd-body-3" rows="4" placeholder="Something only locals know, or a personal story…">${escHtml(card.body_3||'')}</textarea>
+          </div>
+        </div>`;
+      break;
+    case 'photo':
+      fields = `
+        <div class="field" style="margin-bottom:1rem;"><label>Challenge Title</label><input type="text" id="cd-photo-title" value="${escHtml(card.photo_title||'')}"></div>
+        <div class="field" style="margin-bottom:1rem;"><label>Instructions</label><textarea id="cd-photo-desc" rows="3">${escHtml(card.photo_desc||'')}</textarea></div>
+        <div class="field" style="margin-bottom:1rem;"><label>Rudy's Tip</label><textarea id="cd-photo-tip" rows="2">${escHtml(card.photo_tip||'')}</textarea></div>
+        <div class="field" style="margin-bottom:1.25rem;">
+          <label>Background Image</label>
+          <input type="url" id="cd-image-url" value="${escHtml(card.image_url||'')}" placeholder="Paste URL or use Upload button →">
+        </div>
+        <div style="border-top:1px solid var(--border);padding-top:1.25rem;margin-bottom:1rem;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
+            <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:0.9rem;">Where to Stand</div>
+            <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;font-size:0.82rem;color:var(--text2);">
+              <input type="checkbox" id="cd-show-where" ${card.show_where_to_stand!==false?'checked':''} style="accent-color:var(--orange);width:15px;height:15px;">
+              Include in card
+            </label>
+          </div>
+          <div class="form-grid">
+            <div class="field"><label>Location Shot</label><input type="url" id="cd-where-img-1" value="${escHtml(card.where_to_stand_img_1||'')}" placeholder="Paste URL or upload ↑"></div>
+            <div class="field"><label>Position Photo</label><input type="url" id="cd-where-img-2" value="${escHtml(card.where_to_stand_img_2||'')}" placeholder="Paste URL or upload ↑"></div>
+          </div>
+        </div>
+        <div style="border-top:1px solid var(--border);padding-top:1.25rem;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
+            <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:0.9rem;">Shot Styles</div>
+            <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;font-size:0.82rem;color:var(--text2);">
+              <input type="checkbox" id="cd-show-shots" ${card.show_shot_styles!==false?'checked':''} style="accent-color:var(--orange);width:15px;height:15px;">
+              Include in card
+            </label>
+          </div>
+          <div class="form-grid">
+            <div class="field"><label>Selfie Style</label><input type="url" id="cd-shot-selfie" value="${escHtml(card.shot_style_selfie_img||'')}" placeholder="Paste URL or upload ↑"></div>
+            <div class="field"><label>Portrait Style</label><input type="url" id="cd-shot-portrait" value="${escHtml(card.shot_style_portrait_img||'')}" placeholder="Paste URL or upload ↑"></div>
+          </div>
+        </div>`;
+      break;
+    case 'quiz':
+      fields = `
+        <div class="field" style="margin-bottom:1rem;"><label>Question</label><input type="text" id="cd-question" value="${escHtml(card.quiz_question||'')}"></div>
+        <div class="field" style="margin-bottom:1rem;">
+          <label>Answer Options <span style="color:var(--text3);font-weight:400;">(select correct answer)</span></label>
+          ${[0,1,2].map(i => `
+            <div class="quiz-opt-row">
+              <input type="radio" name="quiz-correct" value="${i}" ${(card.quiz_correct===i)?'checked':''}>
+              <input type="text" id="cd-opt-${i}" value="${escHtml(opts[i]||'')}">
+            </div>
+          `).join('')}
+        </div>
+        <div class="field" style="margin-bottom:1rem;"><label>Explanation</label><textarea id="cd-explanation" rows="3">${escHtml(card.quiz_explanation||'')}</textarea><div class="field-hint">Shown after answering. HTML supported.</div></div>
+        <div class="field"><label>Quiz Image</label><input type="url" id="cd-quiz-img" value="${escHtml(card.quiz_image_url||'')}"></div>`;
+      break;
+    case 'partner': {
+      const tourPartners = state.partners || [];
+      const partnerOptions = tourPartners.length
+        ? `<option value="">— select a partner —</option>` + tourPartners.map(p => `<option value="${p.id}" ${card.partner_id===p.id?'selected':''}>${escHtml(p.name)}</option>`).join('')
+        : `<option value="">No partners yet — create one below</option>`;
+      fields = `
+        <div class="field" style="margin-bottom:1rem;">
+          <label>Linked Partner</label>
+          <select id="cd-partner-id">${partnerOptions}</select>
+          <div class="field-hint">The partner whose info will be shown on this card.</div>
+        </div>
+        <div class="field" style="margin-bottom:1.5rem;">
+          <label>Caption (optional)</label>
+          <input type="text" id="cd-caption" value="${escHtml(card.caption||'')}">
+          <div class="field-hint">Short intro text shown above the partner card.</div>
+        </div>
+        <div style="border-top:1px solid var(--border);padding-top:1.25rem;">
+          <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:0.88rem;margin-bottom:0.5rem;">Or create a new partner</div>
+          <button type="button" class="btn btn-secondary btn-sm" style="background:rgba(120,60,200,0.18);border-color:rgba(120,60,200,0.35);color:rgba(200,150,255,0.95);"
+            onclick="_pendingPartnerCardId='${card.id}';closeModalDirect();openPartnerModal();">
+            + New Partner
+          </button>
+          <div style="font-size:0.72rem;color:var(--text3);margin-top:0.4rem;">The new partner will be automatically selected for this card.</div>
+        </div>`;
+      break;
+    }
+    case 'game':
+      fields = `
+        <div class="field" style="margin-bottom:1rem;">
+          <label>Game Type</label>
+          <select id="cd-game-type">
+            ${['Herring Catch','Cable Swing','Window Washer','Cube Stack','Market Rush'].map(g =>
+              `<option value="${g}" ${card.game_type===g?'selected':''}>${g}</option>`
+            ).join('')}
+          </select>
+        </div>
+        <div class="field" style="margin-bottom:1rem;">
+          <label>Game Level</label>
+          <select id="cd-game-level">
+            <option value="1" ${card.game_level===1?'selected':''}>Level 1</option>
+            <option value="2" ${card.game_level===2?'selected':''}>Level 2</option>
+          </select>
+        </div>`;
+      break;
+    case 'finish':
+      fields = `
+        <div class="field"><label>End Message</label><textarea id="cd-finish-message" rows="5">${escHtml(card.finish_message||'')}</textarea><div class="field-hint">Shown on the tour completion card.</div></div>`;
+      break;
+    default:
+      fields = `<p style="color:var(--text2);font-size:0.85rem;">No editable fields for this card type.</p>`;
+  }
+
+  openModal(`Edit ${CARD_TYPE_LABELS[card.card_type] || card.card_type} Card`, `
+    <div id="card-edit-form">${fields}</div>
+  `, [
+    { label: 'Cancel', cls: 'btn-secondary', action: 'closeModalDirect()' },
+    { label: 'Save Card', cls: 'btn-primary', action: `saveCard('${card.id}','${card.card_type}')` },
+  ]);
+
+  // CF preview handled by makeVideoField
+  // Init image upload fields in card modal
+  setTimeout(() => {
+    makeImageField('cd-image-url', 'cards');
+    makeImageField('cd-quiz-img', 'cards');
+    makeVideoField('cd-cf-id');
+    if (card.card_type === 'photo') {
+      makeImageField('cd-where-img-1', 'cards');
+      makeImageField('cd-where-img-2', 'cards');
+      makeImageField('cd-shot-selfie', 'cards');
+      makeImageField('cd-shot-portrait', 'cards');
+    }
+    if (card.card_type === 'rudy') {
+      makeImageField('cd-image-url-2', 'cards');
+    }
+  }, 30);
+}
+
+// Pre-load partners for current tour before opening card editor (needed for partner card type)
+async function ensurePartnersLoaded() {
+  if (!state.currentTour) return;
+  const { data } = await sb.from('partners').select('*').eq('tour_id', state.currentTour.id).order('name');
+  state.partners = data || [];
+}
+
+async function saveCard(id, type) {
+  const payload = collectCardData(type);
+  const { error } = await sb.from('cards').update(payload).eq('id', id);
+  if (error) { toast('Save failed: ' + error.message, 'error'); return; }
+  closeModalDirect();
+  toast('Card saved', 'success');
+  // Reload cards and refresh partners so thumbnails/names update immediately
+  await Promise.all([loadCards(), ensurePartnersLoaded()]);
+}
+
+function collectCardData(type) {
+  const g = (id) => { const el = document.getElementById(id); return el ? el.value : ''; };
+  switch (type) {
+    case 'transition': return { cloudflare_id: g('cd-cf-id') };
+    case 'nav': return { nav_map_url: g('cd-nav-map-url') };
+    case 'desc': return { cloudflare_id: g('cd-cf-id'), caption: g('cd-caption') };
+    case 'rudy': return {
+      body: g('cd-body') || null,
+      body_2: g('cd-body-2') || null,
+      body_3: g('cd-body-3') || null,
+      image_url: g('cd-image-url') || null,
+      image_url_2: g('cd-image-url-2') || null,
+    };
+    case 'photo': return {
+      photo_title: g('cd-photo-title'),
+      photo_desc: g('cd-photo-desc'),
+      photo_tip: g('cd-photo-tip'),
+      image_url: g('cd-image-url') || null,
+      where_to_stand_img_1: g('cd-where-img-1') || null,
+      where_to_stand_img_2: g('cd-where-img-2') || null,
+      shot_style_selfie_img: g('cd-shot-selfie') || null,
+      shot_style_portrait_img: g('cd-shot-portrait') || null,
+      show_where_to_stand: document.getElementById('cd-show-where')?.checked !== false,
+      show_shot_styles: document.getElementById('cd-show-shots')?.checked !== false,
+    };
+    case 'quiz': {
+      const correct = parseInt(document.querySelector('input[name="quiz-correct"]:checked')?.value ?? 0);
+      return { quiz_question: g('cd-question'), quiz_options: [g('cd-opt-0'), g('cd-opt-1'), g('cd-opt-2')], quiz_correct: correct, quiz_explanation: g('cd-explanation'), quiz_image_url: g('cd-quiz-img') };
+    }
+    case 'partner': return { partner_id: g('cd-partner-id') || null, caption: g('cd-caption') || null };
+    case 'game': return { game_type: g('cd-game-type'), game_level: parseInt(g('cd-game-level')) || 1 };
+    case 'finish': return { finish_message: g('cd-finish-message') };
+    default: return {};
+  }
+}
+
+async function deleteCard(id) {
+  if (!confirm('Delete this card?')) return;
+  const { error } = await sb.from('cards').delete().eq('id', id);
+  if (error) { toast('Delete failed', 'error'); return; }
+  toast('Card deleted', 'info');
+  await loadCards();
+}
+
+// ── Partners ──
+async function openPartnerSection(stopId) {
+  // Called from sidebar nav
+  if (!state.currentStop) return;
+  await loadPartners();
+  showSection('partners');
+}
+
+async function loadPartners() {
+  if (!state.currentStop || !state.currentTour) return;
+  document.getElementById('partners-subtitle').textContent = state.currentStop.name;
+  // Always load all tour partners (not just this stop) so dropdown is complete
+  const { data, error } = await sb.from('partners').select('*').eq('tour_id', state.currentTour.id).order('name');
+  if (error) { toast('Error loading partners', 'error'); return; }
+  state.partners = data || [];
+  renderPartners();
+}
+
+function renderPartners() {
+  const el = document.getElementById('partners-list');
+  if (!state.partners.length) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🤝</div><div class="empty-state-text">No partners for this stop yet.</div></div>`;
+    return;
+  }
+  el.innerHTML = state.partners.map(p => `
+    <div class="partner-row">
+      ${p.photo_url ? `<img class="partner-thumb" src="${escHtml(p.photo_url)}" loading="lazy">` :
+        `<div class="partner-thumb" style="background:var(--surface3);border-radius:8px;display:flex;align-items:center;justify-content:center;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.5" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        </div>`}
+      <div class="partner-info">
+        <div class="partner-name">${escHtml(p.name)}</div>
+        <div class="partner-type">${escHtml(p.partner_type || '')}</div>
+      </div>
+      <div class="row-actions">
+        <button class="btn btn-secondary btn-sm" onclick="editPartner('${p.id}')" style="background:rgba(50,18,78,0.7);border-color:rgba(130,65,210,0.45);color:rgba(215,165,255,0.95);">Edit</button>
+        <button class="btn btn-ghost btn-icon btn-sm" onclick="deletePartner('${p.id}')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff6b35" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openPartnerModal(id) {
+  const p = id ? state.partners.find(x => x.id === id) : null;
+  openModal(p ? 'Edit Partner' : 'Add Partner', `
+    <div class="form-grid" style="margin-bottom:1rem;">
+      <div class="field"><label>Partner Name</label><input type="text" id="pd-name" value="${escHtml(p?.name||'')}"></div>
+      <div class="field"><label>Type / Category</label><input type="text" id="pd-type" placeholder="e.g. Street Food, Café" value="${escHtml(p?.partner_type||'')}"></div>
+    </div>
+    <div class="field" style="margin-bottom:1rem;"><label>Description</label><textarea id="pd-desc" rows="3">${escHtml(p?.description||'')}</textarea></div>
+    <div class="form-grid" style="margin-bottom:1rem;">
+      <div class="field"><label>Location</label><input type="text" id="pd-location" value="${escHtml(p?.location||'')}"></div>
+      <div class="field"><label>Google Maps URL</label><input type="url" id="pd-map-url" value="${escHtml(p?.map_url||'')}"></div>
+    </div>
+    <div class="form-grid" style="margin-bottom:1rem;">
+      <div class="field"><label>Offer Text</label><input type="text" id="pd-offer" value="${escHtml(p?.offer_text||'')}"></div>
+      <div class="field"><label>Offer Note</label><input type="text" id="pd-offer-note" value="${escHtml(p?.offer_note||'')}"></div>
+    </div>
+    <div class="form-grid" style="margin-bottom:1rem;">
+      <div class="field"><label>Offer Code</label><input type="text" id="pd-code" value="${escHtml(p?.discount_code||'')}"></div>
+      <div class="field"><label>Main Image</label><input type="url" id="pd-img" value="${escHtml(p?.photo_url||'')}"></div>
+    </div>
+    <div class="field" style="margin-bottom:1rem;">
+      <label>Cloudflare Video ID (optional)</label>
+      <input type="text" id="pd-cf-id" value="${escHtml(p?.cloudflare_id||'')}">
+    </div>
+    <div class="field">
+      <label>Gallery Images</label>
+      <input type="url" id="pd-gallery-0" placeholder="Image 1 — paste URL or upload ↑" value="${escHtml((p?.gallery_urls||[])[0]||'')}" style="margin-bottom:0.4rem;">
+      <input type="url" id="pd-gallery-1" placeholder="Image 2 URL" value="${escHtml((p?.gallery_urls||[])[1]||'')}" style="margin-bottom:0.4rem;">
+      <input type="url" id="pd-gallery-2" placeholder="Image 3 URL" value="${escHtml((p?.gallery_urls||[])[2]||'')}" style="margin-bottom:0.4rem;">
+      <input type="url" id="pd-gallery-3" placeholder="Image 4 URL" value="${escHtml((p?.gallery_urls||[])[3]||'')}">
+      <div class="field-hint">Four images shown in the 2×2 gallery on the partner card. Leave blank to repeat the main photo.</div>
+    </div>
+  `, [
+    { label: 'Cancel', cls: 'btn-secondary', action: 'closeModalDirect()' },
+    { label: p ? 'Save Partner' : 'Add Partner', cls: 'btn-primary', action: `savePartner('${p?.id||''}')` },
+  ]);
+  setTimeout(() => {
+    makeImageField('pd-img', 'partners');
+    makeImageField('pd-gallery-0', 'partners');
+    makeImageField('pd-gallery-1', 'partners');
+    makeImageField('pd-gallery-2', 'partners');
+    makeImageField('pd-gallery-3', 'partners');
+  }, 30);
+}
+
+async function editPartner(id) {
+  // Try state first, then fetch directly (needed when called from all-partners view)
+  let p = state.partners.find(x => x.id === id);
+  if (!p) {
+    const { data } = await sb.from('partners').select('*').eq('id', id).single();
+    if (data) { state.partners = [...state.partners, data]; }
+  }
+  openPartnerModal(id);
+}
+
+async function savePartner(id) {
+  const g = (eid) => document.getElementById(eid)?.value || '';
+  const payload = {
+    tour_id: state.currentTour.id,
+    stop_id: state.currentStop?.id || null,
+    name: g('pd-name'),
+    partner_type: g('pd-type'),
+    description: g('pd-desc'),
+    location: g('pd-location'),
+    map_url: g('pd-map-url'),
+    offer_text: g('pd-offer'),
+    offer_note: g('pd-offer-note'),
+    discount_code: g('pd-code'),
+    photo_url: g('pd-img'),
+    cloudflare_id: g('pd-cf-id'),
+    gallery_urls: [g('pd-gallery-0'), g('pd-gallery-1'), g('pd-gallery-2'), g('pd-gallery-3')].filter(Boolean),
+  };
+  const isNew = !id;
+  let newPartnerId = id;
+  if (isNew) {
+    const { data, error } = await sb.from('partners').insert(payload).select('id').single();
+    if (error) { toast('Save failed: ' + error.message, 'error'); return; }
+    newPartnerId = data.id;
+  } else {
+    const { error } = await sb.from('partners').update(payload).eq('id', id);
+    if (error) { toast('Save failed: ' + error.message, 'error'); return; }
+  }
+  closeModalDirect();
+  toast(isNew ? 'Partner added' : 'Partner saved', 'success');
+  // Always refresh all partners in state (tour-scoped, not stop-scoped)
+  await ensurePartnersLoaded();
+  // If called from a card editor, reopen it with the new partner pre-selected
+  if (_pendingPartnerCardId) {
+    const cardId = _pendingPartnerCardId;
+    _pendingPartnerCardId = null;
+    // Update card in state so it opens with partner pre-selected
+    const card = [...(state.cards||[]), ...(state.substopCards||[])].find(c => c.id === cardId);
+    if (card) card.partner_id = newPartnerId;
+    // Also save partner_id to DB immediately
+    await sb.from('cards').update({ partner_id: newPartnerId }).eq('id', cardId);
+    // Reopen card editor
+    if (state.cards?.find(c => c.id === cardId)) editCard(cardId);
+    else if (state.substopCards?.find(c => c.id === cardId)) editSubstopCard(cardId);
+    return;
+  }
+  if (activeSection === 'all-partners') await loadAndShowAllPartners();
+}
+
+async function deletePartner(id) {
+  if (!confirm('Delete this partner?')) return;
+  const { error } = await sb.from('partners').delete().eq('id', id);
+  if (error) { toast('Delete failed', 'error'); return; }
+  toast('Partner deleted', 'info');
+  await loadPartners();
+}
+
+
+
+
+// ── Sub-stops ──
+function newSubstop() {
+  if (!state.currentTour) { toast('Open a tour first', 'info'); return; }
+  state.currentSubstop = null;
+  document.getElementById('sse-page-title').textContent = 'New Sub-stop';
+  const sss = document.getElementById('sidebar-substop-section');
+  if (sss) sss.style.display = 'none';
+  ['ssf-name','ssf-tagline','ssf-img','ssf-map-url','ssf-lng','ssf-lat','ssf-rudy'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  showSection('substop-edit');
+  updateSubstopAuthorLabel();
+}
+
+function editSubstop(id) {
+  const ss = state.allSubstops.find(x => x.id === id);
+  if (!ss) return;
+  state.currentSubstop = ss;
+  updateSidebarSubstop();
+  document.getElementById('sse-page-title').textContent = 'Edit Sub-stop';
+  document.getElementById('ssf-name').value = ss.name || '';
+  document.getElementById('ssf-tagline').value = ss.tagline || '';
+  document.getElementById('ssf-img').value = ss.photo_url || '';
+  document.getElementById('ssf-map-url').value = ss.map_url || '';
+  document.getElementById('ssf-lng').value = ss.longitude || '';
+  document.getElementById('ssf-lat').value = ss.latitude || '';
+  document.getElementById('ssf-rudy').value = ss.rudy_notes || '';
+  updateSubstopAuthorLabel();
+  showSection('substop-edit');
+  setTimeout(() => makeImageField('ssf-img', 'substops'), 30);
+}
+
+function updateSubstopAuthorLabel() {
+  const label = state.currentTour?.author_card_label || "Author's Notes";
+  const el = document.getElementById('ssf-rudy-label');
+  if (el) el.textContent = label;
+}
+
+function updateSidebarSubstop() {
+  // Sidebar substop section removed — navigation is via substop row buttons
+}
+
+async function saveSubstop(e) {
+  e.preventDefault();
+  const lng = parseFloat(document.getElementById('ssf-lng').value);
+  const lat = parseFloat(document.getElementById('ssf-lat').value);
+
+  // Determine parent stop and global_position
+  // New substops go before the last main stop by default
+  const lastStop = state.stops[state.stops.length - 1];
+  const parentStopId = state.currentSubstop?.stop_id || (lastStop ? lastStop.id : null);
+  const globalPos = state.currentSubstop?.global_position || (state.stops.length - 0.5);
+
+  const payload = {
+    stop_id: parentStopId,
+    global_position: globalPos,
+    name: document.getElementById('ssf-name').value.trim(),
+    tagline: document.getElementById('ssf-tagline').value.trim(),
+    photo_url: document.getElementById('ssf-img').value.trim(),
+    map_url: document.getElementById('ssf-map-url').value.trim(),
+    longitude: lng || null,
+    latitude: lat || null,
+    rudy_notes: document.getElementById('ssf-rudy').value.trim(),
+  };
+
+  let error;
+  if (state.currentSubstop) {
+    ({ error } = await sb.from('substops').update(payload).eq('id', state.currentSubstop.id));
+  } else {
+    let data;
+    ({ data, error } = await sb.from('substops').insert(payload).select().single());
+    if (data) state.currentSubstop = data;
+  }
+  if (error) { toast('Save failed: ' + error.message, 'error'); return; }
+  toast('Sub-stop saved', 'success');
+  await loadStops();
+  returnToStops();
+}
+
+async function deleteSubstop(id) {
+  if (!confirm('Delete this sub-stop and all its cards?')) return;
+  const { error } = await sb.from('substops').delete().eq('id', id);
+  if (error) { toast('Delete failed', 'error'); return; }
+  toast('Sub-stop deleted', 'info');
+  state.currentSubstop = null;
+  const _sss = document.getElementById('sidebar-substop-section');
+  if (_sss) _sss.style.display = 'none';
+  // Remove from local state immediately so list updates without refresh
+  state.allSubstops = state.allSubstops.filter(x => x.id !== id);
+  renderStops();
+}
+
+// ── Substop Cards ──
+async function openSubstopCards(substopId) {
+  const ss = state.allSubstops.find(x => x.id === substopId);
+  if (!ss) return;
+  state.currentSubstop = ss;
+  updateSidebarSubstop();
+  await loadSubstopCards();
+  showSection('substop-cards');
+}
+
+async function loadAndShowSubstopCards() {
+  if (!state.currentSubstop) return;
+  await loadSubstopCards();
+  showSection('substop-cards');
+}
+
+async function loadSubstopCards() {
+  if (!state.currentSubstop) return;
+  document.getElementById('substop-cards-subtitle').textContent = state.currentSubstop.name || 'Sub-stop';
+  const { data, error } = await sb.from('cards').select('*').eq('substop_id', state.currentSubstop.id).order('position');
+  if (error) { toast('Error loading cards', 'error'); return; }
+  state.substopCards = data || [];
+  document.getElementById('nb-substop-cards')&&(document.getElementById('nb-substop-cards').textContent = state.substopCards.length);
+  renderSubstopCards();
+}
+
+function renderSubstopCards() {
+  const el = document.getElementById('substop-cards-list');
+  if (!state.substopCards.length) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🃏</div><div class="empty-state-text">No cards yet.</div></div>`;
+    return;
+  }
+  el.innerHTML = state.substopCards.map((c, i) => {
+    const linkedPartner = c.card_type === 'partner' && c.partner_id
+      ? (state.partners||[]).find(p => p.id === c.partner_id) : null;
+    const partnerImg = linkedPartner?.photo_url || '';
+    const imgUrl = c.image_url || c.quiz_image_url || partnerImg || '';
+    const cfThumb = (c.card_type === 'desc' || c.card_type === 'transition') && c.cloudflare_id
+      ? `https://customer-umijtu8zknmpubqb.cloudflarestream.com/${c.cloudflare_id}/thumbnails/thumbnail.jpg` : '';
+    const thumbSrc = imgUrl || cfThumb;
+    const thumbHtml = thumbSrc ? `<img src="${escHtml(thumbSrc)}" style="width:36px;height:36px;border-radius:5px;object-fit:cover;flex-shrink:0;" onerror="this.style.display='none'">` : '';
+    const partnerName = linkedPartner ? `<span style="font-size:0.78rem;font-weight:700;color:rgba(200,150,255,0.9);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px;">${escHtml(linkedPartner.name)}</span>` : '';
+    return `
+    <div class="card-row" draggable="true" data-id="${c.id}" data-pos="${i}"
+      ondragstart="dragStart(event,'substop-card')" ondragover="dragOver(event)" ondrop="dropSubstopCard(event)" ondragleave="dragLeave(event)"
+      onclick="if(!_wasDragging)editSubstopCard('${c.id}')" style="cursor:pointer;">
+      <div class="drag-handle">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
+      </div>
+      <span class="card-pos">${i + 1}</span>
+      <span class="card-type-pill ct-${c.card_type}">${CARD_TYPE_LABELS[c.card_type] || c.card_type}</span>
+      ${thumbHtml}
+      ${partnerName}
+      <span class="card-preview">${escHtml(cardPreviewText(c))}</span>
+      <div class="row-actions">
+        <button class="btn btn-secondary btn-sm" onclick="editSubstopCard('${c.id}')" style="background:rgba(6,62,82,0.7);border-color:rgba(15,155,175,0.45);color:rgba(120,220,240,0.95);">Edit</button>
+        <button class="btn btn-ghost btn-icon btn-sm" onclick="event.stopPropagation();deleteSubstopCard('${c.id}')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff6b35" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        </button>
+      </div>
+    </div>`;
+  }).join(`<div style="display:flex;justify-content:center;margin:1px 0;"><svg width="14" height="22" viewBox="0 0 18 28" fill="none" stroke="#ff6b35" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="18"/><polyline points="4 13 9 19 14 13"/></svg></div>`);
+}
+
+async function dropSubstopCard(e) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('row-drag-over');
+  document.querySelectorAll('.row-dragging').forEach(el => el.classList.remove('row-dragging'));
+  const destIndex = parseInt(e.currentTarget.dataset.pos);
+  if (dragSrcIndex === null || dragSrcIndex === destIndex) return;
+  const arr = [...state.substopCards];
+  const [moved] = arr.splice(dragSrcIndex, 1);
+  arr.splice(destIndex, 0, moved);
+  state.substopCards = arr;
+  renderSubstopCards();
+  await Promise.all(arr.map((c, i) => sb.from('cards').update({ position: i + 1 }).eq('id', c.id)));
+  toast('Card order saved', 'success');
+  dragSrcIndex = null;
+}
+
+function openAddSubstopCardModal() {
+  // Reuse the same type picker as main stop cards
+  const types = [
+    { type: 'nav',   icon: '📍', name: 'Navigation', desc: 'Map & walking directions' },
+    { type: 'desc',  icon: '🎬', name: 'Video',      desc: 'Cloudflare video' },
+    { type: 'rudy',  icon: '🎙', name: 'Author',     desc: state.currentTour?.author_card_label || "Author's Notes" },
+    { type: 'photo', icon: '📷', name: 'Photo',      desc: 'Photo challenge' },
+    { type: 'quiz',  icon: '❓', name: 'Quiz',       desc: 'Multiple choice question' },
+    { type: 'partner',icon:'🤝', name: 'Partner',    desc: 'Restaurant or partner' },
+  ];
+  openModal('Add Card', `
+    <p style="font-size:0.82rem;color:var(--text2);margin-bottom:1.25rem;">Choose the card type for this sub-stop.</p>
+    <div class="type-grid" id="type-grid">
+      ${(() => {
+        const colours = { 'transition': ['rgba(45,63,170,0.22)','#7b8ff7','rgba(45,63,170,0.45)'], 'nav': ['rgba(15,155,142,0.22)','#4ecdc4','rgba(15,155,142,0.45)'], 'desc': ['rgba(45,107,228,0.22)','#6fa8f5','rgba(45,107,228,0.45)'], 'rudy': ['rgba(255,107,53,0.2)','#ff9a70','rgba(255,107,53,0.4)'], 'photo': ['rgba(52,199,89,0.18)','#5dd97a','rgba(52,199,89,0.38)'], 'quiz': ['rgba(255,204,0,0.2)','#ffd740','rgba(255,204,0,0.4)'], 'partner': ['rgba(175,82,222,0.2)','#d47ef8','rgba(175,82,222,0.4)'], 'game': ['rgba(255,59,48,0.18)','#ff7b72','rgba(255,59,48,0.38)'], 'finish': ['rgba(255,255,255,0.08)','rgba(255,255,255,0.6)','rgba(255,255,255,0.18)'] };
+        return types.map(t => {
+          const [bg, col, border] = colours[t.type] || ['var(--surface2)','var(--text)','var(--border)'];
+          return `
+            <div class="type-option" onclick="selectCardType('${t.type}')" data-type="${t.type}"
+              style="background:${bg};border-color:${border};transition:all 0.15s;"
+              onmouseenter="this.style.background='${border}'"
+              onmouseleave="if(!this.classList.contains('selected'))this.style.background='${bg}'">
+              <div style="font-size:1.4rem;">${t.icon}</div>
+              <div class="type-option-name" style="color:${col}">${t.name}</div>
+              <div class="type-option-desc">${t.desc}</div>
+            </div>`;
+        }).join('');
+      })()}
+    </div>
+  `, [
+    { label: 'Cancel', cls: 'btn-secondary', action: 'closeModalDirect()' },
+    { label: 'Add Card', cls: 'btn-primary', action: 'confirmAddSubstopCard()', id: 'add-card-confirm-btn', disabled: true },
+  ]);
+}
+
+async function confirmAddSubstopCard() {
+  if (!selectedCardType) return;
+  const pos = state.substopCards.length + 1;
+  const { data, error } = await sb.from('cards').insert({
+    substop_id: state.currentSubstop.id,
+    card_type: selectedCardType,
+    position: pos,
+  }).select().single();
+  if (error) { toast('Error creating card', 'error'); return; }
+  closeModalDirect();
+  toast('Card added', 'success');
+  await loadSubstopCards();
+  editSubstopCard(data.id);
+}
+
+function editSubstopCard(id) {
+  // Reuse main card editCard but save back to substop cards
+  const card = state.substopCards.find(x => x.id === id);
+  if (!card) return;
+  // Temporarily swap state.cards so editCard/saveCard work
+  const _savedCards = state.cards;
+  state.cards = state.substopCards;
+  editCard(id);
+  // Override save action to use substop card save
+  const saveBtn = document.querySelector('#modal-footer .btn-primary');
+  if (saveBtn) saveBtn.setAttribute('onclick', `saveSubstopCard('${id}','${card.card_type}')`);
+  state.cards = _savedCards;
+}
+
+async function saveSubstopCard(id, type) {
+  const payload = collectCardData(type);
+  const { error } = await sb.from('cards').update(payload).eq('id', id);
+  if (error) { toast('Save failed: ' + error.message, 'error'); return; }
+  closeModalDirect();
+  toast('Card saved', 'success');
+  await loadSubstopCards();
+}
+
+async function deleteSubstopCard(id) {
+  if (!confirm('Delete this card?')) return;
+  const { error } = await sb.from('cards').delete().eq('id', id);
+  if (error) { toast('Delete failed', 'error'); return; }
+  toast('Card deleted', 'info');
+  await loadSubstopCards();
+}
+
+// ── Substop Partners ──
+async function loadAndShowSubstopPartners() {
+  if (!state.currentSubstop) return;
+  await loadSubstopPartners();
+  showSection('substop-partners');
+}
+
+async function loadSubstopPartners() {
+  if (!state.currentSubstop) return;
+  document.getElementById('substop-partners-subtitle').textContent = state.currentSubstop.name || 'Sub-stop';
+  const { data, error } = await sb.from('partners').select('*').eq('substop_id', state.currentSubstop.id).order('created_at');
+  if (error) { toast('Error loading partners', 'error'); return; }
+  state.substopPartners = data || [];
+  document.getElementById('nb-substop-partners')&&(document.getElementById('nb-substop-partners').textContent = state.substopPartners.length);
+  renderSubstopPartners();
+}
+
+function renderSubstopPartners() {
+  const el = document.getElementById('substop-partners-list');
+  if (!state.substopPartners.length) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🤝</div><div class="empty-state-text">No partners for this sub-stop yet.</div></div>`;
+    return;
+  }
+  el.innerHTML = state.substopPartners.map(p => `
+    <div class="partner-row">
+      ${p.photo_url ? `<img class="partner-thumb" src="${escHtml(p.photo_url)}" loading="lazy">` :
+        `<div class="partner-thumb" style="background:var(--surface3);border-radius:8px;display:flex;align-items:center;justify-content:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.5" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>`}
+      <div class="partner-info">
+        <div class="partner-name">${escHtml(p.name)}</div>
+        <div class="partner-type">${escHtml(p.partner_type || '')}</div>
+      </div>
+      <div class="row-actions">
+        <button class="btn btn-secondary btn-sm" onclick="editSubstopPartner('${p.id}')" style="background:rgba(50,18,78,0.7);border-color:rgba(130,65,210,0.45);color:rgba(215,165,255,0.95);">Edit</button>
+        <button class="btn btn-ghost btn-icon btn-sm" onclick="deleteSubstopPartner('${p.id}')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff6b35" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openSubstopPartnerModal(id) {
+  const p = id ? state.substopPartners.find(x => x.id === id) : null;
+  openModal(p ? 'Edit Partner' : 'Add Partner', `
+    <div class="form-grid" style="margin-bottom:1rem;">
+      <div class="field"><label>Partner Name</label><input type="text" id="ssp-name" value="${escHtml(p?.name||'')}"></div>
+      <div class="field"><label>Type / Category</label><input type="text" id="ssp-type" placeholder="e.g. Street Food, Café" value="${escHtml(p?.partner_type||'')}"></div>
+    </div>
+    <div class="field" style="margin-bottom:1rem;"><label>Description</label><textarea id="ssp-desc" rows="3">${escHtml(p?.description||'')}</textarea></div>
+    <div class="form-grid" style="margin-bottom:1rem;">
+      <div class="field"><label>Location</label><input type="text" id="ssp-location" value="${escHtml(p?.location||'')}"></div>
+      <div class="field"><label>Google Maps URL</label><input type="url" id="ssp-map-url" value="${escHtml(p?.map_url||'')}"></div>
+    </div>
+    <div class="form-grid" style="margin-bottom:1rem;">
+      <div class="field"><label>Offer Text</label><input type="text" id="ssp-offer" value="${escHtml(p?.offer_text||'')}"></div>
+      <div class="field"><label>Offer Note</label><input type="text" id="ssp-offer-note" value="${escHtml(p?.offer_note||'')}"></div>
+    </div>
+    <div class="form-grid" style="margin-bottom:1rem;">
+      <div class="field"><label>Offer Code</label><input type="text" id="ssp-code" value="${escHtml(p?.discount_code||'')}"></div>
+      <div class="field"><label>Main Image</label><input type="url" id="ssp-img" value="${escHtml(p?.photo_url||'')}"></div>
+    </div>
+    <div class="field"><label>Cloudflare Video ID (optional)</label><input type="text" id="ssp-cf-id" value="${escHtml(p?.cloudflare_id||'')}"></div>
+  `, [
+    { label: 'Cancel', cls: 'btn-secondary', action: 'closeModalDirect()' },
+    { label: p ? 'Save Partner' : 'Add Partner', cls: 'btn-primary', action: `saveSubstopPartner('${p?.id||''}')` },
+  ]);
+  setTimeout(() => makeImageField('ssp-img', 'partners'), 30);
+}
+
+function editSubstopPartner(id) { openSubstopPartnerModal(id); }
+
+async function saveSubstopPartner(id) {
+  const g = eid => document.getElementById(eid)?.value || '';
+  const payload = {
+    substop_id: state.currentSubstop.id,
+    name: g('ssp-name'),
+    partner_type: g('ssp-type'),
+    description: g('ssp-desc'),
+    location: g('ssp-location'),
+    map_url: g('ssp-map-url'),
+    offer_text: g('ssp-offer'),
+    offer_note: g('ssp-offer-note'),
+    discount_code: g('ssp-code'),
+    photo_url: g('ssp-img'),
+    cloudflare_id: g('ssp-cf-id'),
+  };
+  let error;
+  if (id) {
+    ({ error } = await sb.from('partners').update(payload).eq('id', id));
+  } else {
+    ({ error } = await sb.from('partners').insert(payload));
+  }
+  if (error) { toast('Save failed: ' + error.message, 'error'); return; }
+  closeModalDirect();
+  toast('Partner saved', 'success');
+  await loadSubstopPartners();
+}
+
+async function deleteSubstopPartner(id) {
+  if (!confirm('Delete this partner?')) return;
+  const { error } = await sb.from('partners').delete().eq('id', id);
+  if (error) { toast('Delete failed', 'error'); return; }
+  toast('Partner deleted', 'info');
+  await loadSubstopPartners();
+}
+
+// ── Navigation helpers ──
+function returnToStops() {
+  // Clear both sidebars when returning to stops list
+  state.currentSubstop = null;
+  document.getElementById('sidebar-substop-section').style.display = 'none';
+  document.getElementById('sidebar-stop-section').style.display = 'none';
+  showSection('stops');
+}
+
+// ── Tour Start / Finish editors ──
+function editTourStart() {
+  if (!state.currentTour) return;
+  const t = state.currentTour;
+  document.getElementById('ts-meeting-name').value = t.meeting_point_name || '';
+  document.getElementById('ts-meeting-address').value = t.meeting_point_address || '';
+  document.getElementById('ts-meeting-map-url').value = t.meeting_point_map_url || '';
+  document.getElementById('ts-intro-desc').value = t.intro_description || '';
+  document.getElementById('ts-safety-notes').value = t.safety_notes || '';
+  showSection('tour-start');
+}
+
+async function saveTourStart(e) {
+  e.preventDefault();
+  const payload = {
+    meeting_point_name:    document.getElementById('ts-meeting-name').value.trim(),
+    meeting_point_address: document.getElementById('ts-meeting-address').value.trim(),
+    meeting_point_map_url: document.getElementById('ts-meeting-map-url').value.trim(),
+    intro_description:     document.getElementById('ts-intro-desc').value.trim(),
+    safety_notes:          document.getElementById('ts-safety-notes').value.trim(),
+  };
+  const { error } = await sb.from('tours').update(payload).eq('id', state.currentTour.id);
+  if (error) { toast('Save failed: ' + error.message, 'error'); return; }
+  Object.assign(state.currentTour, payload);
+  toast('Tour start saved', 'success');
+  await loadStops();
+  returnToStops();
+}
+
+function editTourFinish() {
+  if (!state.currentTour) return;
+  document.getElementById('tf-finish-message').value = state.currentTour.finish_message || '';
+  showSection('tour-finish');
+}
+
+async function saveTourFinish(e) {
+  e.preventDefault();
+  const payload = { finish_message: document.getElementById('tf-finish-message').value.trim() };
+  const { error } = await sb.from('tours').update(payload).eq('id', state.currentTour.id);
+  if (error) { toast('Save failed: ' + error.message, 'error'); return; }
+  Object.assign(state.currentTour, payload);
+  toast('Tour finish saved', 'success');
+  await loadStops();
+  returnToStops();
+}
+
+
+// ── Video Upload via Cloudflare Stream (Edge Function) ──
+const EDGE_FN_URL = 'https://gwvwzyzondplicgeubrc.supabase.co/functions/v1/cloudflare-upload-url';
+
+async function getCloudflareUploadURL() {
+  const res = await fetch(EDGE_FN_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd3dnd6eXpvbmRwbGljZ2V1YnJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NDk1OTMsImV4cCI6MjA5MDAyNTU5M30.Lu6mQ_0rmn6Pv9RnquJhQhg6bZbdA_vvWl7qEvC6rcA',
+      'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd3dnd6eXpvbmRwbGljZ2V1YnJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NDk1OTMsImV4cCI6MjA5MDAyNTU5M30.Lu6mQ_0rmn6Pv9RnquJhQhg6bZbdA_vvWl7qEvC6rcA',
+    },
+  });
+  if (!res.ok) {
+    const txt = await res.text().catch(() => res.status);
+    throw new Error(`HTTP ${res.status}: ${txt}`);
+  }
+  const data = await res.json();
+  if (data.error) throw new Error(JSON.stringify(data.error));
+  return data; // { uploadURL, uid }
+}
+
+function makeVideoField(inputId) {
+  const input = document.getElementById(inputId);
+  if (!input || input.dataset.vidUploadInit) return;
+  input.dataset.vidUploadInit = '1';
+
+  const field = input.parentElement;
+  const wrap = document.createElement('div');
+  wrap.className = 'media-upload-wrap';
+  field.insertBefore(wrap, input);
+
+  // Hidden file input
+  const fileInput = document.createElement('input');
+  fileInput.type = 'file'; fileInput.accept = 'video/*'; fileInput.style.display = 'none';
+  wrap.appendChild(fileInput);
+
+  // Primary upload button
+  const primaryBtn = document.createElement('button');
+  primaryBtn.type = 'button'; primaryBtn.className = 'media-upload-primary';
+  primaryBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>Click to upload video, or drag & drop here`;
+  wrap.appendChild(primaryBtn);
+
+  // ID fallback toggle
+  const toggle = document.createElement('button');
+  toggle.type = 'button'; toggle.className = 'media-url-toggle';
+  toggle.textContent = 'or paste a Cloudflare video ID instead';
+  wrap.appendChild(toggle);
+
+  // ID row (hidden by default)
+  const idRow = document.createElement('div');
+  idRow.className = 'media-url-row';
+  input.placeholder = 'Cloudflare video ID';
+  idRow.appendChild(input);
+  wrap.appendChild(idRow);
+
+  toggle.addEventListener('click', () => {
+    idRow.classList.toggle('visible');
+    toggle.textContent = idRow.classList.contains('visible') ? 'hide ID field' : 'or paste a Cloudflare video ID instead';
+  });
+
+  // Always hide ID row — preview shows current video
+
+  // Progress
+  const progressWrap = document.createElement('div');
+  progressWrap.className = 'media-progress';
+  progressWrap.innerHTML = `<div class="media-progress-bar-wrap"><div class="media-progress-bar"></div></div><div class="media-status"></div>`;
+  wrap.appendChild(progressWrap);
+
+  // Preview (CF thumbnail + iframe)
+  const preview = document.createElement('div');
+  preview.className = 'media-preview';
+  preview.innerHTML = `<iframe allowfullscreen allow="accelerometer; autoplay; encrypted-media"></iframe><button type="button" class="media-preview-remove" title="Remove">✕</button>`;
+  wrap.appendChild(preview);
+
+  function updatePreview() {
+    const uid = input.value.trim();
+    if (uid && uid.length > 10) {
+      preview.style.display = 'block';
+      preview.querySelector('iframe').src = `https://customer-umijtu8zknmpubqb.cloudflarestream.com/${uid}/iframe`;
+    } else {
+      preview.style.display = 'none';
+      preview.querySelector('iframe').src = '';
+    }
+  }
+  updatePreview();
+  input.addEventListener('input', updatePreview);
+
+  preview.querySelector('.media-preview-remove').addEventListener('click', () => {
+    // Note: we don't auto-delete from Cloudflare as deletion requires separate API call
+    input.value = ''; updatePreview();
+    idRow.classList.remove('visible'); toggle.textContent = 'or paste a Cloudflare video ID instead';
+  });
+
+  async function handleVideoFile(file) {
+    if (file.size > 2 * 1024 * 1024 * 1024) { toast('File too large — max 2GB', 'error'); return; }
+    wrap.classList.add('media-uploading');
+    primaryBtn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Uploading…`;
+    progressWrap.style.display = 'flex';
+    const statusEl = progressWrap.querySelector('.media-status');
+    const barEl = progressWrap.querySelector('.media-progress-bar');
+    statusEl.textContent = 'Getting upload URL…';
+    statusEl.style.color = 'var(--text3)';
+
+    let uploadURL, uid;
+    try {
+      ({ uploadURL, uid } = await getCloudflareUploadURL());
+    } catch(e) {
+      toast('Could not connect to Cloudflare: ' + e.message, 'error');
+      wrap.classList.remove('media-uploading');
+      primaryBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>Click to upload video, or drag & drop here`;
+      progressWrap.style.display = 'none';
+      return;
+    }
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', uploadURL);
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable) {
+        const pct = Math.round(e.loaded / e.total * 100);
+        barEl.style.width = pct + '%';
+        statusEl.textContent = `Uploading… ${pct}%`;
+      }
+    };
+    xhr.onload = () => {
+      wrap.classList.remove('media-uploading');
+      primaryBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>Click to upload video, or drag & drop here`;
+      if (xhr.status === 200 || xhr.status === 201) {
+        barEl.style.width = '100%';
+        statusEl.textContent = '✓ Uploaded — Cloudflare is processing the video (takes 1–2 minutes)';
+        statusEl.style.color = 'var(--green, #34c759)';
+        input.value = uid;
+        updatePreview();
+        toast('Video uploaded successfully', 'success');
+      } else {
+        statusEl.textContent = 'Upload failed — please try again';
+        statusEl.style.color = 'var(--red)';
+        toast('Video upload failed', 'error');
+      }
+    };
+    xhr.onerror = () => {
+      wrap.classList.remove('media-uploading');
+      primaryBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>Click to upload video, or drag & drop here`;
+      statusEl.textContent = 'Upload failed — check your connection';
+      statusEl.style.color = 'var(--red)';
+    };
+    const formData = new FormData();
+    formData.append('file', file);
+    xhr.send(formData);
+  }
+
+  primaryBtn.addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', e => { if (e.target.files[0]) handleVideoFile(e.target.files[0]); });
+  wrap.addEventListener('dragover', e => { e.preventDefault(); wrap.classList.add('drag-over'); });
+  wrap.addEventListener('dragleave', e => { if (!wrap.contains(e.relatedTarget)) wrap.classList.remove('drag-over'); });
+  wrap.addEventListener('drop', e => {
+    e.preventDefault(); wrap.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('video/')) handleVideoFile(file);
+  });
+}
+
+// ── Image Upload via Supabase Storage ──
+async function uploadImageToSupabase(file, folder) {
+  const ext = file.name.split('.').pop().toLowerCase();
+  const allowed = ['jpg','jpeg','png','webp','gif'];
+  if (!allowed.includes(ext)) { toast('Please upload an image file (jpg, png, webp)', 'error'); return null; }
+  if (file.size > 10 * 1024 * 1024) { toast('File too large — max 10MB', 'error'); return null; }
+  const filename = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  const { data, error } = await sb.storage.from('tour-media').upload(filename, file, {
+    cacheControl: '3600', upsert: false, contentType: file.type
+  });
+  if (error) { toast('Upload failed: ' + error.message, 'error'); return null; }
+  const { data: urlData } = sb.storage.from('tour-media').getPublicUrl(filename);
+  return urlData.publicUrl;
+}
+
+// Make an image URL input into an upload-capable field
+// folder: storage subfolder e.g. 'stops', 'cards', 'partners'
+function makeImageField(inputId, folder) {
+  const input = document.getElementById(inputId);
+  if (!input || input.dataset.uploadInit) return;
+  input.dataset.uploadInit = '1';
+
+  const field = input.parentElement;
+  const wrap = document.createElement('div');
+  wrap.className = 'media-upload-wrap';
+  field.insertBefore(wrap, input);
+
+  // Hidden file input
+  const fileInput = document.createElement('input');
+  fileInput.type = 'file'; fileInput.accept = 'image/*'; fileInput.style.display = 'none';
+  wrap.appendChild(fileInput);
+
+  // Primary upload button — orange, prominent
+  const primaryBtn = document.createElement('button');
+  primaryBtn.type = 'button'; primaryBtn.className = 'media-upload-primary';
+  primaryBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Click to upload image, or drag & drop here`;
+  wrap.appendChild(primaryBtn);
+
+  // URL fallback toggle
+  const toggle = document.createElement('button');
+  toggle.type = 'button'; toggle.className = 'media-url-toggle';
+  toggle.textContent = 'or paste a URL instead';
+  wrap.appendChild(toggle);
+
+  // URL row — hidden by default
+  const urlRow = document.createElement('div');
+  urlRow.className = 'media-url-row';
+  input.placeholder = 'https://…';
+  urlRow.appendChild(input);
+  wrap.appendChild(urlRow);
+
+  toggle.addEventListener('click', () => {
+    urlRow.classList.toggle('visible');
+    toggle.textContent = urlRow.classList.contains('visible') ? 'hide URL field' : 'or paste a URL instead';
+  });
+
+  // Always hide URL row — preview shows current image
+
+  // Preview
+  const preview = document.createElement('div');
+  preview.className = 'media-preview';
+  preview.innerHTML = `<img><button type="button" class="media-preview-remove" title="Remove">✕</button>`;
+  wrap.appendChild(preview);
+
+  function updatePreview() {
+    const url = input.value.trim();
+    if (url) { preview.style.display = 'block'; preview.querySelector('img').src = url; }
+    else preview.style.display = 'none';
+  }
+  updatePreview();
+  input.addEventListener('input', updatePreview);
+
+  preview.querySelector('.media-preview-remove').addEventListener('click', () => {
+    const oldUrl = input.value.trim();
+    if (oldUrl.includes('supabase.co/storage')) {
+      const path = oldUrl.split('/tour-media/')[1];
+      if (path) sb.storage.from('tour-media').remove([path]).catch(() => {});
+    }
+    input.value = ''; updatePreview();
+    urlRow.classList.remove('visible'); toggle.textContent = 'or paste a URL instead';
+  });
+
+  async function handleFile(file) {
+    wrap.classList.add('media-uploading');
+    primaryBtn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Uploading…`;
+    const oldUrl = input.value.trim();
+    if (oldUrl.includes('supabase.co/storage')) {
+      const path = oldUrl.split('/tour-media/')[1];
+      if (path) await sb.storage.from('tour-media').remove([path]).catch(() => {});
+    }
+    const url = await uploadImageToSupabase(file, folder);
+    wrap.classList.remove('media-uploading');
+    primaryBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Click to upload image, or drag & drop here`;
+    if (url) { input.value = url; updatePreview(); toast('Image uploaded', 'success'); }
+  }
+
+  primaryBtn.addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', e => { if (e.target.files[0]) handleFile(e.target.files[0]); });
+  wrap.addEventListener('dragover', e => { e.preventDefault(); wrap.classList.add('drag-over'); });
+  wrap.addEventListener('dragleave', e => { if (!wrap.contains(e.relatedTarget)) wrap.classList.remove('drag-over'); });
+  wrap.addEventListener('drop', e => {
+    e.preventDefault(); wrap.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) handleFile(file);
+  });
+}
+
+// Initialise all image fields in the current section
+function initImageFields() {
+  // Stop editor
+  makeImageField('sf-img', 'stops');
+  // Substop editor
+  makeImageField('ssf-img', 'substops');
+}
+
+// ── All Partners (tour-wide overview) ──
+async function loadAndShowAllPartners() {
+  if (!state.currentTour) { toast('Open a tour first', 'info'); return; }
+  showSection('all-partners');
+  const el = document.getElementById('all-partners-list');
+  el.innerHTML = `<div class="loading-row"><div class="spinner"></div> Loading…</div>`;
+
+  // Fetch all stops for stop name lookup
+  const { data: stops } = await sb.from('stops').select('id,name,stop_number').eq('tour_id', state.currentTour.id).order('stop_number');
+  const stopMap = Object.fromEntries((stops||[]).map(s => [s.id, s]));
+
+  // Fetch partners by tour_id (works regardless of stop_id)
+  const { data: partners } = await sb.from('partners').select('*').eq('tour_id', state.currentTour.id).order('name');
+
+  if (!partners || !partners.length) {
+    el.innerHTML = `<div style="padding:2rem;text-align:center;color:var(--text3);">No partners yet. Add partners via a stop's Cards section.</div>`;
+    return;
+  }
+
+  el.innerHTML = partners.map(p => `
+    <div class="partner-row" style="cursor:pointer;" onclick="editPartner('${p.id}')">
+      ${p.photo_url ? `<img class="partner-thumb" src="${escHtml(p.photo_url)}" loading="lazy">` :
+        `<div class="partner-thumb" style="background:var(--surface3);border-radius:8px;display:flex;align-items:center;justify-content:center;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.5" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        </div>`}
+      <div class="partner-info" style="flex:1;min-width:0;">
+        <div class="partner-name">${escHtml(p.name)}</div>
+        <div class="partner-type" style="color:rgba(255,255,255,0.65);">
+          ${escHtml(p.partner_type||'')}
+          ${stopMap[p.stop_id] ? `<span style="margin-left:0.5rem;opacity:0.5;">· Stop ${stopMap[p.stop_id].stop_number}: ${escHtml(stopMap[p.stop_id].name)}</span>` : ''}
+        </div>
+        ${p.offer_text ? `<div style="font-size:0.72rem;color:var(--orange);margin-top:0.15rem;">🏷 ${escHtml(p.offer_text)}</div>` : ''}
+      </div>
+      <div class="row-actions">
+        <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();editPartner('${p.id}')" style="background:rgba(50,18,78,0.7);border-color:rgba(130,65,210,0.45);color:rgba(215,165,255,0.95);">Edit</button>
+        <button class="btn btn-ghost btn-icon btn-sm" onclick="event.stopPropagation();deletePartnerAndRefresh('${p.id}')" title="Delete partner">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff6b35" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function deletePartnerAndRefresh(id) {
+  if (!confirm('Delete this partner? This cannot be undone.')) return;
+  const { error } = await sb.from('partners').delete().eq('id', id);
+  if (error) { toast('Delete failed', 'error'); return; }
+  toast('Partner deleted', 'info');
+  await ensurePartnersLoaded();
+  await loadAndShowAllPartners();
+}
+
+async function goToStopPartners(stopId) {
+  const s = state.stops.find(x => x.id === stopId);
+  if (!s) {
+    await loadStops();
+    const s2 = state.stops.find(x => x.id === stopId);
+    if (!s2) return;
+    state.currentStop = s2;
+  } else {
+    state.currentStop = s;
+  }
+  await loadPartners();
+  showSection('partners');
+}
+
+// nav-partners removed — partners accessed via loadAndShowAllPartners()
+
+// ── Modal helpers ──
+function openModal(title, bodyHtml, buttons) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-body').innerHTML = bodyHtml;
+  document.getElementById('modal-footer').innerHTML = buttons.map(b =>
+    `<button class="btn ${b.cls}" ${b.disabled?'disabled':''} id="${b.id||''}" onclick="${b.action}">${b.label}</button>`
+  ).join('');
+  document.getElementById('modal-overlay').classList.add('open');
+}
+function closeModal(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeModalDirect();
+}
+function closeModalDirect() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  selectedCardType = null;
+  // Reset upload init flags so fields re-init correctly next time
+  document.querySelectorAll('[data-upload-init]').forEach(el => delete el.dataset.uploadInit);
+  document.querySelectorAll('[data-vid-upload-init]').forEach(el => delete el.dataset.vidUploadInit);
+}
+
+// ── CF preview ──
+function updateCfPreview(previewId, cfId) {
+  const el = document.getElementById(previewId);
+  if (!el) return;
+  if (!cfId || cfId.length < 10) {
+    el.innerHTML = `<span class="cf-preview-placeholder">Enter an ID to preview</span>`;
+    return;
+  }
+  el.innerHTML = `<img src="https://customer-umijtu8zknmpubqb.cloudflarestream.com/${cfId}/thumbnails/thumbnail.jpg" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='<span class=cf-preview-placeholder>Preview unavailable</span>'">`;
+}
+
+// ── Toast ──
+function toast(msg, type = 'info') {
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  const icons = { success: '✓', error: '✕', info: 'ℹ' };
+  el.innerHTML = `<span style="font-weight:700;color:${type==='success'?'var(--green)':type==='error'?'var(--red)':'var(--blue)'}">${icons[type]||''}</span> ${escHtml(msg)}`;
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(() => el.remove(), 3500);
+}
+
+// ── Utilities ──
+function escHtml(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function truncate(s, n) {
+  if (!s) return '';
+  return s.length > n ? s.slice(0, n) + '…' : s;
+}
+function clearForm(formId) {
+  document.getElementById(formId).querySelectorAll('input,textarea,select').forEach(el => {
+    if (el.type === 'checkbox') el.checked = false;
+    else el.value = '';
+  });
+}
+
+// ── Boot ──
+boot();
+</script>
+</body>
+</html>
