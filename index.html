@@ -7,6 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
+html { overflow-x: hidden; max-width: 100%; }
+* { box-sizing: border-box; }
 :root {
   --bg: #0e0e11;
   --surface: #16161a;
@@ -615,16 +617,33 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   display: flex; align-items: center; justify-content: center;
 }
 .stop-num-destination {
+  position: absolute;
+  top: -14px; left: 50%; transform: translateX(-50%);
   width: 28px; height: 28px; border-radius: 50%;
   background: linear-gradient(160deg,#ff3b30 0%,#ff6b35 45%,#ffcc00 100%);
   color: white; font-family: 'Nunito', sans-serif;
   font-weight: 900; font-size: 0.8rem;
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(255,107,53,0.35);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 8px rgba(255,107,53,0.45);
+  z-index: 2;
 }
 
 /* ── Mobile responsive ── */
 @media (max-width: 600px) {
+
+  /* Prevent ALL horizontal overflow */
+  #main, #main > .section, .panel, .panel-body, .form-grid,
+  .stop-row-main, .card-row, .partner-row, .tour-row,
+  .page-header, .row-actions { max-width: 100%; overflow-x: hidden; }
+
+  /* Wrap row-actions so they don't force width */
+  .row-actions { flex-wrap: wrap; justify-content: flex-end; gap: 0.3rem; }
+
+  /* Shrink buttons on mobile */
+  .btn-sm { font-size: 0.72rem; padding: 0.3rem 0.55rem; }
+
+  /* Tour row meta — smaller gap */
+  .tour-meta { gap: 0.3rem; font-size: 0.7rem; }
 
   /* Header — tighter, breadcrumb smaller */
   #header { padding: 0 0.75rem; gap: 0.5rem; }
@@ -1452,11 +1471,9 @@ function renderTours() {
       <div class="tour-info">
         <div class="tour-name">${escHtml(t.title)}</div>
         <div class="tour-meta">
-          ${t.city ? `<span>${escHtml(t.city)}</span> ·` : ''}
           <span class="status-pill ${t.published ? 'published' : 'draft'}">
             <span class="status-dot"></span>${t.published ? 'Published' : 'Draft'}
           </span>
-          ${t.base_price ? `· €${Number(t.base_price).toFixed(2)}` : '· Free'}
         </div>
       </div>
       <div class="row-actions">
@@ -1675,17 +1692,15 @@ function renderStops() {
     const stopHtml = `
       <div class="stop-row stop-row-main" draggable="true" data-id="${s.id}" data-pos="${stopIdx}" data-type="stop"
         ondragstart="dragStart(event,'stop')" ondragover="dragOver(event,true)" ondrop="dropStopItem(event)" ondragleave="dragLeave(event)"
-        onclick="if(!_wasDragging)openCards('${s.id}')" style="cursor:pointer;display:flex;align-items:center;gap:0.75rem;padding:0.6rem 0.85rem 0.6rem 0.75rem;">
+        onclick="if(!_wasDragging)openCards('${s.id}')" style="cursor:pointer;display:flex;align-items:center;gap:0.75rem;padding:0.85rem 0.85rem 0.6rem 0.75rem;position:relative;">
         ${dragHandle}
         <div class="stop-num-destination">${s.stop_number || gi+1}</div>
         ${thumb(s.photo_url)}
         <div class="stop-info" style="flex:1;min-width:0;">
           <div class="stop-name">${escHtml(s.name)}</div>
-          <div class="stop-tagline">${escHtml(s.tagline || '')}</div>
         </div>
         <div class="row-actions">
           <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();editStop('${s.id}')" style="background:rgba(12,58,95,0.7);border-color:rgba(26,111,181,0.45);color:rgba(160,215,255,0.95);">Details</button>
-          <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();openCards('${s.id}')" style="background:rgba(6,62,82,0.7);border-color:rgba(15,155,175,0.45);color:rgba(120,220,240,0.95);">Cards</button>
           ${deleteBtn(`deleteStop('${s.id}')`)}
         </div>
       </div>`;
@@ -2015,13 +2030,11 @@ function renderCards() {
       <div class="drag-handle">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
       </div>
-      <span class="card-pos">${i + 1}</span>
       <span class="card-type-pill ct-${c.card_type}">${CARD_TYPE_LABELS[c.card_type] || c.card_type}</span>
       ${thumbHtml}
       ${partnerName}
       <span class="card-preview">${escHtml(cardPreviewText(c))}</span>
       <div class="row-actions">
-        <button class="btn btn-secondary btn-sm" onclick="editCard('${c.id}')" style="background:rgba(6,62,82,0.7);border-color:rgba(15,155,175,0.45);color:rgba(120,220,240,0.95);">Edit</button>
         <button class="btn btn-ghost btn-icon btn-sm" onclick="event.stopPropagation();deleteCard('${c.id}')">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff6b35" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
         </button>
@@ -2423,8 +2436,7 @@ function renderPartners() {
         <div class="partner-type">${escHtml(p.partner_type || '')}</div>
       </div>
       <div class="row-actions">
-        <button class="btn btn-secondary btn-sm" onclick="editPartner('${p.id}')" style="background:rgba(50,18,78,0.7);border-color:rgba(130,65,210,0.45);color:rgba(215,165,255,0.95);">Edit</button>
-        <button class="btn btn-ghost btn-icon btn-sm" onclick="deletePartner('${p.id}')">
+        <button class="btn btn-ghost btn-icon btn-sm" onclick="deletePartner('${p.id}'">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff6b35" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
         </button>
       </div>
@@ -2688,13 +2700,11 @@ function renderSubstopCards() {
       <div class="drag-handle">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
       </div>
-      <span class="card-pos">${i + 1}</span>
       <span class="card-type-pill ct-${c.card_type}">${CARD_TYPE_LABELS[c.card_type] || c.card_type}</span>
       ${thumbHtml}
       ${partnerName}
       <span class="card-preview">${escHtml(cardPreviewText(c))}</span>
       <div class="row-actions">
-        <button class="btn btn-secondary btn-sm" onclick="editSubstopCard('${c.id}')" style="background:rgba(6,62,82,0.7);border-color:rgba(15,155,175,0.45);color:rgba(120,220,240,0.95);">Edit</button>
         <button class="btn btn-ghost btn-icon btn-sm" onclick="event.stopPropagation();deleteSubstopCard('${c.id}')">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff6b35" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
         </button>
@@ -3272,8 +3282,7 @@ async function loadAndShowAllPartners() {
         ${p.offer_text ? `<div style="font-size:0.72rem;color:var(--orange);margin-top:0.15rem;">🏷 ${escHtml(p.offer_text)}</div>` : ''}
       </div>
       <div class="row-actions">
-        <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();editPartner('${p.id}')" style="background:rgba(50,18,78,0.7);border-color:rgba(130,65,210,0.45);color:rgba(215,165,255,0.95);">Edit</button>
-        <button class="btn btn-ghost btn-icon btn-sm" onclick="event.stopPropagation();deletePartnerAndRefresh('${p.id}')" title="Delete partner">
+        <button class="btn btn-ghost btn-icon btn-sm" onclick="event.stopPropagation();deletePartnerAndRefresh('${p.id}'" title="Delete partner">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff6b35" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
         </button>
       </div>
