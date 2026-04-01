@@ -1721,7 +1721,8 @@ function renderStops() {
         </div>
       </div>`;
 
-    return `<div class="stop-group">${subsHtml}${stopHtml}</div>`;
+    const arrowHtml = isLast ? '' : `<div class="stop-group-connector">${orangeArrow(16)}</div>`;
+    return `<div class="stop-group">${subsHtml}${stopHtml}</div>${arrowHtml}`;
   }).join('');
 
   el.innerHTML = startBlock + el.innerHTML + finishBlock;
