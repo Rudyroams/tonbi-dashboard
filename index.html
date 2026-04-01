@@ -333,15 +333,16 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 
 /* ── Modal ── */
 #modal-overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5);
   z-index: 500; display: none; align-items: center; justify-content: center;
   padding: 1.5rem;
   backdrop-filter: blur(4px);
 }
 #modal-overlay.open { display: flex; }
 #modal {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: linear-gradient(160deg, rgba(6,48,64,0.92) 0%, rgba(8,74,90,0.9) 50%, rgba(8,88,88,0.92) 100%);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.12);
   border-radius: var(--radius);
   width: 100%; max-width: 600px;
   max-height: calc(100vh - 3rem);
@@ -351,16 +352,16 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 @keyframes modalIn { from { opacity:0; transform:scale(0.96) translateY(8px); } to { opacity:1; transform:none; } }
 #modal-header {
   padding: 1.1rem 1.25rem;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
   display: flex; align-items: center; justify-content: space-between;
 }
 #modal-title { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 1rem; }
 #modal-body { padding: 1.25rem; overflow-y: auto; flex: 1; }
 #modal-footer {
   padding: 0.9rem 1.25rem;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid rgba(255,255,255,0.1);
   display: flex; align-items: center; justify-content: flex-end; gap: 0.75rem;
-  background: rgba(0,0,0,0.15);
+  background: rgba(0,0,0,0.1);
 }
 
 /* ── Toast ── */
@@ -633,11 +634,12 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 }
 .stop-num-destination {
   width: 28px; height: 28px; border-radius: 50%;
-  background: linear-gradient(160deg,#ff3b30 0%,#ff6b35 45%,#ffcc00 100%);
-  color: white; font-family: 'Nunito', sans-serif;
+  background: linear-gradient(160deg,rgba(255,59,48,0.55) 0%,rgba(255,107,53,0.5) 45%,rgba(255,204,0,0.5) 100%);
+  border: 1px solid rgba(255,107,53,0.4);
+  color: rgba(255,255,255,0.9); font-family: 'Nunito', sans-serif;
   font-weight: 900; font-size: 0.8rem;
   display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(255,107,53,0.45);
+  box-shadow: 0 2px 8px rgba(255,107,53,0.2);
 }
 
 /* ── Mobile responsive ── */
@@ -905,7 +907,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
       <div style="text-align:center;margin-bottom:1.25rem;">
         <div id="stops-title" style="font-family:'Nunito',sans-serif;font-size:2.4rem;font-weight:900;color:white;line-height:1.05;margin-bottom:0.2rem;"></div>
         <div style="font-family:'Nunito',sans-serif;font-size:0.9rem;font-weight:800;background:linear-gradient(160deg,#ff3b30 0%,#ff6b35 45%,#ffcc00 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-transform:uppercase;letter-spacing:0.14em;margin-bottom:0.3rem;">Tour Flow</div>
-        <div style="display:flex;justify-content:center;"><svg width="16" height="22" viewBox="0 0 18 28" fill="none" stroke="#ff6b35" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="18"/><polyline points="4 13 9 19 14 13"/></svg></div>
+        <div style="display:flex;justify-content:center;"><svg width="16" height="22" viewBox="0 0 18 28" fill="none" stroke="rgba(255,107,53,0.5)" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="18"/><polyline points="4 13 9 19 14 13"/></svg></div>
         <div id="stops-subtitle" style="font-size:0.82rem;color:var(--text3);margin-top:0.15rem;"></div>
       </div>
       <!-- Single action row: settings+partners on left, add buttons on right -->
@@ -919,8 +921,8 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
           </button>
         </div>
         <div style="display:flex;gap:0.5rem;">
-          <button class="btn btn-primary btn-sm" onclick="newSubstop()" style="background:linear-gradient(160deg,#ff3b30 0%,#ff6b35 45%,#ffcc00 100%);">+ Sub-stop</button>
-          <button class="btn btn-primary btn-sm" onclick="newStop()" style="background:linear-gradient(160deg,#ff3b30 0%,#ff6b35 45%,#ffcc00 100%);">+ Add Stop</button>
+          <button class="btn btn-primary btn-sm" onclick="newSubstop()" style="background:linear-gradient(160deg,rgba(255,59,48,0.55) 0%,rgba(255,107,53,0.5) 45%,rgba(255,204,0,0.5) 100%);border:1px solid rgba(255,107,53,0.4);">+ Sub-stop</button>
+          <button class="btn btn-primary btn-sm" onclick="newStop()" style="background:linear-gradient(160deg,rgba(255,59,48,0.55) 0%,rgba(255,107,53,0.5) 45%,rgba(255,204,0,0.5) 100%);border:1px solid rgba(255,107,53,0.4);">+ Add Stop</button>
         </div>
       </div>
       <div id="stops-list" style="padding:0 0 0.5rem 0;">
@@ -1031,7 +1033,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
       <div style="text-align:center;margin-bottom:1.25rem;">
         <div class="page-title" id="cards-subtitle" style="font-size:2.4rem;font-weight:900;color:white;line-height:1.05;margin-bottom:0.2rem;">Cards for this stop</div>
         <div style="font-family:'Nunito',sans-serif;font-size:0.85rem;font-weight:800;background:linear-gradient(160deg,#ff3b30 0%,#ff6b35 45%,#ffcc00 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-transform:uppercase;letter-spacing:0.14em;margin-bottom:0.3rem;">Card Flow</div>
-        <div style="display:flex;justify-content:center;"><svg width="14" height="22" viewBox="0 0 18 28" fill="none" stroke="#ff6b35" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="18"/><polyline points="4 13 9 19 14 13"/></svg></div>
+        <div style="display:flex;justify-content:center;"><svg width="14" height="22" viewBox="0 0 18 28" fill="none" stroke="rgba(255,107,53,0.5)" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="18"/><polyline points="4 13 9 19 14 13"/></svg></div>
       </div>
       <!-- Action row: Details + Stops left, Add Card right -->
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;">
@@ -1127,7 +1129,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
       <div style="text-align:center;margin-bottom:1.25rem;">
         <div class="page-title" id="substop-cards-subtitle" style="font-size:2.4rem;font-weight:900;color:white;line-height:1.05;margin-bottom:0.2rem;">Cards for this sub-stop</div>
         <div style="font-family:'Nunito',sans-serif;font-size:0.85rem;font-weight:800;background:linear-gradient(160deg,#ff3b30 0%,#ff6b35 45%,#ffcc00 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-transform:uppercase;letter-spacing:0.14em;margin-bottom:0.3rem;">Card Flow</div>
-        <div style="display:flex;justify-content:center;"><svg width="14" height="22" viewBox="0 0 18 28" fill="none" stroke="#ff6b35" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="18"/><polyline points="4 13 9 19 14 13"/></svg></div>
+        <div style="display:flex;justify-content:center;"><svg width="14" height="22" viewBox="0 0 18 28" fill="none" stroke="rgba(255,107,53,0.5)" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="18"/><polyline points="4 13 9 19 14 13"/></svg></div>
       </div>
       <!-- Action row: Details + Stops left, Add Card right -->
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;">
@@ -1647,7 +1649,7 @@ function renderStops() {
     </div>`;
 
   if (!state.stops.length) {
-    el.innerHTML = startBlock + `<div class="stop-group-connector">${'<svg width="16" height="28" viewBox="0 0 18 28" fill="none" stroke="#ff6b35" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="20"/><polyline points="4 15 9 21 14 15"/></svg>'}</div>` + `<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;text-align:center;color:var(--text3);font-size:0.88rem;">No stops yet. Add the first stop for this tour.</div>` + `<div class="stop-group-connector">${'<svg width="16" height="28" viewBox="0 0 18 28" fill="none" stroke="#ff6b35" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="20"/><polyline points="4 15 9 21 14 15"/></svg>'}</div>` + finishBlock;
+    el.innerHTML = startBlock + `<div class="stop-group-connector">${'<svg width="16" height="28" viewBox="0 0 18 28" fill="none" stroke="rgba(255,107,53,0.5)" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="20"/><polyline points="4 15 9 21 14 15"/></svg>'}</div>` + `<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;text-align:center;color:var(--text3);font-size:0.88rem;">No stops yet. Add the first stop for this tour.</div>` + `<div class="stop-group-connector">${'<svg width="16" height="28" viewBox="0 0 18 28" fill="none" stroke="rgba(255,107,53,0.5)" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="20"/><polyline points="4 15 9 21 14 15"/></svg>'}</div>` + finishBlock;
     return;
   }
   const items = buildStopsList();
@@ -1670,7 +1672,7 @@ function renderStops() {
   const trashIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff6b35" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>`;
   const deleteBtn = (fn) => `<button class="btn btn-ghost btn-icon btn-sm" onclick="event.stopPropagation();${fn}">${trashIcon}</button>`;
   // Orange downward arrow SVG reused for connectors
-  const orangeArrow = (size=18) => `<svg width="${size}" height="${Math.round(size*1.6)}" viewBox="0 0 18 28" fill="none" stroke="#ff6b35" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="20"/><polyline points="4 15 9 21 14 15"/></svg>`;
+  const orangeArrow = (size=18) => `<svg width="${size}" height="${Math.round(size*1.6)}" viewBox="0 0 18 28" fill="none" stroke="rgba(255,107,53,0.5)" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="20"/><polyline points="4 15 9 21 14 15"/></svg>`;
 
   el.innerHTML = groups.map((group, gi) => {
     const s = group.stop;
@@ -1728,7 +1730,7 @@ function renderStops() {
     return `<div class="stop-group">${subsHtml}${stopHtml}</div>${connectorHtml}`;
   }).join('');
 
-  const orangeArrowSvg = `<svg width="16" height="28" viewBox="0 0 18 28" fill="none" stroke="#ff6b35" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="20"/><polyline points="4 15 9 21 14 15"/></svg>`;
+  const orangeArrowSvg = `<svg width="16" height="28" viewBox="0 0 18 28" fill="none" stroke="rgba(255,107,53,0.5)" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="20"/><polyline points="4 15 9 21 14 15"/></svg>`;
   const outerConnector = `<div class="stop-group-connector">${orangeArrowSvg}</div>`;
   el.innerHTML = startBlock + outerConnector + el.innerHTML + outerConnector + finishBlock;
   el.querySelectorAll('.stop-row-main[data-id]').forEach(row => initTouchDrag(row, 'stop'));
@@ -1837,25 +1839,28 @@ let _touchDragStartY = 0;
 let _touchDragMoved = false;
 
 function initTouchDrag(el, context) {
+  let _dragActivateTimer = null;
   el.addEventListener('touchstart', (e) => {
-    // Only start drag if touch begins on the drag handle
     const handle = e.target.closest('.drag-handle');
     if (!handle) return;
-    e.preventDefault();
-    _touchDragEl = el;
-    _touchDragContext = context;
-    _touchDragSrcIndex = parseInt(el.dataset.pos);
-    _touchDragMoved = false;
-    _touchDragStartY = e.touches[0].clientY;
-    // Create ghost
-    _touchDragGhost = document.createElement('div');
-    _touchDragGhost.className = 'touch-drag-ghost';
-    const nameEl = el.querySelector('.stop-name, .card-preview, .partner-name, .tour-name');
-    _touchDragGhost.textContent = nameEl ? nameEl.textContent : 'Moving…';
-    document.body.appendChild(_touchDragGhost);
-    _positionGhost(e.touches[0]);
-    el.classList.add('row-dragging');
-  }, { passive: false });
+    const touch = e.touches[0];
+    _dragActivateTimer = setTimeout(() => {
+      e.preventDefault();
+      _touchDragEl = el;
+      _touchDragContext = context;
+      _touchDragSrcIndex = parseInt(el.dataset.pos);
+      _touchDragMoved = false;
+      _touchDragStartY = touch.clientY;
+      _touchDragGhost = document.createElement('div');
+      _touchDragGhost.className = 'touch-drag-ghost';
+      const nameEl = el.querySelector('.stop-name, .card-preview, .partner-name, .tour-name');
+      _touchDragGhost.textContent = nameEl ? nameEl.textContent : 'Moving…';
+      document.body.appendChild(_touchDragGhost);
+      _positionGhost(touch);
+      el.classList.add('row-dragging');
+    }, 350);
+  }, { passive: true });
+  el.addEventListener('touchend', () => { clearTimeout(_dragActivateTimer); }, { passive: true });
 
   el.addEventListener('touchmove', (e) => {
     if (!_touchDragGhost) return;
@@ -2162,7 +2167,7 @@ function renderCards() {
         </button>
       </div>
     </div>`;
-  }).join(`<div style="display:flex;justify-content:center;margin:1px 0;"><svg width="14" height="22" viewBox="0 0 18 28" fill="none" stroke="#ff6b35" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="18"/><polyline points="4 13 9 19 14 13"/></svg></div>`);
+  }).join(`<div style="display:flex;justify-content:center;margin:1px 0;"><svg width="14" height="22" viewBox="0 0 18 28" fill="none" stroke="rgba(255,107,53,0.5)" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="18"/><polyline points="4 13 9 19 14 13"/></svg></div>`);
   // Wire touch drag for iOS
   el.querySelectorAll('.card-row[data-id]').forEach(row => initTouchDrag(row, 'card'));
 }
@@ -2835,7 +2840,7 @@ function renderSubstopCards() {
         </button>
       </div>
     </div>`;
-  }).join(`<div style="display:flex;justify-content:center;margin:1px 0;"><svg width="14" height="22" viewBox="0 0 18 28" fill="none" stroke="#ff6b35" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="18"/><polyline points="4 13 9 19 14 13"/></svg></div>`);
+  }).join(`<div style="display:flex;justify-content:center;margin:1px 0;"><svg width="14" height="22" viewBox="0 0 18 28" fill="none" stroke="rgba(255,107,53,0.5)" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="18"/><polyline points="4 13 9 19 14 13"/></svg></div>`);
   el.querySelectorAll('.card-row[data-id]').forEach(row => initTouchDrag(row, 'substop-card'));
 }
 
