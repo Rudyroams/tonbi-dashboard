@@ -634,12 +634,11 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 }
 .stop-num-destination {
   width: 28px; height: 28px; border-radius: 50%;
-  background: linear-gradient(160deg,rgba(255,59,48,0.55) 0%,rgba(255,107,53,0.5) 45%,rgba(255,204,0,0.5) 100%);
-  border: 1px solid rgba(255,107,53,0.4);
-  color: rgba(255,255,255,0.9); font-family: 'Nunito', sans-serif;
+  background: linear-gradient(160deg,#ff3b30 0%,#ff6b35 45%,#ffcc00 100%);
+  color: white; font-family: 'Nunito', sans-serif;
   font-weight: 900; font-size: 0.8rem;
   display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(255,107,53,0.2);
+  box-shadow: 0 2px 8px rgba(255,107,53,0.45);
 }
 
 /* ── Mobile responsive ── */
@@ -921,8 +920,8 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
           </button>
         </div>
         <div style="display:flex;gap:0.5rem;">
-          <button class="btn btn-primary btn-sm" onclick="newSubstop()" style="background:linear-gradient(160deg,rgba(255,59,48,0.55) 0%,rgba(255,107,53,0.5) 45%,rgba(255,204,0,0.5) 100%);border:1px solid rgba(255,107,53,0.4);">+ Sub-stop</button>
-          <button class="btn btn-primary btn-sm" onclick="newStop()" style="background:linear-gradient(160deg,rgba(255,59,48,0.55) 0%,rgba(255,107,53,0.5) 45%,rgba(255,204,0,0.5) 100%);border:1px solid rgba(255,107,53,0.4);">+ Add Stop</button>
+          <button class="btn btn-primary btn-sm" onclick="newSubstop()" style="background:linear-gradient(160deg,#ff3b30 0%,#ff6b35 45%,#ffcc00 100%);">+ Sub-stop</button>
+          <button class="btn btn-primary btn-sm" onclick="newStop()" style="background:linear-gradient(160deg,#ff3b30 0%,#ff6b35 45%,#ffcc00 100%);">+ Add Stop</button>
         </div>
       </div>
       <div id="stops-list" style="padding:0 0 0.5rem 0;">
