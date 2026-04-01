@@ -2198,7 +2198,7 @@ function openAddCardModal() {
   ];
 
   openModal('Add Card', `
-    <p style="font-size:0.82rem;color:var(--text2);margin-bottom:1.25rem;">Choose the card type to add to this stop.</p>
+    <p style="font-size:0.82rem;color:var(--text2);margin-bottom:1.25rem;">Tap a card type to add it.</p>
     <div class="type-grid" id="type-grid">
       ${(() => {
         const colours = { 'transition': ['rgba(45,63,170,0.22)','#7b8ff7','rgba(45,63,170,0.45)'], 'nav': ['rgba(15,155,142,0.22)','#4ecdc4','rgba(15,155,142,0.45)'], 'desc': ['rgba(45,107,228,0.22)','#6fa8f5','rgba(45,107,228,0.45)'], 'rudy': ['rgba(255,107,53,0.2)','#ff9a70','rgba(255,107,53,0.4)'], 'photo': ['rgba(52,199,89,0.18)','#5dd97a','rgba(52,199,89,0.38)'], 'quiz': ['rgba(255,204,0,0.2)','#ffd740','rgba(255,204,0,0.4)'], 'partner': ['rgba(175,82,222,0.2)','#d47ef8','rgba(175,82,222,0.4)'], 'game': ['rgba(255,59,48,0.18)','#ff7b72','rgba(255,59,48,0.38)'], 'finish': ['rgba(255,255,255,0.08)','rgba(255,255,255,0.6)','rgba(255,255,255,0.18)'] };
@@ -2225,8 +2225,12 @@ let selectedCardType = null;
 let _pendingPartnerCardId = null; // set when creating a partner from within a card editor
 function selectCardType(type) {
   selectedCardType = type;
-  // Auto-confirm immediately on selection
-  confirmAddCard();
+  // Auto-confirm immediately — detect substop context
+  if (state.currentSubstop && document.getElementById('type-grid')?.closest('#modal')) {
+    confirmAddSubstopCard();
+  } else {
+    confirmAddCard();
+  }
 }
 
 async function confirmAddCard() {
@@ -2857,7 +2861,7 @@ function openAddSubstopCardModal() {
     { type: 'partner',icon:'🤝', name: 'Partner',    desc: 'Restaurant or partner' },
   ];
   openModal('Add Card', `
-    <p style="font-size:0.82rem;color:var(--text2);margin-bottom:1.25rem;">Choose the card type for this sub-stop.</p>
+    <p style="font-size:0.82rem;color:var(--text2);margin-bottom:1.25rem;">Tap a card type to add it.</p>
     <div class="type-grid" id="type-grid">
       ${(() => {
         const colours = { 'transition': ['rgba(45,63,170,0.22)','#7b8ff7','rgba(45,63,170,0.45)'], 'nav': ['rgba(15,155,142,0.22)','#4ecdc4','rgba(15,155,142,0.45)'], 'desc': ['rgba(45,107,228,0.22)','#6fa8f5','rgba(45,107,228,0.45)'], 'rudy': ['rgba(255,107,53,0.2)','#ff9a70','rgba(255,107,53,0.4)'], 'photo': ['rgba(52,199,89,0.18)','#5dd97a','rgba(52,199,89,0.38)'], 'quiz': ['rgba(255,204,0,0.2)','#ffd740','rgba(255,204,0,0.4)'], 'partner': ['rgba(175,82,222,0.2)','#d47ef8','rgba(175,82,222,0.4)'], 'game': ['rgba(255,59,48,0.18)','#ff7b72','rgba(255,59,48,0.38)'], 'finish': ['rgba(255,255,255,0.08)','rgba(255,255,255,0.6)','rgba(255,255,255,0.18)'] };
@@ -2877,7 +2881,6 @@ function openAddSubstopCardModal() {
     </div>
   `, [
     { label: 'Cancel', cls: 'btn-secondary', action: 'closeModalDirect()' },
-    { label: 'Add Card', cls: 'btn-primary', action: 'confirmAddSubstopCard()', id: 'add-card-confirm-btn', disabled: true },
   ]);
 }
 
