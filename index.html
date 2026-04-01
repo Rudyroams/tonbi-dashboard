@@ -318,7 +318,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .ct-partner   { background: rgba(175,82,222,0.2);  color: #d47ef8; }
 .ct-game      { background: rgba(255,59,48,0.18);  color: #ff7b72; }
 .ct-finish    { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.5); }
-.card-preview { flex: 1; font-size: 0.8rem; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.card-preview { flex: 1; font-size: 0.8rem; color: rgba(255,255,255,0.45); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .card-pos { font-size: 0.88rem; color: #ff6b35; font-weight: 800; width: 22px; text-align: center; flex-shrink: 0; }
 
 /* ── Tabs ── */
@@ -906,7 +906,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
       <div style="text-align:center;margin-bottom:1.25rem;">
         <div id="stops-title" style="font-family:'Nunito',sans-serif;font-size:2.4rem;font-weight:900;color:white;line-height:1.05;margin-bottom:0.2rem;"></div>
         <div style="font-family:'Nunito',sans-serif;font-size:0.9rem;font-weight:800;background:linear-gradient(160deg,#ff3b30 0%,#ff6b35 45%,#ffcc00 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-transform:uppercase;letter-spacing:0.14em;margin-bottom:0.3rem;">Tour Flow</div>
-        <div style="display:flex;justify-content:center;"><svg width="16" height="14" viewBox="0 0 18 28" fill="none" stroke="rgba(255,107,53,0.5)" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="12"/><polyline points="4 7 9 13 14 7"/></svg></div>
+        <div style="display:flex;justify-content:center;"><svg width="16" height="22" viewBox="0 0 18 28" fill="none" stroke="rgba(255,107,53,0.5)" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="18"/><polyline points="4 13 9 19 14 13"/></svg></div>
         <div id="stops-subtitle" style="font-size:0.82rem;color:var(--text3);margin-top:0.15rem;"></div>
       </div>
       <!-- Single action row: settings+partners on left, add buttons on right -->
@@ -1032,7 +1032,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
       <div style="text-align:center;margin-bottom:1.25rem;">
         <div class="page-title" id="cards-subtitle" style="font-size:2.4rem;font-weight:900;color:white;line-height:1.05;margin-bottom:0.2rem;">Cards for this stop</div>
         <div style="font-family:'Nunito',sans-serif;font-size:0.85rem;font-weight:800;background:linear-gradient(160deg,#ff3b30 0%,#ff6b35 45%,#ffcc00 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-transform:uppercase;letter-spacing:0.14em;margin-bottom:0.3rem;">Card Flow</div>
-        <div style="display:flex;justify-content:center;"><svg width="14" height="14" viewBox="0 0 18 28" fill="none" stroke="rgba(255,107,53,0.5)" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="12"/><polyline points="4 7 9 13 14 7"/></svg></div>
+        <div style="display:flex;justify-content:center;"><svg width="14" height="22" viewBox="0 0 18 28" fill="none" stroke="rgba(255,107,53,0.5)" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="18"/><polyline points="4 13 9 19 14 13"/></svg></div>
       </div>
       <!-- Action row: Details + Stops left, Add Card right -->
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;">
@@ -1128,7 +1128,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
       <div style="text-align:center;margin-bottom:1.25rem;">
         <div class="page-title" id="substop-cards-subtitle" style="font-size:2.4rem;font-weight:900;color:white;line-height:1.05;margin-bottom:0.2rem;">Cards for this sub-stop</div>
         <div style="font-family:'Nunito',sans-serif;font-size:0.85rem;font-weight:800;background:linear-gradient(160deg,#ff3b30 0%,#ff6b35 45%,#ffcc00 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-transform:uppercase;letter-spacing:0.14em;margin-bottom:0.3rem;">Card Flow</div>
-        <div style="display:flex;justify-content:center;"><svg width="14" height="14" viewBox="0 0 18 28" fill="none" stroke="rgba(255,107,53,0.5)" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="12"/><polyline points="4 7 9 13 14 7"/></svg></div>
+        <div style="display:flex;justify-content:center;"><svg width="14" height="22" viewBox="0 0 18 28" fill="none" stroke="rgba(255,107,53,0.5)" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="18"/><polyline points="4 13 9 19 14 13"/></svg></div>
       </div>
       <!-- Action row: Details + Stops left, Add Card right -->
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;">
@@ -1648,7 +1648,7 @@ function renderStops() {
     </div>`;
 
   if (!state.stops.length) {
-    el.innerHTML = startBlock + `<div class="stop-group-connector">${'<svg width="16" height="18" viewBox="0 0 18 28" fill="none" stroke="rgba(255,107,53,0.5)" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="20"/><polyline points="4 15 9 21 14 15"/></svg>'}</div>` + `<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;text-align:center;color:var(--text3);font-size:0.88rem;">No stops yet. Add the first stop for this tour.</div>` + `<div class="stop-group-connector">${'<svg width="16" height="18" viewBox="0 0 18 28" fill="none" stroke="rgba(255,107,53,0.5)" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="20"/><polyline points="4 15 9 21 14 15"/></svg>'}</div>` + finishBlock;
+    el.innerHTML = startBlock + `<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;text-align:center;color:var(--text3);font-size:0.88rem;">No stops yet. Add the first stop for this tour.</div>` + finishBlock;
     return;
   }
   const items = buildStopsList();
@@ -1720,16 +1720,10 @@ function renderStops() {
         </div>
       </div>`;
 
-    // Orange arrow connector between groups
-    const connectorHtml = isLast ? '' : `
-      <div class="stop-group-connector">${orangeArrow(16)}</div>`;
-
-    return `<div class="stop-group">${subsHtml}${stopHtml}</div>${connectorHtml}`;
+    return `<div class="stop-group">${subsHtml}${stopHtml}</div>`;
   }).join('');
 
-  const orangeArrowSvg = `<svg width="16" height="28" viewBox="0 0 18 28" fill="none" stroke="rgba(255,107,53,0.5)" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="20"/><polyline points="4 15 9 21 14 15"/></svg>`;
-  const outerConnector = `<div class="stop-group-connector">${orangeArrowSvg}</div>`;
-  el.innerHTML = startBlock + outerConnector + el.innerHTML + outerConnector + finishBlock;
+  el.innerHTML = startBlock + el.innerHTML + finishBlock;
   el.querySelectorAll('.stop-row-main[data-id]').forEach(row => initTouchDrag(row, 'stop'));
   el.querySelectorAll('.substop-row[data-id]').forEach(row => initTouchDrag(row, 'substop'));
 }
@@ -2144,8 +2138,10 @@ function renderCards() {
     const imgUrl = c.image_url || c.quiz_image_url || partnerImg || '';
     const cfThumb = (c.card_type === 'desc' || c.card_type === 'transition') && c.cloudflare_id
       ? `https://customer-umijtu8zknmpubqb.cloudflarestream.com/${c.cloudflare_id}/thumbnails/thumbnail.jpg` : '';
+    const navIcon = c.card_type === 'nav'
+      ? `<div style="width:36px;height:36px;border-radius:5px;background:rgba(15,155,142,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4ecdc4" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>` : '';
     const thumbSrc = imgUrl || cfThumb;
-    const thumbHtml = thumbSrc ? `<img src="${escHtml(thumbSrc)}" style="width:36px;height:36px;border-radius:5px;object-fit:cover;flex-shrink:0;" onerror="this.style.display='none'">` : '';
+    const thumbHtml = navIcon || (thumbSrc ? `<img src="${escHtml(thumbSrc)}" style="width:36px;height:36px;border-radius:5px;object-fit:cover;flex-shrink:0;" onerror="this.style.display='none'">` : '');
     const partnerName = linkedPartner ? `<span style="font-size:0.78rem;font-weight:700;color:rgba(200,150,255,0.9);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px;">${escHtml(linkedPartner.name)}</span>` : '';
     return `
     <div class="card-row" draggable="true" data-id="${c.id}" data-pos="${i}"
@@ -2164,7 +2160,7 @@ function renderCards() {
         </button>
       </div>
     </div>`;
-  }).join(`<div style="display:flex;justify-content:center;margin:1px 0;"><svg width="14" height="14" viewBox="0 0 18 28" fill="none" stroke="rgba(255,107,53,0.5)" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="12"/><polyline points="4 7 9 13 14 7"/></svg></div>`);
+  }).join('');
   // Wire touch drag for iOS
   el.querySelectorAll('.card-row[data-id]').forEach(row => initTouchDrag(row, 'card'));
 }
@@ -2817,8 +2813,10 @@ function renderSubstopCards() {
     const imgUrl = c.image_url || c.quiz_image_url || partnerImg || '';
     const cfThumb = (c.card_type === 'desc' || c.card_type === 'transition') && c.cloudflare_id
       ? `https://customer-umijtu8zknmpubqb.cloudflarestream.com/${c.cloudflare_id}/thumbnails/thumbnail.jpg` : '';
+    const navIcon = c.card_type === 'nav'
+      ? `<div style="width:36px;height:36px;border-radius:5px;background:rgba(15,155,142,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4ecdc4" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>` : '';
     const thumbSrc = imgUrl || cfThumb;
-    const thumbHtml = thumbSrc ? `<img src="${escHtml(thumbSrc)}" style="width:36px;height:36px;border-radius:5px;object-fit:cover;flex-shrink:0;" onerror="this.style.display='none'">` : '';
+    const thumbHtml = navIcon || (thumbSrc ? `<img src="${escHtml(thumbSrc)}" style="width:36px;height:36px;border-radius:5px;object-fit:cover;flex-shrink:0;" onerror="this.style.display='none'">` : '');
     const partnerName = linkedPartner ? `<span style="font-size:0.78rem;font-weight:700;color:rgba(200,150,255,0.9);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px;">${escHtml(linkedPartner.name)}</span>` : '';
     return `
     <div class="card-row" draggable="true" data-id="${c.id}" data-pos="${i}"
@@ -2837,7 +2835,7 @@ function renderSubstopCards() {
         </button>
       </div>
     </div>`;
-  }).join(`<div style="display:flex;justify-content:center;margin:1px 0;"><svg width="14" height="14" viewBox="0 0 18 28" fill="none" stroke="rgba(255,107,53,0.5)" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="12"/><polyline points="4 7 9 13 14 7"/></svg></div>`);
+  }).join('');
   el.querySelectorAll('.card-row[data-id]').forEach(row => initTouchDrag(row, 'substop-card'));
 }
 
@@ -3405,7 +3403,7 @@ async function loadAndShowAllPartners() {
         <div class="partner-name">${escHtml(p.name)}</div>
         <div class="partner-type" style="color:rgba(255,255,255,0.65);">
           ${escHtml(p.partner_type||'')}
-          ${stopMap[p.stop_id] ? `<span style="margin-left:0.5rem;opacity:0.5;">· Stop ${stopMap[p.stop_id].stop_number}: ${escHtml(stopMap[p.stop_id].name)}</span>` : ''}
+
         </div>
         ${p.offer_text ? `<div style="font-size:0.72rem;color:var(--orange);margin-top:0.15rem;">🏷 ${escHtml(p.offer_text)}</div>` : ''}
       </div>
