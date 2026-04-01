@@ -550,6 +550,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   background: none;
   border: none;
   overflow: visible;
+  padding-top: 14px; /* make room for the number badge */
 }
 /* Orange arrow connector between stop groups */
 .stop-group-connector {
@@ -1719,12 +1720,12 @@ function renderStops() {
 
 function newStop() {
   state.currentStop = null;
+  const sss = document.getElementById('sidebar-stop-section');
+  if (sss) sss.style.display = 'none';
   document.getElementById('se-page-title').textContent = 'New Stop';
-  document.getElementById('sidebar-stop-section').style.display = 'none';
   clearForm('stop-form');
-  // Set default position
-  document.getElementById('sf-position').value = state.stops.length + 1;
-  // Update author label
+  const sfPos = document.getElementById('sf-position');
+  if (sfPos) sfPos.value = state.stops.length + 1;
   updateAuthorLabel();
   showSection('stop-edit');
 }
@@ -2563,8 +2564,8 @@ function newSubstop() {
   if (!state.currentTour) { toast('Open a tour first', 'info'); return; }
   state.currentSubstop = null;
   document.getElementById('sse-page-title').textContent = 'New Sub-stop';
-  const sss = document.getElementById('sidebar-substop-section');
-  if (sss) sss.style.display = 'none';
+  const sss2 = document.getElementById('sidebar-substop-section');
+  if (sss2) sss2.style.display = 'none';
   ['ssf-name','ssf-tagline','ssf-img','ssf-map-url','ssf-lng','ssf-lat','ssf-rudy'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = '';
@@ -2920,8 +2921,8 @@ async function deleteSubstopPartner(id) {
 function returnToStops() {
   // Clear both sidebars when returning to stops list
   state.currentSubstop = null;
-  document.getElementById('sidebar-substop-section').style.display = 'none';
-  document.getElementById('sidebar-stop-section').style.display = 'none';
+  const _ssss=document.getElementById('sidebar-substop-section'); if(_ssss)_ssss.style.display='none';
+  const _sss=document.getElementById('sidebar-stop-section'); if(_sss)_sss.style.display='none';
   showSection('stops');
 }
 
