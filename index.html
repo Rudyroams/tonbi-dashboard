@@ -3131,7 +3131,7 @@ function makeVideoField(inputId) {
   // Primary upload button
   const primaryBtn = document.createElement('button');
   primaryBtn.type = 'button'; primaryBtn.className = 'media-upload-primary';
-  primaryBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>Click to upload video, or drag & drop here`;
+  primaryBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>Click or drop here`;
   wrap.appendChild(primaryBtn);
 
   // ID fallback toggle
@@ -3201,7 +3201,7 @@ function makeVideoField(inputId) {
     } catch(e) {
       toast('Could not connect to Cloudflare: ' + e.message, 'error');
       wrap.classList.remove('media-uploading');
-      primaryBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>Click to upload video, or drag & drop here`;
+      primaryBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>Click or drop here`;
       progressWrap.style.display = 'none';
       return;
     }
@@ -3217,7 +3217,7 @@ function makeVideoField(inputId) {
     };
     xhr.onload = () => {
       wrap.classList.remove('media-uploading');
-      primaryBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>Click to upload video, or drag & drop here`;
+      primaryBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>Click or drop here`;
       if (xhr.status === 200 || xhr.status === 201) {
         barEl.style.width = '100%';
         statusEl.textContent = '✓ Uploaded — Cloudflare is processing the video (takes 1–2 minutes)';
@@ -3233,7 +3233,7 @@ function makeVideoField(inputId) {
     };
     xhr.onerror = () => {
       wrap.classList.remove('media-uploading');
-      primaryBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>Click to upload video, or drag & drop here`;
+      primaryBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>Click or drop here`;
       statusEl.textContent = 'Upload failed — check your connection';
       statusEl.style.color = 'var(--red)';
     };
@@ -3288,7 +3288,7 @@ function makeImageField(inputId, folder) {
   // Primary upload button — orange, prominent
   const primaryBtn = document.createElement('button');
   primaryBtn.type = 'button'; primaryBtn.className = 'media-upload-primary';
-  primaryBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Click to upload image, or drag & drop here`;
+  primaryBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Click or drop here`;
   wrap.appendChild(primaryBtn);
 
   // URL fallback toggle
@@ -3345,7 +3345,7 @@ function makeImageField(inputId, folder) {
     }
     const url = await uploadImageToSupabase(file, folder);
     wrap.classList.remove('media-uploading');
-    primaryBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Click to upload image, or drag & drop here`;
+    primaryBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Click or drop here`;
     if (url) { input.value = url; updatePreview(); toast('Image uploaded', 'success'); }
   }
 
