@@ -2187,9 +2187,8 @@ async function dropCard(e) {
 // ── Add card modal ──
 function openAddCardModal() {
   const types = [
-    { type: 'transition', icon: '▶', name: 'Transition', desc: 'Cinematic intro video' },
     { type: 'nav',        icon: '📍', name: 'Navigation', desc: 'Map & walking directions' },
-    { type: 'desc',       icon: '🎬', name: 'Video',      desc: 'Cloudflare video with caption' },
+    { type: 'desc',       icon: '🎬', name: 'Video',      desc: 'Intro video for this stop' },
     { type: 'rudy',       icon: '🎙', name: 'Author',     desc: state.currentTour?.author_card_label || "Author's Notes" },
     { type: 'photo',      icon: '📷', name: 'Photo',      desc: 'Photo challenge' },
     { type: 'quiz',       icon: '❓', name: 'Quiz',       desc: 'Multiple choice question' },
@@ -2219,7 +2218,6 @@ function openAddCardModal() {
     </div>
   `, [
     { label: 'Cancel', cls: 'btn-secondary', action: 'closeModalDirect()' },
-    { label: 'Add Card', cls: 'btn-primary', action: 'confirmAddCard()', id: 'add-card-confirm-btn', disabled: true },
   ]);
 }
 
@@ -2227,18 +2225,8 @@ let selectedCardType = null;
 let _pendingPartnerCardId = null; // set when creating a partner from within a card editor
 function selectCardType(type) {
   selectedCardType = type;
-  document.querySelectorAll('#type-grid .type-option').forEach(el => {
-    const isSelected = el.dataset.type === type;
-    el.classList.toggle('selected', isSelected);
-    // Brighten selected, restore others to their type colour
-    if (isSelected) {
-      el.style.outline = '2px solid rgba(255,107,53,0.7)';
-      el.style.outlineOffset = '1px';
-    } else {
-      el.style.outline = 'none';
-    }
-  });
-  document.getElementById('add-card-confirm-btn').disabled = false;
+  // Auto-confirm immediately on selection
+  confirmAddCard();
 }
 
 async function confirmAddCard() {
