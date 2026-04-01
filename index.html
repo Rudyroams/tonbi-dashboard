@@ -550,7 +550,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   background: none;
   border: none;
   overflow: visible;
-  padding-top: 14px; /* make room for the number badge */
 }
 /* Orange arrow connector between stop groups */
 .stop-group-connector {
@@ -618,15 +617,12 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   display: flex; align-items: center; justify-content: center;
 }
 .stop-num-destination {
-  position: absolute;
-  top: -14px; left: 50%; transform: translateX(-50%);
   width: 28px; height: 28px; border-radius: 50%;
   background: linear-gradient(160deg,#ff3b30 0%,#ff6b35 45%,#ffcc00 100%);
   color: white; font-family: 'Nunito', sans-serif;
   font-weight: 900; font-size: 0.8rem;
-  display: flex; align-items: center; justify-content: center;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
   box-shadow: 0 2px 8px rgba(255,107,53,0.45);
-  z-index: 2;
 }
 
 /* ── Mobile responsive ── */
@@ -1681,7 +1677,6 @@ function renderStops() {
           </div>
           <div class="row-actions">
             <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();editSubstop('${ss.id}')" style="background:rgba(12,58,95,0.7);border-color:rgba(26,111,181,0.45);color:rgba(160,215,255,0.95);">Details</button>
-            <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();openSubstopCards('${ss.id}')" style="background:rgba(6,62,82,0.7);border-color:rgba(15,155,175,0.45);color:rgba(120,220,240,0.95);">Cards</button>
             ${deleteBtn(`deleteSubstop('${ss.id}')`)}
           </div>
         </div>`;
@@ -1693,7 +1688,7 @@ function renderStops() {
     const stopHtml = `
       <div class="stop-row stop-row-main" draggable="true" data-id="${s.id}" data-pos="${stopIdx}" data-type="stop"
         ondragstart="dragStart(event,'stop')" ondragover="dragOver(event,true)" ondrop="dropStopItem(event)" ondragleave="dragLeave(event)"
-        onclick="if(!_wasDragging)openCards('${s.id}')" style="cursor:pointer;display:flex;align-items:center;gap:0.75rem;padding:0.85rem 0.85rem 0.6rem 0.75rem;position:relative;">
+        onclick="if(!_wasDragging)openCards('${s.id}')" style="cursor:pointer;display:flex;align-items:center;gap:0.75rem;padding:0.6rem 0.85rem;">
         ${dragHandle}
         <div class="stop-num-destination">${s.stop_number || gi+1}</div>
         ${thumb(s.photo_url)}
@@ -2466,7 +2461,7 @@ function openPartnerModal(id) {
       <div class="field"><label>Main Image</label><input type="url" id="pd-img" value="${escHtml(p?.photo_url||'')}"></div>
     </div>
     <div class="field" style="margin-bottom:1rem;">
-      <label>Cloudflare Video ID (optional)</label>
+      <label>Video (optional)</label>
       <input type="text" id="pd-cf-id" value="${escHtml(p?.cloudflare_id||'')}">
     </div>
     <div class="field">
@@ -2487,6 +2482,7 @@ function openPartnerModal(id) {
     makeImageField('pd-gallery-1', 'partners');
     makeImageField('pd-gallery-2', 'partners');
     makeImageField('pd-gallery-3', 'partners');
+    makeVideoField('pd-cf-id');
   }, 30);
 }
 
