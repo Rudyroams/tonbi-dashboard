@@ -1392,11 +1392,54 @@ async function boot() {
     document.head.appendChild(s);
   });
 
-  const cfg = getConfig();
-  if (!cfg.url || !cfg.key) {
-    document.getElementById('config-screen').style.display = 'flex';
+  // Password gate
+  const DASHBOARD_PASSWORD = 'tonbi2025';
+  const authed = sessionStorage.getItem('tonbi_dash_auth') === DASHBOARD_PASSWORD;
+  if (!authed) {
+    document.getElementById('main').style.display = 'none';
+    document.getElementById('header').style.display = 'none';
+    document.getElementById('config-screen').style.display = 'none';
+    const gate = document.createElement('div');
+    gate.id = 'auth-gate';
+    gate.style.cssText = 'position:fixed;inset:0;background:linear-gradient(160deg,#063040 0%,#084a5a 30%,#085858 60%,#063d50 100%);display:flex;align-items:center;justify-content:center;z-index:9999;';
+    gate.innerHTML = `
+      <div style="background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.12);border-radius:16px;padding:2.5rem 2rem;width:90%;max-width:360px;text-align:center;">
+        <div style="font-family:'Nunito',sans-serif;font-size:1.8rem;font-weight:900;color:white;margin-bottom:0.25rem;">Tonbi</div>
+        <div style="font-size:0.75rem;font-weight:700;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:2rem;">Dashboard</div>
+        <input type="password" id="gate-input" placeholder="Enter password"
+          style="width:100%;padding:0.85rem 1rem;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.08);color:white;font-size:1rem;font-family:'DM Sans',sans-serif;margin-bottom:1rem;outline:none;box-sizing:border-box;"
+          onkeydown="if(event.key==='Enter')document.getElementById('gate-btn').click()">
+        <div id="gate-error" style="color:#ff6b35;font-size:0.8rem;margin-bottom:0.75rem;display:none;">Incorrect password</div>
+        <button id="gate-btn" style="width:100%;padding:0.9rem;border-radius:10px;border:none;background:linear-gradient(160deg,#ff3b30 0%,#ff6b35 45%,#ffcc00 100%);color:white;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:900;cursor:pointer;"
+          onclick="(async()=>{
+            const pw=document.getElementById('gate-input').value;
+            if(pw==='tonbi2025'){
+              sessionStorage.setItem('tonbi_dash_auth',pw);
+              document.getElementById('auth-gate').remove();
+              document.getElementById('main').style.display='';
+              document.getElementById('header').style.display='';
+              await connectSupabase();
+            }else{
+              document.getElementById('gate-error').style.display='block';
+              document.getElementById('gate-input').value='';
+              document.getElementById('gate-input').focus();
+            }
+          })()">
+          Enter
+        </button>
+      </div>
+    `;
+    document.body.appendChild(gate);
+    setTimeout(()=>document.getElementById('gate-input')?.focus(),100);
     return;
   }
+
+  await connectSupabase();
+}
+
+async function connectSupabase() {
+  // Hardcoded credentials — no config screen needed
+  setConfig('https://gwvwzyzondplicgeubrc.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd3dnd6eXpvbmRwbGljZ2V1YnJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NDk1OTMsImV4cCI6MjA5MDAyNTU5M30.Lu6mQ_0rmn6Pv9RnquJhQhg6bZbdA_vvWl7qEvC6rcA');
   document.getElementById('config-screen').style.display = 'none';
   await initSupabase();
 }
