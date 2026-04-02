@@ -1607,6 +1607,14 @@ async function loadStops() {
   if (stopsRes.error) { toast('Error loading stops', 'error'); return; }
   state.stops = stopsRes.data || [];
   state.allSubstops = substopsRes.data || [];
+  // Load all cards for all stops so partner badges work
+  const stopIds = state.stops.map(s => s.id);
+  if (stopIds.length) {
+    const { data: allCardsData } = await sb.from('cards').select('id,stop_id,card_type,partner_id').in('stop_id', stopIds);
+    state.allCards = allCardsData || [];
+  } else {
+    state.allCards = [];
+  }
   renderStops();
 }
 
@@ -1722,7 +1730,7 @@ function renderStops() {
         <div class="stop-info" style="flex:1;min-width:0;">
           <div class="stop-name">${escHtml(s.name)}</div>
         </div>
-        ${(() => { const pc = (state.partners||[]).filter(p=>p.stop_id===s.id).length; return pc > 0 ? `<div style="background:rgba(120,60,200,0.35);border:1px solid rgba(160,80,255,0.4);color:rgba(215,165,255,0.95);font-size:0.62rem;font-weight:800;padding:0.15rem 0.45rem;border-radius:99px;flex-shrink:0;">${pc}</div>` : ''; })()}
+        ${(() => { const pc = (state.allCards||[]).filter(c=>c.stop_id===s.id&&c.card_type==='partner'&&c.partner_id).length; return pc > 0 ? `<div style="background:rgba(120,60,200,0.35);border:1px solid rgba(160,80,255,0.4);color:rgba(215,165,255,0.95);font-size:0.62rem;font-weight:800;padding:0.15rem 0.45rem;border-radius:99px;flex-shrink:0;">${pc}</div>` : ''; })()}
         <div class="row-actions">
           ${deleteBtn(`deleteStop('${s.id}')`)}
         </div>
