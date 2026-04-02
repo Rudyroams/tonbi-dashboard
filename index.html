@@ -797,12 +797,12 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 
     <!-- TOURS section -->
     <div class="section active" id="section-tours">
-      <div class="page-header">
-        <div>
+      <div class="page-header" style="align-items:flex-start;">
+        <div style="flex:1;min-width:0;">
           <div class="page-title">Tours</div>
-          <div class="page-subtitle">All tours in the platform</div>
+          <div class="page-subtitle">These are all your tours, click one to edit its contents.</div>
         </div>
-        <button class="btn btn-primary" onclick="newTour()">
+        <button class="btn btn-primary" style="flex-shrink:0;margin-left:1rem;" onclick="newTour()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           New Tour
         </button>
@@ -852,6 +852,11 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
               <div class="field">
                 <label>Access Code</label>
                 <input type="text" id="tf-access-code" placeholder="e.g. qqq">
+              </div>
+              <div class="field">
+                <label>Estimated Duration</label>
+                <input type="text" id="tf-duration" placeholder="e.g. 2–3 hours">
+                <div class="field-hint">Shown to travellers before starting the tour.</div>
                 <div class="field-hint">Leave blank for free/open access</div>
               </div>
             </div>
@@ -1487,21 +1492,16 @@ function renderTours() {
     <div class="tour-row" onclick="if(!_wasDragging)openStops('${t.id}')" style="cursor:pointer;">
       ${t.photo_url ? `<img class="tour-thumb" src="${escHtml(t.photo_url)}" loading="lazy">` :
         `<div class="tour-thumb-placeholder"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg></div>`}
-      <div class="tour-info">
-        <div class="tour-name">${escHtml(t.title)}</div>
+      <div class="tour-info" style="flex:1;min-width:0;">
+        <div class="tour-name" style="white-space:normal;font-size:0.95rem;line-height:1.25;">${escHtml(t.title)}</div>
         <div class="tour-meta">
-          <span class="status-pill ${t.published ? 'published' : 'draft'}">
-            <span class="status-dot"></span>${t.published ? 'Published' : 'Draft'}
-          </span>
-          ${t.duration ? `<span style="color:var(--text2);font-size:0.72rem;">· ${escHtml(t.duration)}</span>` : ''}
+          ${t.published ? `<span class="status-pill published"><span class="status-dot"></span>Published</span>` : ''}
+          ${t.duration ? `<span style="color:var(--text2);font-size:0.72rem;">${t.published?'·':''} ${escHtml(t.duration)}</span>` : ''}
         </div>
       </div>
-      <div class="row-actions">
-        <button class="btn btn-ghost btn-icon btn-sm" title="Tour Settings" onclick="event.stopPropagation();editTour('${t.id}')" style="color:rgba(160,215,255,0.9);">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        </button>
-        <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();openStops('${t.id}')" style="background:rgba(8,52,82,0.6);border-color:rgba(26,111,181,0.4);color:rgba(150,210,255,0.95);">Stops</button>
-      </div>
+      <button class="btn btn-ghost btn-icon btn-sm" title="Tour Settings" onclick="event.stopPropagation();editTour('${t.id}')" style="color:rgba(160,215,255,0.9);margin-left:auto;flex-shrink:0;">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
     </div>
   `).join('');
 }
