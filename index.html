@@ -2601,6 +2601,13 @@ function openPartnerModal(id) {
       <div class="field"><label>Partner Name</label><input type="text" id="pd-name" value="${escHtml(p?.name||'')}"></div>
       <div class="field"><label>Type / Category</label><input type="text" id="pd-type" placeholder="e.g. Street Food, Café" value="${escHtml(p?.partner_type||'')}"></div>
     </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(120,60,200,0.12);border:1px solid rgba(160,80,255,0.25);border-radius:var(--radius-sm);padding:0.75rem 1rem;margin-bottom:1rem;">
+      <div>
+        <div style="font-size:0.85rem;font-weight:700;color:rgba(215,165,255,0.95);">Show in Partners List</div>
+        <div style="font-size:0.72rem;color:var(--text2);margin-top:0.1rem;">Appears in the app's partner list even without a card. Always on if linked to a stop.</div>
+      </div>
+      <button type="button" id="pd-featured-toggle" class="toggle ${p?.featured ? 'on' : ''}" onclick="this.classList.toggle('on')" style="flex-shrink:0;margin-left:1rem;"></button>
+    </div>
     <div class="field" style="margin-bottom:1rem;"><label>Description</label><textarea id="pd-desc" rows="3">${escHtml(p?.description||'')}</textarea></div>
     <div class="form-grid" style="margin-bottom:1rem;">
       <div class="field"><label>Location</label><input type="text" id="pd-location" value="${escHtml(p?.location||'')}"></div>
@@ -2666,6 +2673,7 @@ async function savePartner(id) {
     photo_url: g('pd-img'),
     cloudflare_id: g('pd-cf-id'),
     gallery_urls: [g('pd-gallery-0'), g('pd-gallery-1'), g('pd-gallery-2'), g('pd-gallery-3')].filter(Boolean),
+    featured: document.getElementById('pd-featured-toggle')?.classList.contains('on') || false,
   };
   const isNew = !id;
   let newPartnerId = id;
