@@ -1442,34 +1442,37 @@ async function boot() {
 }
 
 async function connectSupabase() {
-  // Hardcoded credentials — no config screen needed
-  setConfig('https://gwvwzyzondplicgeubrc.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd3dnd6eXpvbmRwbGljZ2V1YnJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NDk1OTMsImV4cCI6MjA5MDAyNTU5M30.Lu6mQ_0rmn6Pv9RnquJhQhg6bZbdA_vvWl7qEvC6rcA');
-  document.getElementById('config-screen').style.display = 'none';
-  await initSupabase();
-}
-
-async function initSupabase() {
-  const cfg = getConfig();
+  const SUPA_URL = 'https://gwvwzyzondplicgeubrc.supabase.co';
+  const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd3dnd6eXpvbmRwbGljZ2V1YnJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NDk1OTMsImV4cCI6MjA5MDAyNTU5M30.Lu6mQ_0rmn6Pv9RnquJhQhg6bZbdA_vvWl7qEvC6rcA';
+  console.log('connectSupabase called');
+  console.log('window.supabase:', typeof window.supabase);
   try {
-    sb = window.supabase.createClient(cfg.url, cfg.key);
-    // Quick connection test
-    const { error } = await sb.from('tours').select('id').limit(1);
+    if (!window.supabase || !window.supabase.createClient) {
+      throw new Error('Supabase library not loaded — window.supabase=' + typeof window.supabase);
+    }
+    sb = window.supabase.createClient(SUPA_URL, SUPA_KEY);
+    console.log('sb created:', !!sb);
+    const { data, error } = await sb.from('tours').select('id').limit(1);
+    console.log('connection test — data:', data, 'error:', error);
     if (error) throw error;
     setConnStatus(true);
-    document.getElementById('config-screen').style.display = 'none';
-    // Populate settings fields
     const surlEl = document.getElementById('settings-url');
     const skeyEl = document.getElementById('settings-key');
-    if (surlEl) surlEl.value = cfg.url;
-    if (skeyEl) skeyEl.value = cfg.key;
+    if (surlEl) surlEl.value = SUPA_URL;
+    if (skeyEl) skeyEl.value = SUPA_KEY;
     await loadTours();
     showSection('tours');
   } catch(e) {
+    console.error('connectSupabase failed:', e);
     setConnStatus(false);
-    const errEl = document.getElementById('cfg-error');
-    if (errEl) { errEl.textContent = 'Could not connect: ' + e.message; errEl.style.display = 'block'; }
     toast('Connection failed: ' + e.message, 'error');
+    const el = document.getElementById('tours-list');
+    if (el) el.innerHTML = '<div style="padding:2rem;text-align:center;color:#ff6b35;">Connection failed: ' + e.message + '</div>';
   }
+}
+
+async function initSupabase() {
+  await connectSupabase();
 }
 
 function setConnStatus(ok) {
