@@ -3420,8 +3420,14 @@ async function loadAndShowAllPartners() {
   const { data: stops } = await sb.from('stops').select('id,name,stop_number').eq('tour_id', state.currentTour.id).order('stop_number');
   const stopMap = Object.fromEntries((stops||[]).map(s => [s.id, s]));
 
-  // Fetch partners by tour_id (works regardless of stop_id)
+  // Fetch partners, then fetch partner cards via stop_ids
   const { data: partners } = await sb.from('partners').select('*').eq('tour_id', state.currentTour.id).order('name');
+  const stopIds = (stops||[]).map(s => s.id);
+  const livePartnerIds = new Set();
+  if (stopIds.length) {
+    const { data: partnerCards } = await sb.from('cards').select('partner_id').in('stop_id', stopIds).eq('card_type', 'partner').not('partner_id', 'is', null);
+    (partnerCards||[]).forEach(c => { if(c.partner_id) livePartnerIds.add(c.partner_id); });
+  }
 
   if (!partners || !partners.length) {
     el.innerHTML = `<div style="padding:2rem;text-align:center;color:var(--text3);">No partners yet. Add partners via a stop's Cards section.</div>`;
@@ -3429,7 +3435,7 @@ async function loadAndShowAllPartners() {
   }
 
   el.innerHTML = partners.map(p => {
-    const hasCard = (state.allCards||[]).some(c => c.card_type === 'partner' && c.partner_id === p.id);
+    const hasCard = livePartnerIds.has(p.id);
     const isLive = p.featured || hasCard;
     return `
     <div class="partner-row" style="cursor:pointer;" onclick="editPartner('${p.id}')">
