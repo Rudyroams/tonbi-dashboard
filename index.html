@@ -682,8 +682,9 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   .panel-header { padding: 0.75rem 0.85rem; }
   .panel-footer { padding: 0.75rem 0.85rem; flex-wrap: wrap; gap: 0.5rem; }
 
-  /* Page header — stack vertically */
+  /* Page header — stack vertically (except tours) */
   .page-header { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+  #section-tours .page-header { flex-direction: row !important; align-items: flex-start; flex-wrap: nowrap; }
 
   /* Stops page action row — stack */
   .page-header > div { width: 100%; }
@@ -797,7 +798,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 
     <!-- TOURS section -->
     <div class="section active" id="section-tours">
-      <div class="page-header" style="align-items:flex-start;">
+      <div class="page-header" style="align-items:flex-start;flex-wrap:nowrap;flex-direction:row !important;">
         <div style="flex:1;min-width:0;">
           <div class="page-title">Tours</div>
           <div class="page-subtitle">These are all your tours, click one to edit its contents.</div>
@@ -819,6 +820,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
           <div class="page-title" id="te-page-title">Edit Tour</div>
           <div class="page-subtitle">Tour settings and metadata</div>
         </div>
+        <button class="btn btn-secondary btn-sm" style="background:rgba(26,111,181,0.18);border-color:rgba(26,111,181,0.35);color:rgba(150,200,255,0.95);" onclick="showSection('tours')">← Back</button>
       </div>
       <form id="tour-form" onsubmit="saveTour(event)">
         <div class="panel">
@@ -926,8 +928,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
           </button>
         </div>
         <div style="display:flex;gap:0.5rem;">
-          <button class="btn btn-primary btn-sm" onclick="newSubstop()" style="background:linear-gradient(160deg,#ff3b30 0%,#ff6b35 45%,#ffcc00 100%);">+ Sub-stop</button>
-          <button class="btn btn-primary btn-sm" onclick="newStop()" style="background:linear-gradient(160deg,#ff3b30 0%,#ff6b35 45%,#ffcc00 100%);">+ Add Stop</button>
+          <button class="btn btn-primary btn-sm" onclick="openAddStopModal()" style="background:linear-gradient(160deg,#ff3b30 0%,#ff6b35 45%,#ffcc00 100%);">+ Add Stop</button>
         </div>
       </div>
       <div id="stops-list" style="padding:0 0 0.5rem 0;">
@@ -1731,6 +1732,23 @@ function renderStops() {
   el.innerHTML = startBlock + outerConnector + el.innerHTML + outerConnector + finishBlock;
   el.querySelectorAll('.stop-row-main[data-id]').forEach(row => initTouchDrag(row, 'stop'));
   el.querySelectorAll('.substop-row[data-id]').forEach(row => initTouchDrag(row, 'substop'));
+}
+
+function openAddStopModal() {
+  openModal('Add Stop', `
+    <div style="display:flex;flex-direction:column;gap:0.75rem;">
+      <div onclick="closeModalDirect();newStop();" style="cursor:pointer;padding:1.1rem;border-radius:var(--radius);background:linear-gradient(135deg,rgba(8,90,110,0.55),rgba(10,105,120,0.5));border:1px solid rgba(15,175,175,0.3);transition:background 0.12s;" onmouseenter="this.style.background='linear-gradient(135deg,rgba(10,108,130,0.75),rgba(12,118,135,0.7))'" onmouseleave="this.style.background='linear-gradient(135deg,rgba(8,90,110,0.55),rgba(10,105,120,0.5))'">
+        <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:1rem;color:white;margin-bottom:0.3rem;">Main Stop</div>
+        <div style="font-size:0.8rem;color:rgba(255,255,255,0.6);line-height:1.5;">A primary destination on your tour — the Erasmus Bridge, a museum, a viewpoint. Each main stop gets its own set of cards and appears on the overworld map.</div>
+      </div>
+      <div onclick="closeModalDirect();newSubstop();" style="cursor:pointer;padding:1.1rem;border-radius:var(--radius);background:linear-gradient(135deg,rgba(6,70,88,0.52),rgba(8,82,100,0.48));border:1px solid rgba(15,165,165,0.25);transition:background 0.12s;" onmouseenter="this.style.background='linear-gradient(135deg,rgba(8,88,108,0.72),rgba(10,98,118,0.68))'" onmouseleave="this.style.background='linear-gradient(135deg,rgba(6,70,88,0.52),rgba(8,82,100,0.48))'">
+        <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:1rem;color:white;margin-bottom:0.3rem;">Sub-stop <span style="font-size:0.72rem;font-weight:600;color:rgba(255,255,255,0.45);margin-left:0.35rem;">waypoint</span></div>
+        <div style="font-size:0.8rem;color:rgba(255,255,255,0.6);line-height:1.5;">A smaller point of interest along the way to a main stop — a hidden alley, a detail to notice, a short detour. Sub-stops appear inside a main stop's flow and don't show on the overworld map.</div>
+      </div>
+    </div>
+  `, [
+    { label: 'Cancel', cls: 'btn-secondary', action: 'closeModalDirect()' },
+  ]);
 }
 
 function newStop() {
