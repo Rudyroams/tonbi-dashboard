@@ -1455,8 +1455,11 @@ async function initSupabase() {
     setConnStatus(true);
     document.getElementById('config-screen').style.display = 'none';
     // Populate settings fields
-    document.getElementById('settings-url').value = cfg.url;
-    document.getElementById('settings-key').value = cfg.key;
+    const surlEl = document.getElementById('settings-url');
+    const skeyEl = document.getElementById('settings-key');
+    if (surlEl) surlEl.value = cfg.url;
+    if (skeyEl) skeyEl.value = cfg.key;
+    showSection('tours');
     loadTours();
   } catch(e) {
     setConnStatus(false);
