@@ -3428,18 +3428,21 @@ async function loadAndShowAllPartners() {
     return;
   }
 
-  el.innerHTML = partners.map(p => `
+  el.innerHTML = partners.map(p => {
+    const hasCard = (state.allCards||[]).some(c => c.card_type === 'partner' && c.partner_id === p.id);
+    const isLive = p.featured || hasCard;
+    return `
     <div class="partner-row" style="cursor:pointer;" onclick="editPartner('${p.id}')">
       ${p.photo_url ? `<img class="partner-thumb" src="${escHtml(p.photo_url)}" loading="lazy">` :
         `<div class="partner-thumb" style="background:var(--surface3);border-radius:8px;display:flex;align-items:center;justify-content:center;">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.5" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
         </div>`}
       <div class="partner-info" style="flex:1;min-width:0;">
-        <div class="partner-name">${escHtml(p.name)}</div>
-        <div class="partner-type" style="color:rgba(255,255,255,0.65);">
-          ${escHtml(p.partner_type||'')}
-
+        <div style="display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap;">
+          <div class="partner-name">${escHtml(p.name)}</div>
+          ${isLive ? `<div style="display:inline-flex;align-items:center;gap:0.25rem;font-size:0.58rem;font-weight:800;color:rgba(100,220,140,0.95);background:rgba(52,199,89,0.15);border:1px solid rgba(52,199,89,0.35);border-radius:99px;padding:0.1rem 0.45rem;letter-spacing:0.06em;"><span style="width:5px;height:5px;border-radius:50%;background:rgba(52,199,89,0.9);display:inline-block;box-shadow:0 0 4px rgba(52,199,89,0.7);"></span>LIVE</div>` : ''}
         </div>
+        <div class="partner-type" style="color:rgba(255,255,255,0.65);">${escHtml(p.partner_type||'')}</div>
         ${p.offer_text ? `<div style="font-size:0.72rem;color:var(--orange);margin-top:0.15rem;">🏷 ${escHtml(p.offer_text)}</div>` : ''}
       </div>
       <div class="row-actions">
@@ -3447,7 +3450,8 @@ async function loadAndShowAllPartners() {
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff6b35" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
         </button>
       </div>
-    </div>
+    </div>`;
+  
   `).join('');
 }
 
