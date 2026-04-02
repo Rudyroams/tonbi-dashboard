@@ -820,7 +820,10 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
           <div class="page-title" id="te-page-title">Edit Tour</div>
           <div class="page-subtitle">Tour settings and metadata</div>
         </div>
-        <button class="btn btn-secondary btn-sm" style="background:rgba(26,111,181,0.18);border-color:rgba(26,111,181,0.35);color:rgba(150,200,255,0.95);" onclick="showSection(_prevSection||'tours')">← Back</button>
+        <div style="display:flex;gap:0.4rem;">
+          <button class="btn btn-secondary btn-sm" style="background:rgba(26,111,181,0.18);border-color:rgba(26,111,181,0.35);color:rgba(150,200,255,0.95);" onclick="showSection('tours')">← Tours</button>
+          <button class="btn btn-secondary btn-sm" style="background:rgba(26,111,181,0.18);border-color:rgba(26,111,181,0.35);color:rgba(150,200,255,0.95);" onclick="if(state.currentTour)loadStops().then(()=>showSection('stops'))">← Stops</button>
+        </div>
       </div>
       <form id="tour-form" onsubmit="saveTour(event)">
         <div class="panel">
@@ -1719,6 +1722,7 @@ function renderStops() {
         <div class="stop-info" style="flex:1;min-width:0;">
           <div class="stop-name">${escHtml(s.name)}</div>
         </div>
+        ${(() => { const pc = (state.partners||[]).filter(p=>p.stop_id===s.id).length; return pc > 0 ? `<div style="background:rgba(120,60,200,0.35);border:1px solid rgba(160,80,255,0.4);color:rgba(215,165,255,0.95);font-size:0.62rem;font-weight:800;padding:0.15rem 0.45rem;border-radius:99px;flex-shrink:0;">${pc}</div>` : ''; })()}
         <div class="row-actions">
           ${deleteBtn(`deleteStop('${s.id}')`)}
         </div>
@@ -1743,7 +1747,7 @@ function openAddStopModal() {
       </div>
       <div onclick="closeModalDirect();newSubstop();" style="cursor:pointer;padding:1.1rem;border-radius:var(--radius);background:linear-gradient(135deg,rgba(6,70,88,0.52),rgba(8,82,100,0.48));border:1px solid rgba(15,165,165,0.25);transition:background 0.12s;" onmouseenter="this.style.background='linear-gradient(135deg,rgba(8,88,108,0.72),rgba(10,98,118,0.68))'" onmouseleave="this.style.background='linear-gradient(135deg,rgba(6,70,88,0.52),rgba(8,82,100,0.48))'">
         <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:1rem;color:white;margin-bottom:0.3rem;">Sub-stop <span style="font-size:0.72rem;font-weight:600;color:rgba(255,255,255,0.45);margin-left:0.35rem;">waypoint</span></div>
-        <div style="font-size:0.8rem;color:rgba(255,255,255,0.6);line-height:1.5;">A smaller point of interest along the way to a main stop — a hidden alley, a detail to notice, a short detour. Sub-stops appear inside a main stop's flow and don't show on the overworld map.</div>
+        <div style="font-size:0.8rem;color:rgba(255,255,255,0.6);line-height:1.5;">A point of interest along the way to a main stop: A hidden alley, a detail to notice, a short detour. Sub-stops don't show on the overworld map. You can make as many as you want!</div>
       </div>
     </div>
   `, [
