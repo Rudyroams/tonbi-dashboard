@@ -1459,8 +1459,8 @@ async function initSupabase() {
     const skeyEl = document.getElementById('settings-key');
     if (surlEl) surlEl.value = cfg.url;
     if (skeyEl) skeyEl.value = cfg.key;
+    await loadTours();
     showSection('tours');
-    loadTours();
   } catch(e) {
     setConnStatus(false);
     const errEl = document.getElementById('cfg-error');
@@ -1524,10 +1524,17 @@ function updateBreadcrumb(section) {
 
 // ── Tours ──
 async function loadTours() {
-  const { data, error } = await sb.from('tours').select('*').order('created_at');
-  if (error) { toast('Error loading tours', 'error'); return; }
-  state.tours = data || [];
-  renderTours();
+  try {
+    const { data, error } = await sb.from('tours').select('*').order('created_at');
+    if (error) throw error;
+    state.tours = data || [];
+    renderTours();
+  } catch(e) {
+    console.error('loadTours failed:', e);
+    toast('Error loading tours: ' + e.message, 'error');
+    const el = document.getElementById('tours-list');
+    if (el) el.innerHTML = `<div style="padding:2rem;text-align:center;color:var(--red);">Failed to load tours: ${e.message}</div>`;
+  }
 }
 
 function renderTours() {
@@ -2302,7 +2309,8 @@ function openAddCardModal() {
 
 let selectedCardType = null;
 let _pendingPartnerCardId = null;
-let _prevSection = 'tours'; // track where we came from // set when creating a partner from within a card editor
+let _prevSection = 'tours';
+let activeSection = 'tours'; // track where we came from // set when creating a partner from within a card editor
 function selectCardType(type) {
   selectedCardType = type;
   // Auto-confirm immediately — detect substop context
