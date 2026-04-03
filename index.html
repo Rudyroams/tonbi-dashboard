@@ -1444,17 +1444,13 @@ async function boot() {
 async function connectSupabase() {
   const SUPA_URL = 'https://gwvwzyzondplicgeubrc.supabase.co';
   const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd3dnd6eXpvbmRwbGljZ2V1YnJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NDk1OTMsImV4cCI6MjA5MDAyNTU5M30.Lu6mQ_0rmn6Pv9RnquJhQhg6bZbdA_vvWl7qEvC6rcA';
-  console.log('connectSupabase called');
-  console.log('window.supabase:', typeof window.supabase);
   try {
     if (!window.supabase || !window.supabase.createClient) {
       throw new Error('Supabase library not loaded — window.supabase=' + typeof window.supabase);
     }
     sb = window.supabase.createClient(SUPA_URL, SUPA_KEY);
-    console.log('sb created:', !!sb);
-    const { data, error } = await sb.from('tours').select('id').limit(1);
-    console.log('connection test — data:', data, 'error:', error);
-    if (error) throw error;
+      const { data, error } = await sb.from('tours').select('id').limit(1);
+      if (error) throw error;
     setConnStatus(true);
     const surlEl = document.getElementById('settings-url');
     const skeyEl = document.getElementById('settings-key');
@@ -3518,8 +3514,7 @@ async function loadAndShowAllPartners() {
         </button>
       </div>
     </div>`;
-  
-  `).join('');
+  }).join('');
 }
 
 async function deletePartnerAndRefresh(id) {
