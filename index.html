@@ -274,7 +274,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 }
 .drag-handle:active { cursor: grabbing; }
 .drag-handle svg { display: block; }
-.row-dragging { opacity: 0.35; transform: scale(1.03); box-shadow: 0 4px 16px rgba(0,0,0,0.35) !important; z-index: 10; position: relative; }
+.row-dragging { opacity: 0.5; transform: scaleX(1.06); transform-origin: center; box-shadow: 0 6px 20px rgba(0,0,0,0.45) !important; z-index: 10; position: relative; transition: transform 0.1s; }
 .row-drag-over { border-top: 3px solid #ff6b35 !important; margin-top: -1px; box-shadow: 0 -2px 8px rgba(255,107,53,0.45) !important; }
 /* Touch drag ghost */
 .touch-drag-ghost {
