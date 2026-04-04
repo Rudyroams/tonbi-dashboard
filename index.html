@@ -2275,14 +2275,13 @@ async function dropCard(e) {
 // ── Add card modal ──
 function openAddCardModal() {
   const types = [
-    { type: 'nav',        icon: '📍', name: 'Navigation', desc: 'Map & walking directions' },
-    { type: 'desc',       icon: '🎬', name: 'Video',      desc: 'Intro video for this stop' },
-    { type: 'rudy',       icon: '🎙', name: 'Author',     desc: state.currentTour?.author_card_label || "Author's Notes" },
-    { type: 'photo',      icon: '📷', name: 'Photo',      desc: 'Photo challenge' },
-    { type: 'quiz',       icon: '❓', name: 'Quiz',       desc: 'Multiple choice question' },
-    { type: 'partner',    icon: '🤝', name: 'Partner',    desc: 'Restaurant or partner' },
-    { type: 'game',       icon: '🎮', name: 'Game',       desc: 'Mini-game' },
-    { type: 'finish',     icon: '🏁', name: 'Finish',     desc: 'Tour end card' },
+    { type: 'desc',    icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>`,    name: 'Video',   desc: 'Intro video for this stop' },
+    { type: 'rudy',    icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>`,    name: 'Author',  desc: state.currentTour?.author_card_label || "Author's Notes" },
+    { type: 'photo',   icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="7" width="20" height="15" rx="2"/><circle cx="12" cy="14" r="3"/><path d="M16 3l-1.5 4H9.5L8 3"/></svg>`,   name: 'Photo',   desc: 'Photo challenge' },
+    { type: 'quiz',    icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17" stroke-width="2.5"/></svg>`,    name: 'Quiz',    desc: 'Multiple choice question' },
+    { type: 'partner', icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`, name: 'Partner', desc: 'Restaurant or partner' },
+    { type: 'game',    icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 12h4"/><path d="M8 10v4"/><circle cx="16" cy="11" r="1" fill="currentColor"/><circle cx="18" cy="13" r="1" fill="currentColor"/></svg>`,    name: 'Game',    desc: 'Mini-game' },
+    { type: 'finish',  icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>`,  name: 'Finish',  desc: 'Tour end card' },
   ];
 
   openModal('Add Card', `
@@ -2297,7 +2296,7 @@ function openAddCardModal() {
               style="background:${bg};border-color:${border};transition:all 0.15s;"
               onmouseenter="this.style.background='${border}'"
               onmouseleave="if(!this.classList.contains('selected'))this.style.background='${bg}'">
-              <div style="font-size:1.4rem;">${t.icon}</div>
+              <div style="width:20px;height:20px;display:flex;align-items:center;justify-content:center;color:white;opacity:0.9;">${t.icon}</div>
               <div class="type-option-name" style="color:${col}">${t.name}</div>
               <div class="type-option-desc">${t.desc}</div>
             </div>`;
@@ -2951,12 +2950,11 @@ async function dropSubstopCard(e) {
 function openAddSubstopCardModal() {
   // Reuse the same type picker as main stop cards
   const types = [
-    { type: 'nav',   icon: '📍', name: 'Navigation', desc: 'Map & walking directions' },
-    { type: 'desc',  icon: '🎬', name: 'Video',      desc: 'Cloudflare video' },
-    { type: 'rudy',  icon: '🎙', name: 'Author',     desc: state.currentTour?.author_card_label || "Author's Notes" },
-    { type: 'photo', icon: '📷', name: 'Photo',      desc: 'Photo challenge' },
-    { type: 'quiz',  icon: '❓', name: 'Quiz',       desc: 'Multiple choice question' },
-    { type: 'partner',icon:'🤝', name: 'Partner',    desc: 'Restaurant or partner' },
+    { type: 'desc',    icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>`,    name: 'Video',   desc: 'Intro video for this stop' },
+    { type: 'rudy',    icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>`,    name: 'Author',  desc: state.currentTour?.author_card_label || "Author's Notes" },
+    { type: 'photo',   icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="7" width="20" height="15" rx="2"/><circle cx="12" cy="14" r="3"/><path d="M16 3l-1.5 4H9.5L8 3"/></svg>`,   name: 'Photo',   desc: 'Photo challenge' },
+    { type: 'quiz',    icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17" stroke-width="2.5"/></svg>`,    name: 'Quiz',    desc: 'Multiple choice question' },
+    { type: 'partner', icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`, name: 'Partner', desc: 'Restaurant or partner' },
   ];
   openModal('Add Card', `
     <p style="font-size:0.82rem;color:var(--text2);margin-bottom:1.25rem;">Tap a card type to add it.</p>
@@ -2970,7 +2968,7 @@ function openAddSubstopCardModal() {
               style="background:${bg};border-color:${border};transition:all 0.15s;"
               onmouseenter="this.style.background='${border}'"
               onmouseleave="if(!this.classList.contains('selected'))this.style.background='${bg}'">
-              <div style="font-size:1.4rem;">${t.icon}</div>
+              <div style="width:20px;height:20px;display:flex;align-items:center;justify-content:center;color:white;opacity:0.9;">${t.icon}</div>
               <div class="type-option-name" style="color:${col}">${t.name}</div>
               <div class="type-option-desc">${t.desc}</div>
             </div>`;
