@@ -274,10 +274,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 }
 .drag-handle:active { cursor: grabbing; }
 .drag-handle svg { display: block; }
-.row-dragging { opacity: 0.5; transform: scaleX(1.06); transform-origin: center; box-shadow: 0 6px 20px rgba(0,0,0,0.45) !important; z-index: 10; position: relative; transition: transform 0.1s; }
-.row-drag-over { border-top: 3px solid #ff6b35 !important; margin-top: -1px; box-shadow: 0 -2px 8px rgba(255,107,53,0.45) !important; }
-.row-drag-over-bottom { border-bottom: 3px solid #ff6b35 !important; margin-bottom: -1px; box-shadow: 0 2px 8px rgba(255,107,53,0.45) !important; }
-.row-drag-over-bottom { border-bottom: 3px solid #ff6b35 !important; margin-bottom: -1px; box-shadow: 0 2px 8px rgba(255,107,53,0.45) !important; }
+/* drag CSS removed */
 /* Touch drag ghost */
 .touch-drag-ghost {
   position: fixed; pointer-events: none; z-index: 9999;
@@ -648,10 +645,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 /* ── Mobile responsive ── */
 @media (max-width: 600px) {
 
-  /* Prevent text selection on draggable rows */
-  .stop-row-main, .substop-row, .card-row, .partner-row, .tour-row {
-    -webkit-user-select: none; user-select: none;
-  }
 
   /* Prevent ALL horizontal overflow */
   #main, #main > .section, .panel, .panel-body, .form-grid,
@@ -1551,7 +1544,7 @@ function renderTours() {
     return;
   }
   el.innerHTML = state.tours.map(t => `
-    <div class="tour-row" onclick="if(!_wasDragging)openStops('${t.id}')" style="cursor:pointer;">
+    <div class="tour-row" onclick="openStops('${t.id}')" style="cursor:pointer;">
       ${t.photo_url ? `<img class="tour-thumb" src="${escHtml(t.photo_url)}" loading="lazy">` :
         `<div class="tour-thumb-placeholder"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg></div>`}
       <div class="tour-info" style="flex:1;min-width:0;">
@@ -1740,7 +1733,7 @@ function renderStops() {
     flatItems.push({ type: 'stop', data: g.stop });
   });
 
-  const dragHandle = `<div class="drag-handle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg></div>`;
+  const dragHandle = ''; // drag removed
   const trashIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff6b35" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>`;
   const deleteBtn = (fn) => `<button class="btn btn-ghost btn-icon btn-sm" onclick="event.stopPropagation();${fn}">${trashIcon}</button>`;
   // Orange downward arrow SVG reused for connectors
@@ -1760,9 +1753,8 @@ function renderStops() {
     const subsRowsHtml = group.substops.map((ss, ssi) => {
       const ssIdx = flatItems.findIndex(x => x.type === 'substop' && x.data.id === ss.id);
       return `
-        <div class="substop-row" draggable="true" data-id="${ss.id}" data-pos="${ssIdx}" data-type="substop"
-          ondragstart="dragStart(event,'substop')" ondragover="dragOver(event,false)" ondrop="dropStopItem(event)" ondragleave="dragLeave(event)"
-          onclick="if(!_wasDragging)openSubstopCards('${ss.id}')">
+        <div class="substop-row" data-id="${ss.id}" data-pos="${ssIdx}" data-type="substop"
+          onclick="openSubstopCards('${ss.id}')">
           ${dragHandle}
           ${thumb(ss.photo_url)}
           <div class="stop-info" style="flex:1;min-width:0;">
@@ -1779,9 +1771,8 @@ function renderStops() {
 
     // Main stop row
     const stopHtml = `
-      <div class="stop-row stop-row-main" draggable="true" data-id="${s.id}" data-pos="${stopIdx}" data-type="stop"
-        ondragstart="dragStart(event,'stop')" ondragover="dragOver(event,true)" ondrop="dropStopItem(event)" ondragleave="dragLeave(event)"
-        onclick="if(!_wasDragging)openCards('${s.id}')" style="cursor:pointer;display:flex;align-items:center;gap:0.75rem;padding:0.6rem 0.85rem;">
+      <div class="stop-row stop-row-main" data-id="${s.id}" data-pos="${stopIdx}" data-type="stop"
+        onclick="openCards('${s.id}')" style="cursor:pointer;display:flex;align-items:center;gap:0.75rem;padding:0.6rem 0.85rem;">
         ${dragHandle}
         <div class="stop-num-destination">${s.stop_number || gi+1}</div>
         ${thumb(s.photo_url)}
@@ -1800,8 +1791,6 @@ function renderStops() {
 
   const outerConnector = `<div class="stop-group-connector"><svg width="16" height="22" viewBox="0 0 18 28" fill="none" stroke="rgba(255,107,53,0.5)" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="18"/><polyline points="4 13 9 19 14 13"/></svg></div>`;
   el.innerHTML = startBlock + outerConnector + el.innerHTML + outerConnector + finishBlock;
-  el.querySelectorAll('.stop-row-main[data-id]').forEach(row => initTouchDrag(row, 'stop'));
-  el.querySelectorAll('.substop-row[data-id]').forEach(row => initTouchDrag(row, 'substop'));
 }
 
 function openAddStopModal() {
@@ -1913,276 +1902,7 @@ function updateSidebarStop() {
   // Sidebar stop section removed — navigation is via stop row buttons
 }
 
-// ── Drag & Drop (stops) ──
-// ── Touch drag support (iOS Safari) ──
-let _touchDragEl = null;
-let _touchDragGhost = null;
-let _touchDragContext = null;
-let _touchDragSrcIndex = null;
-let _touchDragStartY = 0;
-let _touchDragMoved = false;
-
-function initTouchDrag(el, context) {
-  let _dragActivateTimer = null;
-  el.addEventListener('touchstart', (e) => {
-    // Allow drag from anywhere on the block (but not buttons)
-    if (e.target.closest('button, a, input, select, textarea')) return;
-    const touch = e.touches[0];
-    _dragActivateTimer = setTimeout(() => {
-      e.preventDefault();
-      _touchDragEl = el;
-      _touchDragContext = context;
-      _touchDragSrcIndex = parseInt(el.dataset.pos);
-      _touchDragMoved = false;
-      _touchDragStartY = touch.clientY;
-      _touchDragGhost = document.createElement('div');
-      _touchDragGhost.className = 'touch-drag-ghost';
-      const nameEl = el.querySelector('.stop-name, .card-preview, .partner-name, .tour-name');
-      _touchDragGhost.textContent = nameEl ? nameEl.textContent : 'Moving…';
-      document.body.appendChild(_touchDragGhost);
-      _positionGhost(touch);
-      el.classList.add('row-dragging');
-    }, 350);
-  }, { passive: true });
-  el.addEventListener('touchend', () => { clearTimeout(_dragActivateTimer); }, { passive: true });
-
-  el.addEventListener('touchmove', (e) => {
-    if (!_touchDragGhost) return;
-    e.preventDefault();
-    _touchDragMoved = true;
-    _wasDragging = true;
-    _positionGhost(e.touches[0]);
-    // Find element under touch
-    _touchDragGhost.style.display = 'none';
-    const under = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY);
-    _touchDragGhost.style.display = '';
-    const targetRow = under?.closest('[data-pos]');
-    document.querySelectorAll('.row-drag-over, .row-drag-over-bottom').forEach(r => {
-      r.classList.remove('row-drag-over', 'row-drag-over-bottom');
-    });
-    if (targetRow && targetRow !== _touchDragEl) {
-      const rect = targetRow.getBoundingClientRect();
-      const insertAfter = e.touches[0].clientY > rect.top + rect.height / 2;
-      targetRow.dataset.insertAfter = insertAfter ? '1' : '0';
-      targetRow.classList.add(insertAfter ? 'row-drag-over-bottom' : 'row-drag-over');
-    }
-  }, { passive: false });
-
-  el.addEventListener('touchend', (e) => {
-    if (!_touchDragGhost) return;
-    _touchDragGhost.remove(); _touchDragGhost = null;
-    _touchDragEl?.classList.remove('row-dragging');
-    document.querySelectorAll('.row-drag-over').forEach(r => r.classList.remove('row-drag-over'));
-    if (!_touchDragMoved) { _touchDragEl = null; return; }
-    // Find drop target
-    const touch = e.changedTouches[0];
-    _touchDragGhost = null;
-    const under = document.elementFromPoint(touch.clientX, touch.clientY);
-    const targetRow = under?.closest('[data-pos]');
-    if (targetRow && targetRow !== _touchDragEl) {
-      const rect = targetRow.getBoundingClientRect();
-      const isTopHalf = touch.clientY < rect.top + rect.height / 2;
-      let destIndex = parseInt(targetRow.dataset.pos);
-      if (!isTopHalf) destIndex = destIndex + 1;
-      dragSrcIndex = _touchDragSrcIndex;
-      if (_touchDragContext === 'card') _touchDropCard(destIndex);
-      else if (_touchDragContext === 'substop-card') _touchDropSubstopCard(destIndex);
-      else if (_touchDragContext === 'stop' || _touchDragContext === 'substop') _touchDropStop(destIndex);
-    }
-    setTimeout(() => { _wasDragging = false; }, 300);
-    _touchDragEl = null; _touchDragContext = null;
-  });
-}
-
-function _positionGhost(touch) {
-  if (!_touchDragGhost) return;
-  _touchDragGhost.style.left = (touch.clientX - 90) + 'px';
-  _touchDragGhost.style.top = (touch.clientY - 20) + 'px';
-}
-
-async function _touchDropCard(destIndex) {
-  const arr = [...state.cards];
-  const [moved] = arr.splice(dragSrcIndex, 1);
-  arr.splice(destIndex, 0, moved);
-  state.cards = arr; renderCards();
-  await Promise.all(arr.map((c,i) => sb.from('cards').update({position:i+1}).eq('id',c.id)));
-  toast('Card order saved','success');
-}
-async function _touchDropSubstopCard(destIndex) {
-  const arr = [...state.substopCards];
-  const [moved] = arr.splice(dragSrcIndex, 1);
-  arr.splice(destIndex, 0, moved);
-  state.substopCards = arr; renderSubstopCards();
-  await Promise.all(arr.map((c,i) => sb.from('cards').update({position:i+1}).eq('id',c.id)));
-  toast('Card order saved','success');
-}
-async function _touchDropStop(destIndex) {
-  const arr = buildStopsList();
-  if (dragSrcIndex === null || dragSrcIndex === destIndex) return;
-  const [moved] = arr.splice(dragSrcIndex, 1);
-  // Clamp destIndex after splice
-  const clampedDest = Math.min(destIndex, arr.length);
-  arr.splice(clampedDest, 0, moved);
-  // Recalculate stop_numbers and substop positions
-  const stopUpdates = [], substopUpdates = [];
-  let stopNum = 1;
-  arr.forEach((item, i) => {
-    if (item.type === 'stop') { stopUpdates.push({ id: item.data.id, stop_number: stopNum++ }); }
-    else {
-      const nextStop = arr.slice(i + 1).find(x => x.type === 'stop');
-      substopUpdates.push({ id: item.data.id, global_position: i + 0.5, stop_id: nextStop?.data.id || item.data.parentStop?.id });
-    }
-  });
-  state.stops = stopUpdates.map(u => ({ ...state.stops.find(x => x.id === u.id), stop_number: u.stop_number }));
-  state.allSubstops = substopUpdates.map(u => ({ ...state.allSubstops.find(x => x.id === u.id), global_position: u.global_position, stop_id: u.stop_id }));
-  renderStops();
-  await Promise.all([
-    ...stopUpdates.map(u => sb.from('stops').update({ stop_number: u.stop_number }).eq('id', u.id)),
-    ...substopUpdates.map(u => sb.from('substops').update({ global_position: u.global_position, stop_id: u.stop_id }).eq('id', u.id)),
-  ]);
-  toast(_touchDragContext === 'substop' ? 'Sub-stop moved' : 'Stop order saved', 'success');
-}
-
-let dragSrcIndex = null;
-let dragContext = null;
-
-let _wasDragging = false;
-function dragStart(e, context) {
-  dragContext = context;
-  dragSrcIndex = parseInt(e.currentTarget.dataset.pos);
-  e.currentTarget.classList.add('row-dragging');
-  e.dataTransfer.effectAllowed = 'move';
-  _wasDragging = true;
-  setTimeout(() => { _wasDragging = false; }, 300);
-}
-function dragOver(e, isStopTarget) {
-  e.preventDefault();
-  const rect = e.currentTarget.getBoundingClientRect();
-  const midY = rect.top + rect.height / 2;
-  const isTopHalf = e.clientY < midY;
-  // Clear both states first
-  e.currentTarget.classList.remove('row-drag-over', 'row-drag-over-bottom');
-  e.currentTarget.style.outline = '';
-  e.currentTarget.style.outlineOffset = '';
-  if (dragContext === 'substop' && isStopTarget) {
-    e.currentTarget.style.outline = '2px solid var(--orange)';
-    e.currentTarget.style.outlineOffset = '-2px';
-  } else {
-    // Top half = insert before (highlight top border)
-    // Bottom half = insert after (highlight bottom border)
-    if (isTopHalf) {
-      e.currentTarget.classList.add('row-drag-over');
-    } else {
-      e.currentTarget.classList.add('row-drag-over-bottom');
-    }
-  }
-}
-function dragLeave(e) {
-  e.currentTarget.classList.remove('row-drag-over', 'row-drag-over-bottom');
-  e.currentTarget.style.outline = '';
-  e.currentTarget.style.outlineOffset = '';
-}
-async function dropStopItem(e) {
-  e.preventDefault();
-  const rect = e.currentTarget.getBoundingClientRect();
-  const isTopHalf = e.clientY < rect.top + rect.height / 2;
-  e.currentTarget.classList.remove('row-drag-over', 'row-drag-over-bottom');
-  e.currentTarget.style.outline = '';
-  e.currentTarget.style.outlineOffset = '';
-  document.querySelectorAll('.row-dragging').forEach(el => el.classList.remove('row-dragging'));
-  let destIndex = parseInt(e.currentTarget.dataset.pos);
-  // If dropping on bottom half, insert after this element
-  if (!isTopHalf && !(dragContext === 'substop' && e.currentTarget.dataset.type === 'stop')) {
-    destIndex = destIndex + 1;
-  }
-  const destType = e.currentTarget.dataset.type;
-  if (dragSrcIndex === null || dragSrcIndex === destIndex) return;
-
-  // Special case: substop dropped ON a main stop — reassign parent, place before that stop
-  if (dragContext === 'substop' && destType === 'stop') {
-    const items = buildStopsList();
-    const movedItem = items[dragSrcIndex];
-    const targetStop = items[destIndex];
-    if (!movedItem || movedItem.type !== 'substop') { dragSrcIndex = null; return; }
-    // Place substop just before the target stop
-    items.splice(dragSrcIndex, 1);
-    const newDestIndex = items.findIndex(x => x.type === 'stop' && x.data.id === targetStop.data.id);
-    items.splice(newDestIndex, 0, movedItem);
-    // Recompute positions
-    let stopNum = 1;
-    const stopUpdates = [], substopUpdates = [];
-    items.forEach((item, i) => {
-      if (item.type === 'stop') { stopUpdates.push({ id: item.data.id, stop_number: stopNum++ }); }
-      else {
-        const nextStop = items.slice(i + 1).find(x => x.type === 'stop');
-        substopUpdates.push({ id: item.data.id, global_position: i + 0.5, stop_id: nextStop?.data.id || item.data.parentStop?.id });
-      }
-    });
-    state.stops = stopUpdates.map(u => ({ ...state.stops.find(x => x.id === u.id), stop_number: u.stop_number }));
-    state.allSubstops = substopUpdates.map(u => ({ ...state.allSubstops.find(x => x.id === u.id), global_position: u.global_position, stop_id: u.stop_id }));
-    renderStops();
-    await Promise.all([
-      ...stopUpdates.map(u => sb.from('stops').update({ stop_number: u.stop_number }).eq('id', u.id)),
-      ...substopUpdates.map(u => sb.from('substops').update({ global_position: u.global_position, stop_id: u.stop_id }).eq('id', u.id)),
-    ]);
-    toast('Sub-stop moved', 'success');
-    dragSrcIndex = null;
-    return;
-  }
-
-  // Build the interleaved list, reorder, then derive new positions
-  const items = buildStopsList();
-  const [moved] = items.splice(dragSrcIndex, 1);
-
-  // Don't allow substop to be dropped after the last main stop (it must lead somewhere)
-  const remaining = items.slice(destIndex);
-  const hasStopBelow = remaining.some(x => x.type === 'stop');
-  if (moved.type === 'substop' && !hasStopBelow && destIndex >= items.length) {
-    toast('A sub-stop must come before a main stop', 'info');
-    renderStops();
-    dragSrcIndex = null;
-    return;
-  }
-
-  items.splice(destIndex, 0, moved);
-
-  // Derive new stop_numbers and substop global_positions + parent stop_id from order
-  let stopNum = 1;
-  let lastStopId = null;
-  const stopUpdates = [];
-  const substopUpdates = [];
-
-  items.forEach((item, i) => {
-    if (item.type === 'stop') {
-      stopUpdates.push({ id: item.data.id, stop_number: stopNum++ });
-      lastStopId = item.data.id;
-    } else {
-      // Substop parent = next main stop below it
-      const nextStop = items.slice(i + 1).find(x => x.type === 'stop');
-      const parentId = nextStop ? nextStop.data.id : lastStopId;
-      substopUpdates.push({ id: item.data.id, global_position: i + 0.5, stop_id: parentId });
-    }
-  });
-
-  // Update state
-  state.stops = stopUpdates.map(u => {
-    const s = state.stops.find(x => x.id === u.id);
-    return { ...s, stop_number: u.stop_number };
-  });
-  state.allSubstops = substopUpdates.map(u => {
-    const ss = state.allSubstops.find(x => x.id === u.id);
-    return { ...ss, global_position: u.global_position, stop_id: u.stop_id };
-  });
-  renderStops();
-
-  // Save to DB
-  await Promise.all([
-    ...stopUpdates.map(u => sb.from('stops').update({ stop_number: u.stop_number }).eq('id', u.id)),
-    ...substopUpdates.map(u => sb.from('substops').update({ global_position: u.global_position, stop_id: u.stop_id }).eq('id', u.id)),
-  ]);
-  toast('Order saved', 'success');
-  dragSrcIndex = null;
-}
+// ── Drag & Drop removed — to be rebuilt in next session ──
 
 // ── Cards ──
 async function openCards(stopId) {
@@ -2277,9 +1997,8 @@ function renderCards() {
     const thumbHtml = navIcon || (thumbSrc ? `<img src="${escHtml(thumbSrc)}" style="width:36px;height:36px;border-radius:5px;object-fit:cover;flex-shrink:0;" onerror="this.style.display='none'">` : '');
     const partnerName = linkedPartner ? `<span style="font-size:0.78rem;font-weight:700;color:rgba(200,150,255,0.9);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px;">${escHtml(linkedPartner.name)}</span>` : '';
     return `
-    <div class="card-row" draggable="true" data-id="${c.id}" data-pos="${i}"
-      ondragstart="dragStart(event,'card')" ondragover="dragOver(event)" ondrop="dropCard(event)" ondragleave="dragLeave(event)"
-      onclick="if(!_wasDragging)editCard('${c.id}')" style="cursor:pointer;">
+    <div class="card-row" data-id="${c.id}" data-pos="${i}"
+      onclick="editCard('${c.id}')" style="cursor:pointer;">
       <div class="drag-handle">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
       </div>
@@ -2295,27 +2014,9 @@ function renderCards() {
     </div>`;
   }).join('');
   // Wire touch drag for iOS
-  el.querySelectorAll('.card-row[data-id]').forEach(row => initTouchDrag(row, 'card'));
 }
 
-async function dropCard(e) {
-  e.preventDefault();
-  const rect = e.currentTarget.getBoundingClientRect();
-  const isTopHalf = e.clientY < rect.top + rect.height / 2;
-  e.currentTarget.classList.remove('row-drag-over', 'row-drag-over-bottom');
-  document.querySelectorAll('.row-dragging').forEach(el => el.classList.remove('row-dragging'));
-  let destIndex = parseInt(e.currentTarget.dataset.pos);
-  if (!isTopHalf) destIndex = destIndex + 1;
-  if (dragSrcIndex === null || dragSrcIndex === destIndex) return;
-  const arr = [...state.cards];
-  const [moved] = arr.splice(dragSrcIndex, 1);
-  arr.splice(destIndex, 0, moved);
-  state.cards = arr;
-  renderCards();
-  await Promise.all(arr.map((c, i) => sb.from('cards').update({ position: i + 1 }).eq('id', c.id)));
-  toast('Card order saved', 'success');
-  dragSrcIndex = null;
-}
+
 
 // ── Add card modal ──
 function openAddCardModal() {
@@ -2956,9 +2657,8 @@ function renderSubstopCards() {
     const thumbHtml = navIcon || (thumbSrc ? `<img src="${escHtml(thumbSrc)}" style="width:36px;height:36px;border-radius:5px;object-fit:cover;flex-shrink:0;" onerror="this.style.display='none'">` : '');
     const partnerName = linkedPartner ? `<span style="font-size:0.78rem;font-weight:700;color:rgba(200,150,255,0.9);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px;">${escHtml(linkedPartner.name)}</span>` : '';
     return `
-    <div class="card-row" draggable="true" data-id="${c.id}" data-pos="${i}"
-      ondragstart="dragStart(event,'substop-card')" ondragover="dragOver(event)" ondrop="dropSubstopCard(event)" ondragleave="dragLeave(event)"
-      onclick="if(!_wasDragging)editSubstopCard('${c.id}')" style="cursor:pointer;">
+    <div class="card-row" data-id="${c.id}" data-pos="${i}"
+      onclick="editSubstopCard('${c.id}')" style="cursor:pointer;">
       <div class="drag-handle">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
       </div>
@@ -2973,27 +2673,9 @@ function renderSubstopCards() {
       </div>
     </div>`;
   }).join('');
-  el.querySelectorAll('.card-row[data-id]').forEach(row => initTouchDrag(row, 'substop-card'));
 }
 
-async function dropSubstopCard(e) {
-  e.preventDefault();
-  const rect = e.currentTarget.getBoundingClientRect();
-  const isTopHalf = e.clientY < rect.top + rect.height / 2;
-  e.currentTarget.classList.remove('row-drag-over', 'row-drag-over-bottom');
-  document.querySelectorAll('.row-dragging').forEach(el => el.classList.remove('row-dragging'));
-  let destIndex = parseInt(e.currentTarget.dataset.pos);
-  if (!isTopHalf) destIndex = destIndex + 1;
-  if (dragSrcIndex === null || dragSrcIndex === destIndex) return;
-  const arr = [...state.substopCards];
-  const [moved] = arr.splice(dragSrcIndex, 1);
-  arr.splice(destIndex, 0, moved);
-  state.substopCards = arr;
-  renderSubstopCards();
-  await Promise.all(arr.map((c, i) => sb.from('cards').update({ position: i + 1 }).eq('id', c.id)));
-  toast('Card order saved', 'success');
-  dragSrcIndex = null;
-}
+
 
 function openAddSubstopCardModal() {
   // Reuse the same type picker as main stop cards
