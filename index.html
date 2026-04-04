@@ -1317,7 +1317,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   <div id="modal">
     <div id="modal-header">
       <div id="modal-title">Modal</div>
-      <button class="btn btn-ghost btn-icon" onclick="closeModalDirect()">
+      <button class="btn btn-ghost btn-icon" onclick="closeModalWithCheck()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
@@ -3543,6 +3543,29 @@ async function goToStopPartners(stopId) {
 // nav-partners removed — partners accessed via loadAndShowAllPartners()
 
 // ── Modal helpers ──
+let _modalSnapshot = null;
+
+function _snapshotModal() {
+  const fields = document.querySelectorAll('#modal-body input, #modal-body textarea, #modal-body select');
+  if (!fields.length) { _modalSnapshot = null; return; }
+  _modalSnapshot = Array.from(fields).map(el => ({
+    id: el.id, value: el.value, type: el.type,
+    checked: el.type === 'checkbox' ? el.checked : null
+  }));
+}
+
+function _modalIsDirty() {
+  if (!_modalSnapshot) return false;
+  const fields = document.querySelectorAll('#modal-body input, #modal-body textarea, #modal-body select');
+  if (!fields.length) return false;
+  return Array.from(fields).some((el, i) => {
+    const snap = _modalSnapshot[i];
+    if (!snap) return false;
+    if (el.type === 'checkbox') return el.checked !== snap.checked;
+    return el.value !== snap.value;
+  });
+}
+
 function openModal(title, bodyHtml, buttons) {
   document.getElementById('modal-title').textContent = title;
   document.getElementById('modal-body').innerHTML = bodyHtml;
@@ -3550,11 +3573,20 @@ function openModal(title, bodyHtml, buttons) {
     `<button class="btn ${b.cls}" ${b.disabled?'disabled':''} id="${b.id||''}" onclick="${b.action}">${b.label}</button>`
   ).join('');
   document.getElementById('modal-overlay').classList.add('open');
+  // Snapshot after a tick so dynamic fields (makeImageField etc) have time to render
+  setTimeout(_snapshotModal, 80);
 }
 function closeModal(e) {
-  if (e.target === document.getElementById('modal-overlay')) closeModalDirect();
+  if (e.target === document.getElementById('modal-overlay')) closeModalWithCheck();
+}
+function closeModalWithCheck() {
+  if (_modalIsDirty()) {
+    if (!confirm('You have unsaved changes. Close without saving?')) return;
+  }
+  closeModalDirect();
 }
 function closeModalDirect() {
+  _modalSnapshot = null;
   document.getElementById('modal-overlay').classList.remove('open');
   selectedCardType = null;
   // Reset upload init flags so fields re-init correctly next time
