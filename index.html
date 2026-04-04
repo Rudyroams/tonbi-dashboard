@@ -276,6 +276,8 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .drag-handle svg { display: block; }
 .row-dragging { opacity: 0.5; transform: scaleX(1.06); transform-origin: center; box-shadow: 0 6px 20px rgba(0,0,0,0.45) !important; z-index: 10; position: relative; transition: transform 0.1s; }
 .row-drag-over { border-top: 3px solid #ff6b35 !important; margin-top: -1px; box-shadow: 0 -2px 8px rgba(255,107,53,0.45) !important; }
+.row-drag-over-bottom { border-bottom: 3px solid #ff6b35 !important; margin-bottom: -1px; box-shadow: 0 2px 8px rgba(255,107,53,0.45) !important; }
+.row-drag-over-bottom { border-bottom: 3px solid #ff6b35 !important; margin-bottom: -1px; box-shadow: 0 2px 8px rgba(255,107,53,0.45) !important; }
 /* Touch drag ghost */
 .touch-drag-ghost {
   position: fixed; pointer-events: none; z-index: 9999;
@@ -1759,7 +1761,7 @@ function renderStops() {
       const ssIdx = flatItems.findIndex(x => x.type === 'substop' && x.data.id === ss.id);
       return `
         <div class="substop-row" draggable="true" data-id="${ss.id}" data-pos="${ssIdx}" data-type="substop"
-          ondragstart="dragStart(event,'substop')" ondragover="dragOver(event)" ondrop="dropStopItem(event)" ondragleave="dragLeave(event)"
+          ondragstart="dragStart(event,'substop')" ondragover="dragOver(event,false)" ondrop="dropStopItem(event)" ondragleave="dragLeave(event)"
           onclick="if(!_wasDragging)openSubstopCards('${ss.id}')">
           ${dragHandle}
           ${thumb(ss.photo_url)}
@@ -1955,8 +1957,15 @@ function initTouchDrag(el, context) {
     const under = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY);
     _touchDragGhost.style.display = '';
     const targetRow = under?.closest('[data-pos]');
-    document.querySelectorAll('.row-drag-over').forEach(r => r.classList.remove('row-drag-over'));
-    if (targetRow && targetRow !== _touchDragEl) targetRow.classList.add('row-drag-over');
+    document.querySelectorAll('.row-drag-over, .row-drag-over-bottom').forEach(r => {
+      r.classList.remove('row-drag-over', 'row-drag-over-bottom');
+    });
+    if (targetRow && targetRow !== _touchDragEl) {
+      const rect = targetRow.getBoundingClientRect();
+      const insertAfter = e.touches[0].clientY > rect.top + rect.height / 2;
+      targetRow.dataset.insertAfter = insertAfter ? '1' : '0';
+      targetRow.classList.add(insertAfter ? 'row-drag-over-bottom' : 'row-drag-over');
+    }
   }, { passive: false });
 
   el.addEventListener('touchend', (e) => {
@@ -1971,9 +1980,11 @@ function initTouchDrag(el, context) {
     const under = document.elementFromPoint(touch.clientX, touch.clientY);
     const targetRow = under?.closest('[data-pos]');
     if (targetRow && targetRow !== _touchDragEl) {
-      const destIndex = parseInt(targetRow.dataset.pos);
+      const rect = targetRow.getBoundingClientRect();
+      const isTopHalf = touch.clientY < rect.top + rect.height / 2;
+      let destIndex = parseInt(targetRow.dataset.pos);
+      if (!isTopHalf) destIndex = destIndex + 1;
       dragSrcIndex = _touchDragSrcIndex;
-      // Simulate drop based on context
       if (_touchDragContext === 'card') _touchDropCard(destIndex);
       else if (_touchDragContext === 'substop-card') _touchDropSubstopCard(destIndex);
       else if (_touchDragContext === 'stop' || _touchDragContext === 'substop') _touchDropStop(destIndex);
@@ -2007,16 +2018,29 @@ async function _touchDropSubstopCard(destIndex) {
 }
 async function _touchDropStop(destIndex) {
   const arr = buildStopsList();
+  if (dragSrcIndex === null || dragSrcIndex === destIndex) return;
   const [moved] = arr.splice(dragSrcIndex, 1);
-  arr.splice(destIndex, 0, moved);
-  // Recalculate stop_numbers and re-render
-  const stopUpdates = [];
+  // Clamp destIndex after splice
+  const clampedDest = Math.min(destIndex, arr.length);
+  arr.splice(clampedDest, 0, moved);
+  // Recalculate stop_numbers and substop positions
+  const stopUpdates = [], substopUpdates = [];
   let stopNum = 1;
-  arr.forEach(item => { if(item.type==='stop') stopUpdates.push({id:item.data.id, stop_number:stopNum++}); });
-  state.stops = stopUpdates.map(u=>({...state.stops.find(x=>x.id===u.id),stop_number:u.stop_number}));
+  arr.forEach((item, i) => {
+    if (item.type === 'stop') { stopUpdates.push({ id: item.data.id, stop_number: stopNum++ }); }
+    else {
+      const nextStop = arr.slice(i + 1).find(x => x.type === 'stop');
+      substopUpdates.push({ id: item.data.id, global_position: i + 0.5, stop_id: nextStop?.data.id || item.data.parentStop?.id });
+    }
+  });
+  state.stops = stopUpdates.map(u => ({ ...state.stops.find(x => x.id === u.id), stop_number: u.stop_number }));
+  state.allSubstops = substopUpdates.map(u => ({ ...state.allSubstops.find(x => x.id === u.id), global_position: u.global_position, stop_id: u.stop_id }));
   renderStops();
-  await Promise.all(stopUpdates.map(u=>sb.from('stops').update({stop_number:u.stop_number}).eq('id',u.id)));
-  toast('Stop order saved','success');
+  await Promise.all([
+    ...stopUpdates.map(u => sb.from('stops').update({ stop_number: u.stop_number }).eq('id', u.id)),
+    ...substopUpdates.map(u => sb.from('substops').update({ global_position: u.global_position, stop_id: u.stop_id }).eq('id', u.id)),
+  ]);
+  toast(_touchDragContext === 'substop' ? 'Sub-stop moved' : 'Stop order saved', 'success');
 }
 
 let dragSrcIndex = null;
@@ -2033,26 +2057,44 @@ function dragStart(e, context) {
 }
 function dragOver(e, isStopTarget) {
   e.preventDefault();
-  // When dragging a substop onto a main stop, show a stronger highlight
+  const rect = e.currentTarget.getBoundingClientRect();
+  const midY = rect.top + rect.height / 2;
+  const isTopHalf = e.clientY < midY;
+  // Clear both states first
+  e.currentTarget.classList.remove('row-drag-over', 'row-drag-over-bottom');
+  e.currentTarget.style.outline = '';
+  e.currentTarget.style.outlineOffset = '';
   if (dragContext === 'substop' && isStopTarget) {
     e.currentTarget.style.outline = '2px solid var(--orange)';
     e.currentTarget.style.outlineOffset = '-2px';
-  } else if (dragContext !== 'substop') {
-    e.currentTarget.classList.add('row-drag-over');
+  } else {
+    // Top half = insert before (highlight top border)
+    // Bottom half = insert after (highlight bottom border)
+    if (isTopHalf) {
+      e.currentTarget.classList.add('row-drag-over');
+    } else {
+      e.currentTarget.classList.add('row-drag-over-bottom');
+    }
   }
 }
 function dragLeave(e) {
-  e.currentTarget.classList.remove('row-drag-over');
+  e.currentTarget.classList.remove('row-drag-over', 'row-drag-over-bottom');
   e.currentTarget.style.outline = '';
   e.currentTarget.style.outlineOffset = '';
 }
 async function dropStopItem(e) {
   e.preventDefault();
-  e.currentTarget.classList.remove('row-drag-over');
+  const rect = e.currentTarget.getBoundingClientRect();
+  const isTopHalf = e.clientY < rect.top + rect.height / 2;
+  e.currentTarget.classList.remove('row-drag-over', 'row-drag-over-bottom');
   e.currentTarget.style.outline = '';
   e.currentTarget.style.outlineOffset = '';
   document.querySelectorAll('.row-dragging').forEach(el => el.classList.remove('row-dragging'));
-  const destIndex = parseInt(e.currentTarget.dataset.pos);
+  let destIndex = parseInt(e.currentTarget.dataset.pos);
+  // If dropping on bottom half, insert after this element
+  if (!isTopHalf && !(dragContext === 'substop' && e.currentTarget.dataset.type === 'stop')) {
+    destIndex = destIndex + 1;
+  }
   const destType = e.currentTarget.dataset.type;
   if (dragSrcIndex === null || dragSrcIndex === destIndex) return;
 
@@ -2258,9 +2300,12 @@ function renderCards() {
 
 async function dropCard(e) {
   e.preventDefault();
-  e.currentTarget.classList.remove('row-drag-over');
+  const rect = e.currentTarget.getBoundingClientRect();
+  const isTopHalf = e.clientY < rect.top + rect.height / 2;
+  e.currentTarget.classList.remove('row-drag-over', 'row-drag-over-bottom');
   document.querySelectorAll('.row-dragging').forEach(el => el.classList.remove('row-dragging'));
-  const destIndex = parseInt(e.currentTarget.dataset.pos);
+  let destIndex = parseInt(e.currentTarget.dataset.pos);
+  if (!isTopHalf) destIndex = destIndex + 1;
   if (dragSrcIndex === null || dragSrcIndex === destIndex) return;
   const arr = [...state.cards];
   const [moved] = arr.splice(dragSrcIndex, 1);
@@ -2933,9 +2978,12 @@ function renderSubstopCards() {
 
 async function dropSubstopCard(e) {
   e.preventDefault();
-  e.currentTarget.classList.remove('row-drag-over');
+  const rect = e.currentTarget.getBoundingClientRect();
+  const isTopHalf = e.clientY < rect.top + rect.height / 2;
+  e.currentTarget.classList.remove('row-drag-over', 'row-drag-over-bottom');
   document.querySelectorAll('.row-dragging').forEach(el => el.classList.remove('row-dragging'));
-  const destIndex = parseInt(e.currentTarget.dataset.pos);
+  let destIndex = parseInt(e.currentTarget.dataset.pos);
+  if (!isTopHalf) destIndex = destIndex + 1;
   if (dragSrcIndex === null || dragSrcIndex === destIndex) return;
   const arr = [...state.substopCards];
   const [moved] = arr.splice(dragSrcIndex, 1);
