@@ -642,13 +642,147 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   box-shadow: 0 2px 8px rgba(255,107,53,0.45);
 }
 
+/* ── Overworld grid ── */
+.overworld-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.overworld-slot {
+  aspect-ratio: 1;
+  border-radius: var(--radius);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  cursor: pointer; position: relative; overflow: hidden;
+  transition: transform 0.12s, box-shadow 0.12s;
+  user-select: none; -webkit-user-select: none;
+  touch-action: none;
+}
+.overworld-slot:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+.overworld-slot.filled {
+  background: linear-gradient(135deg,rgba(8,90,110,0.82) 0%,rgba(10,108,130,0.78) 50%,rgba(8,88,108,0.82) 100%);
+  border: 1.5px solid rgba(15,175,175,0.45);
+  box-shadow: 0 4px 18px rgba(0,0,0,0.3);
+}
+.overworld-slot.empty {
+  background: rgba(255,255,255,0.03);
+  border: 1.5px dashed rgba(255,255,255,0.12);
+  cursor: default;
+}
+.overworld-slot.empty:hover { transform: none; box-shadow: none; }
+.overworld-slot.drag-over-slot {
+  border-color: rgba(255,107,53,0.8) !important;
+  background: rgba(255,107,53,0.12) !important;
+  box-shadow: 0 0 0 2px rgba(255,107,53,0.4) !important;
+}
+.overworld-slot-thumb {
+  width: 100%; height: 55%; object-fit: cover; flex-shrink: 0;
+  background: rgba(0,0,0,0.3);
+}
+.overworld-slot-thumb-placeholder {
+  width: 100%; height: 55%; background: rgba(0,0,0,0.25);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.overworld-slot-body {
+  padding: 0.5rem 0.65rem; width: 100%; flex: 1;
+  display: flex; flex-direction: column; justify-content: center;
+}
+.overworld-slot-num {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: linear-gradient(160deg,#ff3b30 0%,#ff6b35 45%,#ffcc00 100%);
+  color: white; font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 0.72rem;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 0.3rem; flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(255,107,53,0.4);
+}
+.overworld-slot-name {
+  font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.8rem;
+  color: white; line-height: 1.2; word-break: break-word;
+}
+.overworld-slot-tagline {
+  font-size: 0.67rem; color: rgba(255,255,255,0.55);
+  margin-top: 0.1rem; line-height: 1.3;
+  overflow: hidden; display: -webkit-box;
+  -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+}
+.overworld-slot-actions {
+  position: absolute; top: 0.4rem; right: 0.4rem;
+  display: flex; gap: 0.25rem; opacity: 0; transition: opacity 0.15s;
+}
+.overworld-slot:hover .overworld-slot-actions { opacity: 1; }
+.overworld-drag-ghost {
+  position: fixed; pointer-events: none; z-index: 9999;
+  border-radius: var(--radius); opacity: 0.88;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+  background: linear-gradient(135deg,rgba(8,90,110,0.95),rgba(10,108,130,0.92));
+  border: 1.5px solid rgba(15,175,175,0.6);
+  display: flex; align-items: center; gap: 0.6rem;
+  padding: 0.6rem 0.85rem;
+  font-family: 'Nunito', sans-serif; font-weight: 700;
+  font-size: 0.88rem; color: white; white-space: nowrap;
+}
+
+/* ── Single-stop detail view (View B) ── */
+#stop-detail-header {
+  display: flex; align-items: center; gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+#stop-detail-title {
+  font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.8rem;
+  color: white; flex: 1;
+}
+
+/* ── Inline card panel ── */
+.inline-cards-panel {
+  margin-top: 0.5rem;
+  border-radius: var(--radius);
+  background: rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.06);
+  overflow: hidden;
+  animation: panelFadeIn 0.18s ease;
+}
+@keyframes panelFadeIn { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:none; } }
+.inline-cards-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.65rem 0.85rem;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  background: rgba(0,0,0,0.15);
+}
+.inline-cards-label {
+  font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--text3);
+}
+.inline-cards-body { padding: 0.65rem 0.65rem 0.5rem; }
+
+/* Stop block expanded state */
+.stop-block-expanded .stop-row-main {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom: none;
+}
+.stop-block-expanded .substop-row {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.edit-details-btn {
+  font-size: 0.7rem; font-weight: 700; padding: 0.25rem 0.55rem;
+  border-radius: 5px; border: 1px solid rgba(150,200,255,0.35);
+  background: rgba(26,111,181,0.2); color: rgba(150,200,255,0.9);
+  cursor: pointer; white-space: nowrap; flex-shrink: 0;
+  font-family: 'Nunito', sans-serif;
+  transition: background 0.12s;
+}
+.edit-details-btn:hover { background: rgba(26,111,181,0.35); }
+
 /* ── Mobile responsive ── */
 @media (max-width: 600px) {
 
 
   /* Prevent ALL horizontal overflow */
   #main, #main > .section, .panel, .panel-body, .form-grid,
-  .stop-row-main, .card-row, .partner-row, .tour-row,
+  .stop-row-main, .card-row, .partner-row, .tour-row, .overworld-grid,
   .page-header, .row-actions { max-width: 100%; overflow-x: hidden; }
 
   /* Wrap row-actions so they don't force width */
@@ -818,7 +952,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
         </div>
         <div style="display:flex;gap:0.4rem;">
           <button class="btn btn-secondary btn-sm" style="background:rgba(26,111,181,0.18);border-color:rgba(26,111,181,0.35);color:rgba(150,200,255,0.95);" onclick="showSection('tours')">← Tours</button>
-          <button class="btn btn-secondary btn-sm" style="background:rgba(26,111,181,0.18);border-color:rgba(26,111,181,0.35);color:rgba(150,200,255,0.95);" onclick="if(state.currentTour)loadStops().then(()=>showSection('stops'))">← Stops</button>
+          <button class="btn btn-secondary btn-sm" style="background:rgba(26,111,181,0.18);border-color:rgba(26,111,181,0.35);color:rgba(150,200,255,0.95);" onclick="if(state.currentTour)showSection('overworld')">← Map</button>
         </div>
       </div>
       <form id="tour-form" onsubmit="saveTour(event)">
@@ -907,31 +1041,33 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
       </form>
     </div>
 
-    <!-- STOPS section -->
-    <div class="section" id="section-stops">
-      <!-- Centred title area -->
-      <div style="text-align:center;margin-bottom:1.25rem;">
-        <div id="stops-title" style="font-family:'Nunito',sans-serif;font-size:2.4rem;font-weight:900;color:white;line-height:1.05;margin-bottom:0.2rem;"></div>
-        <div style="font-family:'Nunito',sans-serif;font-size:0.9rem;font-weight:800;background:linear-gradient(160deg,#ff3b30 0%,#ff6b35 45%,#ffcc00 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-transform:uppercase;letter-spacing:0.14em;margin-bottom:0.3rem;">Tour Flow</div>
-        <div style="display:flex;justify-content:center;"><svg width="16" height="22" viewBox="0 0 18 28" fill="none" stroke="rgba(255,107,53,0.5)" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="18"/><polyline points="4 13 9 19 14 13"/></svg></div>
-        <div id="stops-subtitle" style="font-size:0.82rem;color:var(--text3);margin-top:0.15rem;"></div>
+    <!-- OVERWORLD section (View A) -->
+    <div class="section" id="section-overworld">
+      <div style="text-align:center;margin-bottom:1rem;">
+        <div id="overworld-tour-title" style="font-family:'Nunito',sans-serif;font-size:2rem;font-weight:900;color:white;line-height:1.05;margin-bottom:0.2rem;"></div>
+        <div style="font-family:'Nunito',sans-serif;font-size:0.75rem;font-weight:800;background:linear-gradient(160deg,#ff3b30 0%,#ff6b35 45%,#ffcc00 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-transform:uppercase;letter-spacing:0.14em;">Overworld Map</div>
       </div>
-      <!-- Single action row: settings+partners on left, add buttons on right -->
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;">
         <div style="display:flex;gap:0.5rem;">
-          <button class="btn btn-secondary btn-sm" onclick="_prevSection='stops';showSection('tour-edit')" style="display:flex;align-items:center;gap:0.35rem;background:rgba(26,111,181,0.28);border-color:rgba(26,111,181,0.6);color:rgba(200,225,255,1);">
-            Tour Settings
-          </button>
-          <button class="btn btn-secondary btn-sm" onclick="loadAndShowAllPartners()" style="display:flex;align-items:center;gap:0.35rem;background:rgba(120,60,200,0.28);border-color:rgba(120,60,200,0.6);color:rgba(220,185,255,1);">
-            Partners
-          </button>
+          <button class="btn btn-secondary btn-sm" onclick="_prevSection='overworld';showSection('tour-edit')" style="background:rgba(26,111,181,0.28);border-color:rgba(26,111,181,0.6);color:rgba(200,225,255,1);">Tour Settings</button>
+          <button class="btn btn-secondary btn-sm" onclick="loadAndShowAllPartners()" style="background:rgba(120,60,200,0.28);border-color:rgba(120,60,200,0.6);color:rgba(220,185,255,1);">Partners</button>
         </div>
-        <div style="display:flex;gap:0.5rem;">
-          <button class="btn btn-primary btn-sm" onclick="openAddStopModal()" style="background:linear-gradient(160deg,#ff3b30 0%,#ff6b35 45%,#ffcc00 100%);">+ Add Stop</button>
-        </div>
+        <button class="btn btn-primary btn-sm" onclick="openAddStopModal()">+ Add Stop</button>
+      </div>
+      <div id="overworld-grid" class="overworld-grid"></div>
+      <!-- Tour Start / Finish quick blocks -->
+      <div id="overworld-start-finish"></div>
+    </div>
+
+    <!-- STOPS section — now single-stop detail view (View B) -->
+    <div class="section" id="section-stops">
+      <div id="stop-detail-header">
+        <button class="btn btn-secondary btn-sm" onclick="showSection('overworld')" style="background:rgba(26,111,181,0.18);border-color:rgba(26,111,181,0.35);color:rgba(150,200,255,0.95);flex-shrink:0;">← Map</button>
+        <div id="stops-title" style="font-family:'Nunito',sans-serif;font-size:1.6rem;font-weight:900;color:white;flex:1;"></div>
+        <button class="btn btn-primary btn-sm" onclick="openAddSubstopForCurrentStop()">+ Waypoint</button>
       </div>
       <div id="stops-list" style="padding:0 0 0.5rem 0;">
-        <div class="loading-row"><div class="spinner"></div> Loading stops…</div>
+        <div class="loading-row"><div class="spinner"></div> Loading…</div>
       </div>
     </div>
 
@@ -1044,7 +1180,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;">
         <div style="display:flex;gap:0.5rem;">
           <button class="btn btn-secondary btn-sm" onclick="if(state.currentStop)editStop(state.currentStop.id)" style="background:rgba(26,111,181,0.18);border-color:rgba(26,111,181,0.35);color:rgba(150,200,255,0.95);">Details</button>
-          <button class="btn btn-secondary btn-sm" onclick="if(state.currentTour){loadStops().then(()=>showSection('stops'))}" style="background:rgba(26,111,181,0.18);border-color:rgba(26,111,181,0.35);color:rgba(150,200,255,0.95);">← Stops</button>
+          <button class="btn btn-secondary btn-sm" onclick="if(state.currentTour){showSection('overworld')}" style="background:rgba(26,111,181,0.18);border-color:rgba(26,111,181,0.35);color:rgba(150,200,255,0.95);">← Stops</button>
         </div>
         <button class="btn btn-primary btn-sm" onclick="openAddCardModal()">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -1084,7 +1220,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
         </div>
         <div style="display:flex;gap:0.5rem;">
           <button class="btn btn-secondary btn-sm" onclick="loadAndShowSubstopCards()" style="background:rgba(15,155,142,0.18);border-color:rgba(15,155,142,0.35);color:rgba(100,220,210,0.95);">Cards</button>
-          <button class="btn btn-secondary btn-sm" onclick="if(state.currentTour){loadStops().then(()=>showSection('stops'))}" style="background:rgba(26,111,181,0.18);border-color:rgba(26,111,181,0.35);color:rgba(150,200,255,0.95);">← Stops</button>
+          <button class="btn btn-secondary btn-sm" onclick="if(state.currentTour){showSection('overworld')}" style="background:rgba(26,111,181,0.18);border-color:rgba(26,111,181,0.35);color:rgba(150,200,255,0.95);">← Stops</button>
         </div>
       </div>
       <form id="substop-form" onsubmit="saveSubstop(event)">
@@ -1140,7 +1276,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;">
         <div style="display:flex;gap:0.5rem;">
           <button class="btn btn-secondary btn-sm" onclick="if(state.currentSubstop)editSubstop(state.currentSubstop.id)" style="background:rgba(26,111,181,0.18);border-color:rgba(26,111,181,0.35);color:rgba(150,200,255,0.95);">Details</button>
-          <button class="btn btn-secondary btn-sm" onclick="if(state.currentTour){loadStops().then(()=>showSection('stops'))}" style="background:rgba(26,111,181,0.18);border-color:rgba(26,111,181,0.35);color:rgba(150,200,255,0.95);">← Stops</button>
+          <button class="btn btn-secondary btn-sm" onclick="if(state.currentTour){showSection('overworld')}" style="background:rgba(26,111,181,0.18);border-color:rgba(26,111,181,0.35);color:rgba(150,200,255,0.95);">← Stops</button>
         </div>
         <button class="btn btn-primary btn-sm" onclick="openAddSubstopCardModal()">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -1216,7 +1352,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
             </div>
           </div>
           <div class="panel-footer">
-            <button type="button" class="btn btn-secondary" onclick="returnToStops()">Cancel</button>
+            <button type="button" class="btn btn-secondary" onclick="showSection('overworld')">Cancel</button>
             <button type="submit" class="btn btn-primary">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
               Save
@@ -1245,7 +1381,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
             </div>
           </div>
           <div class="panel-footer">
-            <button type="button" class="btn btn-secondary" onclick="returnToStops()">Cancel</button>
+            <button type="button" class="btn btn-secondary" onclick="showSection('overworld')">Cancel</button>
             <button type="submit" class="btn btn-primary">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
               Save
@@ -1263,7 +1399,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
           <div class="page-subtitle">All partners across this tour</div>
         </div>
         <div style="display:flex;gap:0.5rem;align-items:center;">
-          <button class="btn btn-secondary btn-sm" onclick="if(state.currentTour){loadStops().then(()=>showSection('stops'))}" style="background:rgba(26,111,181,0.18);border-color:rgba(26,111,181,0.35);color:rgba(150,200,255,0.95);">← Stops</button>
+          <button class="btn btn-secondary btn-sm" onclick="if(state.currentTour){showSection('overworld')}" style="background:rgba(26,111,181,0.18);border-color:rgba(26,111,181,0.35);color:rgba(150,200,255,0.95);">← Map</button>
           <button class="btn btn-primary btn-sm" onclick="openPartnerModal()">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Add Partner
@@ -1341,6 +1477,10 @@ let state = {
   partners: [],
   substopCards: [],
   substopPartners: [],
+  expandedBlockId: null,
+  inlineCards: {},
+  inlineSubstopCards: {},
+  allCards: [],
 };
 
 // ── Config ──
@@ -1472,7 +1612,7 @@ function setConnStatus(ok) {
 }
 
 // ── Navigation ──
-const SECTIONS = ['tours', 'tour-edit', 'stops', 'stop-edit', 'cards', 'partners', 'substop-edit', 'substop-cards', 'substop-partners', 'tour-start', 'tour-finish', 'all-partners', 'settings'];
+const SECTIONS = ['tours', 'tour-edit', 'overworld', 'stops', 'stop-edit', 'cards', 'partners', 'substop-edit', 'substop-cards', 'substop-partners', 'tour-start', 'tour-finish', 'all-partners', 'settings'];
 
 function showSection(name) {
   SECTIONS.forEach(s => {
@@ -1489,30 +1629,33 @@ function showSection(name) {
 function updateBreadcrumb(section) {
   const bc = document.getElementById('breadcrumb');
   const t = state.currentTour;
-  const toFlow = `if(state.currentTour){loadStops().then(()=>showSection('stops'));}`;
+  const toOverworld = `if(state.currentTour){showSection('overworld');}`;
   let html = '';
 
   const toursLink = `<span onclick="showSection('tours')" style="cursor:pointer;">Tours</span>`;
   const arrow = `<span class="bc-arrow">›</span>`;
-  const stopsLink = `<span onclick="${toFlow}" style="cursor:pointer;">Stops</span>`;
+  const overworldLink = `<span onclick="${toOverworld}" style="cursor:pointer;">${escHtml(t?.title||'Map')}</span>`;
   if (!t || section === 'tours') {
     html = `<span style="color:var(--text);font-weight:600;">Tours</span>`;
+  } else if (section === 'overworld') {
+    html = toursLink + arrow + `<span style="color:var(--text);font-weight:700;">${escHtml(t.title)}</span>`;
   } else if (section === 'stops') {
-    html = toursLink + arrow + `<span style="color:var(--text);font-weight:700;">Stops</span>`;
+    const sName = state.currentStop?.name || 'Stop';
+    html = toursLink + arrow + overworldLink + arrow + `<span style="color:var(--text);font-weight:700;">${escHtml(sName)}</span>`;
   } else if (section === 'tour-edit') {
-    html = toursLink + arrow + stopsLink + arrow + `<span>Tour Settings</span>`;
+    html = toursLink + arrow + overworldLink + arrow + `<span>Tour Settings</span>`;
   } else if (section === 'all-partners') {
-    html = toursLink + arrow + stopsLink + arrow + `<span>Partners</span>`;
+    html = toursLink + arrow + overworldLink + arrow + `<span>Partners</span>`;
   } else if (['stop-edit','cards','partners'].includes(section)) {
     const sName = state.currentStop?.name || 'Stop';
-    html = toursLink + arrow + stopsLink + arrow + `<span>${escHtml(sName)}</span>`;
+    html = toursLink + arrow + overworldLink + arrow + `<span>${escHtml(sName)}</span>`;
   } else if (['substop-edit','substop-cards','substop-partners'].includes(section)) {
     const ssName = state.currentSubstop?.name || 'Sub-stop';
-    html = toursLink + arrow + stopsLink + arrow + `<span>${escHtml(ssName)}</span>`;
+    html = toursLink + arrow + overworldLink + arrow + `<span>${escHtml(ssName)}</span>`;
   } else if (section === 'tour-start') {
-    html = toursLink + arrow + stopsLink + arrow + `<span>Tour Start</span>`;
+    html = toursLink + arrow + overworldLink + arrow + `<span>Tour Start</span>`;
   } else if (section === 'tour-finish') {
-    html = toursLink + arrow + stopsLink + arrow + `<span>Tour Finish</span>`;
+    html = toursLink + arrow + overworldLink + arrow + `<span>Tour Finish</span>`;
   } else if (section === 'settings') {
     html = toursLink + arrow + `<span>Settings</span>`;
   }
@@ -1620,7 +1763,12 @@ async function saveTour(e) {
   if (state.currentTour) {
     state.currentTour = state.tours.find(x => x.id === state.currentTour.id) || state.currentTour;
   }
-  showSection(_prevSection||'tours');
+  if (state.currentTour && (_prevSection === 'overworld' || _prevSection === 'stops')) {
+    renderOverworld();
+    showSection('overworld');
+  } else {
+    showSection(_prevSection||'tours');
+  }
 }
 
 async function deleteTour(id) {
@@ -1641,12 +1789,9 @@ async function openStops(tourId) {
   if (!t) return;
   state.currentTour = t;
   updateSidebarTour();
-  document.getElementById('stops-title').textContent = t.title;
-  document.getElementById('stops-subtitle').textContent = '';
-  const htt = document.getElementById('header-tour-title');
-  if(htt){ htt.textContent = t.title; htt.style.display = 'block'; }
   await loadStops();
-  showSection('stops');
+  renderOverworld();
+  showSection('overworld');
 }
 
 async function loadStops() {
@@ -1683,143 +1828,804 @@ function buildStopsList() {
   return items;
 }
 
-function renderStops() {
-  const el = document.getElementById('stops-list');
-  const startBlock = `
-    <div class="stop-group tour-start-finish-block" style="background:linear-gradient(135deg,rgba(15,155,142,0.18),rgba(45,63,170,0.18));border:1px solid rgba(15,155,142,0.35);border-radius:var(--radius);overflow:hidden;backdrop-filter:blur(12px);cursor:pointer;transition:background 0.15s,border-color 0.15s;" onclick="editTourStart()" onmouseenter="this.style.background='linear-gradient(135deg,rgba(15,175,162,0.28),rgba(55,73,190,0.28))'" onmouseleave="this.style.background='linear-gradient(135deg,rgba(15,155,142,0.18),rgba(45,63,170,0.18))'">
-      <div style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem 0.85rem;">
-        <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#0f9b8e,#2d3faa);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-        </div>
-        <div style="flex:1;">
-          <div style="font-size:0.9rem;font-weight:700;color:var(--text);">Tour Start</div>
-          <div style="font-size:0.75rem;color:rgba(255,255,255,0.65);">${escHtml(state.currentTour?.meeting_point_name || 'Click to set meeting point & intro')}</div>
-        </div>
-        <div style="font-size:0.75rem;color:rgba(255,255,255,0.65);">Edit →</div>
-      </div>
-    </div>`;
+// ── Overworld (View A) ──
+function renderOverworld() {
+  const MAX_SLOTS = 8;
+  const titleEl = document.getElementById('overworld-tour-title');
+  if (titleEl) titleEl.textContent = state.currentTour?.title || '';
 
-  const finishBlock = `
-    <div class="stop-group tour-start-finish-block" style="background:linear-gradient(135deg,rgba(15,155,142,0.18),rgba(45,63,170,0.18));border:1px solid rgba(15,155,142,0.35);border-radius:var(--radius);overflow:hidden;backdrop-filter:blur(12px);cursor:pointer;transition:background 0.15s,border-color 0.15s;" onclick="editTourFinish()" onmouseenter="this.style.background='linear-gradient(135deg,rgba(15,175,162,0.28),rgba(55,73,190,0.28))'" onmouseleave="this.style.background='linear-gradient(135deg,rgba(15,155,142,0.18),rgba(45,63,170,0.18))'">
-      <div style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem 0.85rem;">
-        <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#0f9b8e,#2d3faa);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-        </div>
-        <div style="flex:1;">
-          <div style="font-size:0.9rem;font-weight:700;color:var(--text);">Tour Finish</div>
-          <div style="font-size:0.75rem;color:rgba(255,255,255,0.65);">${escHtml(state.currentTour?.finish_message ? state.currentTour.finish_message.slice(0,60)+'…' : 'Click to set finish message')}</div>
-        </div>
-        <div style="font-size:0.75rem;color:rgba(255,255,255,0.65);">Edit →</div>
-      </div>
-    </div>`;
+  const grid = document.getElementById('overworld-grid');
+  if (!grid) return;
 
-  if (!state.stops.length) {
-    el.innerHTML = startBlock + `<div class="stop-group-connector"><svg width="16" height="22" viewBox="0 0 18 28" fill="none" stroke="rgba(255,107,53,0.5)" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="18"/><polyline points="4 13 9 19 14 13"/></svg></div>` + `<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;text-align:center;color:var(--text3);font-size:0.88rem;">No stops yet. Add the first stop for this tour.</div>` + `<div class="stop-group-connector"><svg width="16" height="22" viewBox="0 0 18 28" fill="none" stroke="rgba(255,107,53,0.5)" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="18"/><polyline points="4 13 9 19 14 13"/></svg></div>` + finishBlock;
-    return;
+  const slots = [];
+  for (let i = 0; i < MAX_SLOTS; i++) {
+    const stop = state.stops.find(s => (s.stop_number - 1) === i);
+    slots.push(stop || null);
   }
-  const items = buildStopsList();
-  // Build grouped blocks — each main stop + its substops in one floating card
-  const groups = [];
-  state.stops.forEach(s => {
-    const subs = state.allSubstops.filter(ss => ss.stop_id === s.id)
-      .sort((a, b) => a.global_position - b.global_position);
-    groups.push({ stop: s, substops: subs });
-  });
 
-  // Flat item list for drag indices
-  const flatItems = [];
-  groups.forEach(g => {
-    g.substops.forEach(ss => flatItems.push({ type: 'substop', data: ss }));
-    flatItems.push({ type: 'stop', data: g.stop });
-  });
-
-  const dragHandle = ''; // drag removed
-  const trashIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff6b35" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>`;
-  const deleteBtn = (fn) => `<button class="btn btn-ghost btn-icon btn-sm" onclick="event.stopPropagation();${fn}">${trashIcon}</button>`;
-  // Orange downward arrow SVG reused for connectors
-  const orangeArrow = (size=18) => `<svg width="${size}" height="${Math.round(size*1.0)}" viewBox="0 0 18 28" fill="none" stroke="rgba(255,107,53,0.5)" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="20"/><polyline points="4 15 9 21 14 15"/></svg>`;
-
-  el.innerHTML = groups.map((group, gi) => {
-    const s = group.stop;
-    const isLast = gi === groups.length - 1;
-    const stopIdx = flatItems.findIndex(x => x.type === 'stop' && x.data.id === s.id);
-    const hasSubs = group.substops.length > 0;
-
-    // Thumbnail helper
-    const thumb = (url) => url
-      ? `<img class="stop-thumb" src="${escHtml(url)}" loading="lazy" onerror="this.style.display='none'">`
-      : `<div class="stop-thumb-placeholder"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.5" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>`;
-
-    const subsRowsHtml = group.substops.map((ss, ssi) => {
-      const ssIdx = flatItems.findIndex(x => x.type === 'substop' && x.data.id === ss.id);
-      return `
-        <div class="substop-row" data-id="${ss.id}" data-pos="${ssIdx}" data-type="substop"
-          onclick="openSubstopCards('${ss.id}')">
-          ${dragHandle}
-          ${thumb(ss.photo_url)}
-          <div class="stop-info" style="flex:1;min-width:0;">
-            <div class="stop-name" style="font-size:0.82rem;color:var(--text);">${escHtml(ss.name || 'Unnamed sub-stop')}</div>
-            <div class="stop-tagline">${escHtml(ss.tagline || '')}</div>
-          </div>
-          <div class="row-actions">
-            ${deleteBtn(`deleteSubstop('${ss.id}')`)}
-          </div>
-        </div>`;
-    }).join('');
-
-    const subsHtml = hasSubs ? `<div class="substop-area">${subsRowsHtml}</div>` : '';
-
-    // Main stop row
-    const stopHtml = `
-      <div class="stop-row stop-row-main" data-id="${s.id}" data-pos="${stopIdx}" data-type="stop"
-        onclick="openCards('${s.id}')" style="cursor:pointer;display:flex;align-items:center;gap:0.75rem;padding:0.6rem 0.85rem;">
-        ${dragHandle}
-        <div class="stop-num-destination">${s.stop_number || gi+1}</div>
-        ${thumb(s.photo_url)}
-        <div class="stop-info" style="flex:1;min-width:0;">
-          <div class="stop-name">${escHtml(s.name)}</div>
-        </div>
-        ${(() => { const pc = (state.allCards||[]).filter(c=>c.stop_id===s.id&&c.card_type==='partner'&&c.partner_id).length; return pc > 0 ? `<div style="background:rgba(120,60,200,0.35);border:1px solid rgba(160,80,255,0.4);color:rgba(215,165,255,0.95);font-size:0.62rem;font-weight:800;padding:0.15rem 0.45rem;border-radius:99px;flex-shrink:0;">${pc}</div>` : ''; })()}
-        <div class="row-actions">
-          ${deleteBtn(`deleteStop('${s.id}')`)}
+  grid.innerHTML = slots.map((s, i) => {
+    if (!s) {
+      return `<div class="overworld-slot empty" data-slot="${i}">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.35rem;opacity:0.25;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <div style="font-size:0.65rem;font-weight:600;color:white;">Slot ${i+1}</div>
         </div>
       </div>`;
-
-    const arrowHtml = isLast ? '' : `<div class="stop-group-connector">${orangeArrow(16)}</div>`;
-    return `<div class="stop-group">${subsHtml}${stopHtml}</div>${arrowHtml}`;
+    }
+    const thumb = s.photo_url
+      ? `<img class="overworld-slot-thumb" src="${escHtml(s.photo_url)}" loading="lazy" onerror="this.style.display='none'">`
+      : `<div class="overworld-slot-thumb-placeholder"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>`;
+    return `<div class="overworld-slot filled" data-slot="${i}" data-stop-id="${s.id}"
+        onclick="openStopDetail('${s.id}')">
+      ${thumb}
+      <div class="overworld-slot-body">
+        <div class="overworld-slot-num">${s.stop_number}</div>
+        <div class="overworld-slot-name">${escHtml(s.name)}</div>
+        ${s.tagline ? `<div class="overworld-slot-tagline">${escHtml(s.tagline)}</div>` : ''}
+      </div>
+      <div class="overworld-slot-actions" onclick="event.stopPropagation()">
+        <button class="btn btn-ghost btn-icon btn-sm" onclick="openStopEditModal('${s.id}')" title="Edit details"
+          style="background:rgba(0,0,0,0.4);width:26px;height:26px;padding:0;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        </button>
+        <button class="btn btn-ghost btn-icon btn-sm" onclick="deleteStop('${s.id}')" title="Delete"
+          style="background:rgba(0,0,0,0.4);width:26px;height:26px;padding:0;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ff6b35" stroke-width="2.5" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        </button>
+      </div>
+    </div>`;
   }).join('');
 
-  const outerConnector = `<div class="stop-group-connector"><svg width="16" height="22" viewBox="0 0 18 28" fill="none" stroke="rgba(255,107,53,0.5)" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="18"/><polyline points="4 13 9 19 14 13"/></svg></div>`;
-  el.innerHTML = startBlock + outerConnector + el.innerHTML + outerConnector + finishBlock;
+  // Tour Start / Finish blocks
+  const sf = document.getElementById('overworld-start-finish');
+  if (sf) {
+    sf.innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:0.5rem;">
+      <div style="background:linear-gradient(135deg,rgba(15,155,142,0.18),rgba(45,63,170,0.18));border:1px solid rgba(15,155,142,0.35);border-radius:var(--radius);padding:0.75rem 0.85rem;cursor:pointer;display:flex;align-items:center;gap:0.6rem;backdrop-filter:blur(12px);" onclick="editTourStart()">
+        <div style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#0f9b8e,#2d3faa);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:0.82rem;font-weight:700;color:var(--text);">Tour Start</div>
+          <div style="font-size:0.68rem;color:rgba(255,255,255,0.5);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(state.currentTour?.meeting_point_name || 'Set meeting point')}</div>
+        </div>
+      </div>
+      <div style="background:linear-gradient(135deg,rgba(15,155,142,0.18),rgba(45,63,170,0.18));border:1px solid rgba(15,155,142,0.35);border-radius:var(--radius);padding:0.75rem 0.85rem;cursor:pointer;display:flex;align-items:center;gap:0.6rem;backdrop-filter:blur(12px);" onclick="editTourFinish()">
+        <div style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#0f9b8e,#2d3faa);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:0.82rem;font-weight:700;color:var(--text);">Tour Finish</div>
+          <div style="font-size:0.68rem;color:rgba(255,255,255,0.5);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(state.currentTour?.finish_message ? state.currentTour.finish_message.slice(0,40)+'…' : 'Set finish message')}</div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  initOverworldDrag();
 }
 
-function openAddStopModal() {
-  openModal('Add Stop', `
+// ── Overworld slot drag (pointer events) ──
+function initOverworldDrag() {
+  const grid = document.getElementById('overworld-grid');
+  if (!grid) return;
+
+  let dragging = null; // { stopId, fromSlot, ghost, startX, startY, slotW, slotH }
+  const slots = () => Array.from(grid.querySelectorAll('.overworld-slot.filled'));
+
+  grid.addEventListener('pointerdown', e => {
+    const slot = e.target.closest('.overworld-slot.filled');
+    if (!slot || e.target.closest('.overworld-slot-actions')) return;
+    const stopId = slot.dataset.stopId;
+    const fromSlot = parseInt(slot.dataset.slot);
+    const rect = slot.getBoundingClientRect();
+
+    // Create ghost
+    const ghost = document.createElement('div');
+    ghost.className = 'overworld-drag-ghost';
+    const s = state.stops.find(x => x.id === stopId);
+    ghost.innerHTML = `<div class="overworld-slot-num" style="width:20px;height:20px;font-size:0.68rem;">${s?.stop_number||''}</div><span>${escHtml(s?.name||'')}</span>`;
+    ghost.style.width = rect.width + 'px';
+    ghost.style.height = '48px';
+    ghost.style.left = (e.clientX - rect.width/2) + 'px';
+    ghost.style.top = (e.clientY - 24) + 'px';
+    document.body.appendChild(ghost);
+
+    slot.style.opacity = '0.35';
+    dragging = { stopId, fromSlot, ghost, slot };
+    e.preventDefault();
+  }, { passive: false });
+
+  document.addEventListener('pointermove', e => {
+    if (!dragging) return;
+    dragging.ghost.style.left = (e.clientX - dragging.ghost.offsetWidth/2) + 'px';
+    dragging.ghost.style.top = (e.clientY - 24) + 'px';
+
+    // Highlight hovered slot
+    document.querySelectorAll('.overworld-slot').forEach(s => s.classList.remove('drag-over-slot'));
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+    const targetSlot = el?.closest('.overworld-slot');
+    if (targetSlot && targetSlot !== dragging.slot) targetSlot.classList.add('drag-over-slot');
+  });
+
+  document.addEventListener('pointerup', async e => {
+    if (!dragging) return;
+    const { stopId, fromSlot, ghost, slot } = dragging;
+    dragging = null;
+    ghost.remove();
+    slot.style.opacity = '';
+    document.querySelectorAll('.overworld-slot').forEach(s => s.classList.remove('drag-over-slot'));
+
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+    const targetSlot = el?.closest('.overworld-slot');
+    if (!targetSlot || targetSlot === slot) return;
+
+    const toSlot = parseInt(targetSlot.dataset.slot);
+    const toStopId = targetSlot.dataset.stopId || null;
+
+    // Swap stop_numbers
+    const draggedStop = state.stops.find(x => x.id === stopId);
+    const swapStop = toStopId ? state.stops.find(x => x.id === toStopId) : null;
+    const newNum = toSlot + 1;
+    const oldNum = fromSlot + 1;
+
+    const updates = [];
+    updates.push(sb.from('stops').update({ stop_number: newNum }).eq('id', stopId));
+    if (swapStop) updates.push(sb.from('stops').update({ stop_number: oldNum }).eq('id', swapStop.id));
+
+    await Promise.all(updates);
+    await loadStops();
+    renderOverworld();
+    toast('Order updated', 'success');
+  });
+}
+
+// ── Stop detail view (View B) ──
+async function openStopDetail(stopId) {
+  const s = state.stops.find(x => x.id === stopId);
+  if (!s) return;
+  state.currentStop = s;
+  state.currentSubstop = null;
+  state.expandedBlockId = null;
+  document.getElementById('stops-title').textContent = s.name;
+  await ensurePartnersLoaded();
+  renderStopDetail();
+  showSection('stops');
+}
+
+function openAddSubstopForCurrentStop() {
+  if (!state.currentStop) return;
+  openModal('Add Waypoint', `
     <div style="display:flex;flex-direction:column;gap:0.75rem;">
-      <div onclick="closeModalDirect();newStop();" style="cursor:pointer;padding:1.1rem;border-radius:var(--radius);background:linear-gradient(135deg,rgba(8,90,110,0.55),rgba(10,105,120,0.5));border:1px solid rgba(15,175,175,0.3);transition:background 0.12s;" onmouseenter="this.style.background='linear-gradient(135deg,rgba(10,108,130,0.75),rgba(12,118,135,0.7))'" onmouseleave="this.style.background='linear-gradient(135deg,rgba(8,90,110,0.55),rgba(10,105,120,0.5))'">
-        <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:1rem;color:white;margin-bottom:0.3rem;">Main Stop</div>
-        <div style="font-size:0.8rem;color:rgba(255,255,255,0.6);line-height:1.5;">A primary destination on your tour. Appears on the overworld map.<br><br>To keep your tour from looking overwhelming, you can only make 6 main stops. Create sub-stops if you want more destinations.</div>
+      <div style="font-size:0.82rem;color:var(--text2);line-height:1.55;">A waypoint is a point of interest along the way to <strong style="color:var(--text);">${escHtml(state.currentStop.name)}</strong>. It appears above the main stop in the tour flow.</div>
+      <div class="field"><label>Name</label><input type="text" id="ns-name" placeholder="e.g. Hidden Alley"></div>
+      <div class="field"><label>Tagline</label><input type="text" id="ns-tagline" placeholder="One punchy line"></div>
+      <div class="field"><label>Cover Image</label><input type="url" id="ns-img" placeholder="https://…"></div>
+      <div class="form-grid">
+        <div class="field"><label>Longitude</label><input type="number" id="ns-lng" step="0.0001"></div>
+        <div class="field"><label>Latitude</label><input type="number" id="ns-lat" step="0.0001"></div>
       </div>
-      <div onclick="closeModalDirect();newSubstop();" style="cursor:pointer;padding:1.1rem;border-radius:var(--radius);background:linear-gradient(135deg,rgba(6,70,88,0.52),rgba(8,82,100,0.48));border:1px solid rgba(15,165,165,0.25);transition:background 0.12s;" onmouseenter="this.style.background='linear-gradient(135deg,rgba(8,88,108,0.72),rgba(10,98,118,0.68))'" onmouseleave="this.style.background='linear-gradient(135deg,rgba(6,70,88,0.52),rgba(8,82,100,0.48))'">
-        <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:1rem;color:white;margin-bottom:0.3rem;">Sub-stop <span style="font-size:0.72rem;font-weight:600;color:rgba(255,255,255,0.45);margin-left:0.35rem;">waypoint</span></div>
-        <div style="font-size:0.8rem;color:rgba(255,255,255,0.6);line-height:1.5;">A point of interest along the way to a main stop: A hidden alley, a detail to notice, a short detour. Sub-stops don't show on the overworld map. You can make as many as you want!</div>
-      </div>
+      <div class="field"><label>Google Maps URL</label><input type="url" id="ns-map-url"></div>
     </div>
   `, [
     { label: 'Cancel', cls: 'btn-secondary', action: 'closeModalDirect()' },
+    { label: 'Add Waypoint', cls: 'btn-primary', action: 'confirmAddSubstopInline()' },
   ]);
+  setTimeout(() => makeImageField('ns-img', 'substops'), 30);
 }
 
-function newStop() {
-  state.currentStop = null;
-  const sss = document.getElementById('sidebar-stop-section');
-  if (sss) sss.style.display = 'none';
-  document.getElementById('se-page-title').textContent = 'New Stop';
-  clearForm('stop-form');
-  const sfPos = document.getElementById('sf-position');
-  if (sfPos) sfPos.value = state.stops.length + 1;
-  updateAuthorLabel();
-  showSection('stop-edit');
+async function confirmAddSubstopInline() {
+  if (!state.currentStop) return;
+  const g = id => document.getElementById(id)?.value.trim() || '';
+  const subs = state.allSubstops.filter(x => x.stop_id === state.currentStop.id);
+  const globalPos = state.currentStop.stop_number - 0.5 - (subs.length * 0.1);
+  const payload = {
+    stop_id: state.currentStop.id,
+    global_position: globalPos,
+    name: g('ns-name'),
+    tagline: g('ns-tagline'),
+    photo_url: g('ns-img'),
+    map_url: g('ns-map-url'),
+    longitude: parseFloat(g('ns-lng')) || null,
+    latitude: parseFloat(g('ns-lat')) || null,
+  };
+  const { error } = await sb.from('substops').insert(payload);
+  if (error) { toast('Error adding waypoint: ' + error.message, 'error'); return; }
+  closeModalDirect();
+  toast('Waypoint added', 'success');
+  await loadStops();
+  state.currentStop = state.stops.find(x => x.id === state.currentStop.id) || state.currentStop;
+  renderStopDetail();
+}
+
+function renderStopDetail() {
+  const el = document.getElementById('stops-list');
+  if (!state.currentStop) return;
+
+  const s = state.currentStop;
+  const subs = state.allSubstops.filter(ss => ss.stop_id === s.id)
+    .sort((a, b) => (a.position||a.global_position||0) - (b.position||b.global_position||0));
+
+  const thumb = (url) => url
+    ? `<img class="stop-thumb" src="${escHtml(url)}" loading="lazy" onerror="this.style.display='none'">`
+    : `<div class="stop-thumb-placeholder"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.5" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>`;
+
+  const trashIcon = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ff6b35" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>`;
+
+  // Build substop rows (draggable, constrained above main stop)
+  const subsHtml = subs.map((ss, i) => {
+    const isExpanded = state.expandedBlockId === 'ss-' + ss.id;
+    return `
+    <div class="substop-group" data-substop-id="${ss.id}" data-pos="${i}" style="margin-bottom:0.4rem;">
+      <div class="substop-row" style="cursor:pointer;" onclick="toggleInlineCards('ss-${ss.id}','substop','${ss.id}')">
+        <div class="drag-handle" data-drag-substop="${ss.id}" style="cursor:grab;padding:0.25rem;color:rgba(255,255,255,0.35);" onclick="event.stopPropagation()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
+        </div>
+        ${thumb(ss.photo_url)}
+        <div class="stop-info" style="flex:1;min-width:0;">
+          <div class="stop-name" style="font-size:0.82rem;">${escHtml(ss.name || 'Unnamed waypoint')}</div>
+          ${ss.tagline ? `<div class="stop-tagline">${escHtml(ss.tagline)}</div>` : ''}
+        </div>
+        ${isExpanded ? `<button class="edit-details-btn" onclick="event.stopPropagation();openSubstopEditModal('${ss.id}')">Edit Details</button>` : ''}
+        <div class="row-actions" onclick="event.stopPropagation()">
+          <button class="btn btn-ghost btn-icon btn-sm" onclick="deleteSubstopAndRefresh('${ss.id}')">${trashIcon}</button>
+        </div>
+      </div>
+      ${isExpanded ? renderInlineCards('substop', ss.id) : ''}
+    </div>`;
+  }).join('');
+
+  // Main stop row
+  const isMainExpanded = state.expandedBlockId === 'stop-' + s.id;
+  const stopHtml = `
+  <div class="stop-group" style="margin-bottom:0;">
+    <div class="stop-row stop-row-main" style="cursor:pointer;display:flex;align-items:center;gap:0.75rem;padding:0.6rem 0.85rem;" onclick="toggleInlineCards('stop-${s.id}','stop','${s.id}')">
+      <div class="stop-num-destination">${s.stop_number}</div>
+      ${thumb(s.photo_url)}
+      <div class="stop-info" style="flex:1;min-width:0;">
+        <div class="stop-name">${escHtml(s.name)}</div>
+        ${s.tagline ? `<div class="stop-tagline">${escHtml(s.tagline)}</div>` : ''}
+      </div>
+      ${isMainExpanded ? `<button class="edit-details-btn" onclick="event.stopPropagation();openStopEditModal('${s.id}')">Edit Details</button>` : ''}
+    </div>
+    ${isMainExpanded ? renderInlineCards('stop', s.id) : ''}
+  </div>`;
+
+  el.innerHTML = `<div id="substop-drag-area">${subsHtml}</div>${stopHtml}`;
+
+  // Init substop drag (constrained to substop-drag-area)
+  initSubstopDrag();
+}
+
+// ── Inline card panel rendering ──
+function renderInlineCards(blockType, blockId) {
+  // blockType: 'stop' | 'substop'
+  const cards = blockType === 'stop'
+    ? (state.inlineCards?.[blockId] || [])
+    : (state.inlineSubstopCards?.[blockId] || []);
+  const addFn = blockType === 'stop'
+    ? `openAddInlineCardModal('stop','${blockId}')`
+    : `openAddInlineCardModal('substop','${blockId}')`;
+
+  const cardRows = cards.length === 0
+    ? `<div style="text-align:center;padding:1rem;color:var(--text3);font-size:0.8rem;">No cards yet</div>`
+    : cards.map((c, i) => {
+        const linkedPartner = c.card_type === 'partner' && c.partner_id
+          ? (state.partners||[]).find(p => p.id === c.partner_id) : null;
+        const imgUrl = c.image_url || c.quiz_image_url || linkedPartner?.photo_url || '';
+        const cfThumb = (c.card_type === 'desc' || c.card_type === 'transition') && c.cloudflare_id
+          ? `https://customer-umijtu8zknmpubqb.cloudflarestream.com/${c.cloudflare_id}/thumbnails/thumbnail.jpg` : '';
+        const thumbSrc = imgUrl || cfThumb;
+        const thumbHtml = thumbSrc ? `<img src="${escHtml(thumbSrc)}" style="width:30px;height:30px;border-radius:4px;object-fit:cover;flex-shrink:0;" onerror="this.style.display='none'">` : '';
+        const partnerName = linkedPartner ? `<span style="font-size:0.72rem;font-weight:700;color:rgba(200,150,255,0.9);max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(linkedPartner.name)}</span>` : '';
+        const editFn = blockType === 'stop'
+          ? `editInlineCard('${c.id}','${c.card_type}','stop','${blockId}')`
+          : `editInlineCard('${c.id}','${c.card_type}','substop','${blockId}')`;
+        const deleteFn = blockType === 'stop'
+          ? `deleteInlineCard('${c.id}','stop','${blockId}')`
+          : `deleteInlineCard('${c.id}','substop','${blockId}')`;
+        return `
+        <div class="card-row" data-id="${c.id}" data-pos="${i}" data-block-type="${blockType}" data-block-id="${blockId}"
+          onclick="${editFn}" style="cursor:pointer;margin-bottom:0.4rem;">
+          <div class="drag-handle" onclick="event.stopPropagation()" style="cursor:grab;color:rgba(255,255,255,0.35);">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
+          </div>
+          <span class="card-type-pill ct-${c.card_type}">${CARD_TYPE_LABELS[c.card_type]||c.card_type}</span>
+          ${thumbHtml}${partnerName}
+          <span class="card-preview">${escHtml(cardPreviewText(c))}</span>
+          <div class="row-actions" onclick="event.stopPropagation()">
+            <button class="btn btn-ghost btn-icon btn-sm" onclick="${deleteFn}">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ff6b35" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+            </button>
+          </div>
+        </div>`;
+      }).join('');
+
+  return `<div class="inline-cards-panel">
+    <div class="inline-cards-header">
+      <span class="inline-cards-label">Cards</span>
+      <div style="display:flex;align-items:center;gap:0.5rem;">
+        <span style="font-size:0.72rem;color:var(--text3);">${cards.length} card${cards.length!==1?'s':''}</span>
+        <button class="btn btn-primary btn-sm" style="padding:0.25rem 0.6rem;font-size:0.72rem;" onclick="event.stopPropagation();${addFn}">+ Card</button>
+      </div>
+    </div>
+    <div class="inline-cards-body" id="inline-cards-body-${blockType}-${blockId}">${cardRows}</div>
+  </div>`;
+}
+
+// Toggle inline card expansion
+async function toggleInlineCards(blockKey, blockType, blockId) {
+  if (state.expandedBlockId === blockKey) {
+    state.expandedBlockId = null;
+    renderStopDetail();
+    return;
+  }
+  state.expandedBlockId = blockKey;
+
+  // Load cards for this block if not yet loaded
+  if (blockType === 'stop') {
+    if (!state.inlineCards) state.inlineCards = {};
+    const { data } = await sb.from('cards').select('*').eq('stop_id', blockId).order('position');
+    state.inlineCards[blockId] = data || [];
+    // Also update state.cards for card editing compatibility
+    state.currentStop = state.stops.find(x => x.id === blockId) || state.currentStop;
+    state.currentSubstop = null;
+    state.cards = state.inlineCards[blockId];
+  } else {
+    if (!state.inlineSubstopCards) state.inlineSubstopCards = {};
+    const { data } = await sb.from('cards').select('*').eq('substop_id', blockId).order('position');
+    state.inlineSubstopCards[blockId] = data || [];
+    state.currentSubstop = state.allSubstops.find(x => x.id === blockId) || state.currentSubstop;
+    state.substopCards = state.inlineSubstopCards[blockId];
+  }
+  renderStopDetail();
+  initCardDrag(blockType, blockId);
+}
+
+// ── Inline card CRUD ──
+function openAddInlineCardModal(blockType, blockId) {
+  const types = [
+    { type: 'desc',    icon: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>`, name: 'Video', desc: 'Documentary, story, or walking scene.' },
+    { type: 'rudy',   icon: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>`, name: 'Story & Insights', desc: 'Text, images, your personal voice.' },
+    { type: 'photo',  icon: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="7" width="20" height="15" rx="2"/><circle cx="12" cy="14" r="3"/><path d="M16 3l-1.5 4H9.5L8 3"/></svg>`, name: 'Photo Challenge', desc: 'Invite the traveller to photograph something.' },
+    { type: 'quiz',   icon: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17" stroke-width="2.5"/></svg>`, name: 'Quiz', desc: 'Multiple choice question.' },
+    { type: 'partner',icon: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`, name: 'Partner', desc: 'Feature a local business.' },
+    { type: 'game',   icon: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 12h4"/><path d="M8 10v4"/><circle cx="16" cy="11" r="1" fill="currentColor"/><circle cx="18" cy="13" r="1" fill="currentColor"/></svg>`, name: 'Game', desc: 'A mini-game.' },
+    { type: 'finish', icon: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>`, name: 'Stop Completed', desc: 'End of stop message.' },
+  ];
+  if (blockType === 'substop') {
+    // Remove game + finish from substop types
+    types.splice(5, 2);
+  }
+  const colours = { desc:'rgba(45,107,228,0.22)', rudy:'rgba(255,107,53,0.2)', photo:'rgba(52,199,89,0.18)', quiz:'rgba(255,204,0,0.2)', partner:'rgba(175,82,222,0.2)', game:'rgba(255,59,48,0.18)', finish:'rgba(255,255,255,0.08)' };
+  const cols = { desc:'#6fa8f5', rudy:'#ff9a70', photo:'#5dd97a', quiz:'#ffd740', partner:'#d47ef8', game:'#ff7b72', finish:'rgba(255,255,255,0.6)' };
+  const borders = { desc:'rgba(45,107,228,0.45)', rudy:'rgba(255,107,53,0.4)', photo:'rgba(52,199,89,0.38)', quiz:'rgba(255,204,0,0.4)', partner:'rgba(175,82,222,0.4)', game:'rgba(255,59,48,0.38)', finish:'rgba(255,255,255,0.18)' };
+
+  openModal('Add Card', `
+    <p style="font-size:0.82rem;color:var(--text2);margin-bottom:1rem;">Tap a card type to add it.</p>
+    <div class="type-grid">
+      ${types.map(t => `
+        <div class="type-option" onclick="confirmAddInlineCard('${blockType}','${blockId}','${t.type}')"
+          style="background:${colours[t.type]||'var(--surface2)'};border-color:${borders[t.type]||'var(--border)'};">
+          <div style="width:26px;height:26px;display:flex;align-items:center;justify-content:center;color:white;opacity:0.9;margin:0 auto 0.2rem;">${t.icon}</div>
+          <div class="type-option-name" style="color:${cols[t.type]||'var(--text)'}">${t.name}</div>
+          <div class="type-option-desc">${t.desc}</div>
+        </div>`).join('')}
+    </div>
+  `, [{ label: 'Cancel', cls: 'btn-secondary', action: 'closeModalDirect()' }]);
+}
+
+async function confirmAddInlineCard(blockType, blockId, cardType) {
+  const isStop = blockType === 'stop';
+  if (!state.inlineCards) state.inlineCards = {};
+  if (!state.inlineSubstopCards) state.inlineSubstopCards = {};
+  const existing = isStop ? (state.inlineCards[blockId]||[]) : (state.inlineSubstopCards[blockId]||[]);
+  const pos = existing.length + 1;
+  const insertPayload = isStop
+    ? { stop_id: blockId, card_type: cardType, position: pos }
+    : { substop_id: blockId, card_type: cardType, position: pos };
+  const { data, error } = await sb.from('cards').insert(insertPayload).select().single();
+  if (error) { toast('Error creating card', 'error'); return; }
+  closeModalDirect();
+  toast('Card added', 'success');
+  // Reload inline cards
+  if (isStop) {
+    const { data: fresh } = await sb.from('cards').select('*').eq('stop_id', blockId).order('position');
+    state.inlineCards[blockId] = fresh || [];
+    state.cards = state.inlineCards[blockId];
+  } else {
+    const { data: fresh } = await sb.from('cards').select('*').eq('substop_id', blockId).order('position');
+    state.inlineSubstopCards[blockId] = fresh || [];
+    state.substopCards = state.inlineSubstopCards[blockId];
+  }
+  renderStopDetail();
+  // Open editor immediately
+  editInlineCard(data.id, cardType, blockType, blockId);
+}
+
+function editInlineCard(cardId, cardType, blockType, blockId) {
+  const isStop = blockType === 'stop';
+  const cards = isStop ? (state.inlineCards?.[blockId]||[]) : (state.inlineSubstopCards?.[blockId]||[]);
+  // Temporarily set state.cards so editCard works
+  const _savedCards = state.cards;
+  const _savedSubCards = state.substopCards;
+  state.cards = cards;
+  state.substopCards = cards;
+  if (isStop) {
+    state.currentStop = state.stops.find(x => x.id === blockId) || state.currentStop;
+    state.currentSubstop = null;
+  } else {
+    state.currentSubstop = state.allSubstops.find(x => x.id === blockId) || state.currentSubstop;
+  }
+  editCard(cardId);
+  // Override save btn
+  setTimeout(() => {
+    const saveBtn = document.querySelector('#modal-footer .btn-primary');
+    if (saveBtn) saveBtn.setAttribute('onclick', `saveInlineCard('${cardId}','${cardType}','${blockType}','${blockId}')`);
+  }, 0);
+  state.cards = _savedCards;
+  state.substopCards = _savedSubCards;
+}
+
+async function saveInlineCard(cardId, cardType, blockType, blockId) {
+  const payload = collectCardData(cardType);
+  const { error } = await sb.from('cards').update(payload).eq('id', cardId);
+  if (error) { toast('Save failed: ' + error.message, 'error'); return; }
+  closeModalDirect();
+  toast('Card saved', 'success');
+  const isStop = blockType === 'stop';
+  if (isStop) {
+    const { data } = await sb.from('cards').select('*').eq('stop_id', blockId).order('position');
+    if (!state.inlineCards) state.inlineCards = {};
+    state.inlineCards[blockId] = data || [];
+    state.cards = state.inlineCards[blockId];
+  } else {
+    const { data } = await sb.from('cards').select('*').eq('substop_id', blockId).order('position');
+    if (!state.inlineSubstopCards) state.inlineSubstopCards = {};
+    state.inlineSubstopCards[blockId] = data || [];
+    state.substopCards = state.inlineSubstopCards[blockId];
+  }
+  await ensurePartnersLoaded();
+  renderStopDetail();
+}
+
+async function deleteInlineCard(cardId, blockType, blockId) {
+  if (!confirm('Delete this card? This cannot be undone.')) return;
+  const { error } = await sb.from('cards').delete().eq('id', cardId);
+  if (error) { toast('Delete failed', 'error'); return; }
+  toast('Card deleted', 'info');
+  const isStop = blockType === 'stop';
+  if (isStop) {
+    const { data } = await sb.from('cards').select('*').eq('stop_id', blockId).order('position');
+    if (!state.inlineCards) state.inlineCards = {};
+    state.inlineCards[blockId] = data || [];
+    state.cards = state.inlineCards[blockId];
+  } else {
+    const { data } = await sb.from('cards').select('*').eq('substop_id', blockId).order('position');
+    if (!state.inlineSubstopCards) state.inlineSubstopCards = {};
+    state.inlineSubstopCards[blockId] = data || [];
+    state.substopCards = state.inlineSubstopCards[blockId];
+  }
+  renderStopDetail();
+}
+
+// ── Stop / Substop edit modals ──
+function openStopEditModal(stopId) {
+  const s = state.stops.find(x => x.id === stopId);
+  if (!s) return;
+  state.currentStop = s;
+  const authorLabel = state.currentTour?.author_card_label || "Author's Notes";
+  openModal('Edit Stop', `
+    <div class="form-grid" style="margin-bottom:1rem;">
+      <div class="field"><label>Stop Name</label><input type="text" id="mse-name" value="${escHtml(s.name||'')}" required></div>
+      <div class="field"><label>Local / Dutch Name</label><input type="text" id="mse-dutch" value="${escHtml(s.dutch_name||'')}"></div>
+    </div>
+    <div class="field" style="margin-bottom:1rem;"><label>Tagline</label><input type="text" id="mse-tagline" value="${escHtml(s.tagline||'')}"></div>
+    <div class="field" style="margin-bottom:1rem;"><label>Cover Image</label><input type="url" id="mse-img" value="${escHtml(s.photo_url||'')}"></div>
+    <div class="form-grid" style="margin-bottom:1rem;">
+      <div class="field"><label>Address</label><input type="text" id="mse-address" value="${escHtml(s.address||'')}"></div>
+      <div class="field"><label>Google Maps URL</label><input type="url" id="mse-map-url" value="${escHtml(s.map_url||'')}"></div>
+    </div>
+    <div class="form-grid cols-3" style="margin-bottom:1rem;">
+      <div class="field"><label>Longitude</label><input type="number" id="mse-lng" step="0.0001" value="${s.longitude||''}"></div>
+      <div class="field"><label>Latitude</label><input type="number" id="mse-lat" step="0.0001" value="${s.latitude||''}"></div>
+      <div class="field"><label>Stop Order</label><input type="number" id="mse-pos" min="1" value="${s.stop_number||''}"></div>
+    </div>
+    <div class="field" style="margin-bottom:1rem;"><label>Opener Video (Cloudflare ID)</label><input type="text" id="mse-cf-id" value="${escHtml(s.opener_cloudflare_id||'')}"></div>
+    <div class="field" style="margin-bottom:1rem;"><label>Description</label><textarea id="mse-desc" rows="3">${escHtml(s.description||'')}</textarea></div>
+    <div class="field"><label>${escHtml(authorLabel)} Notes</label><textarea id="mse-rudy" rows="3">${escHtml(s.rudy_notes||'')}</textarea></div>
+  `, [
+    { label: 'Cancel', cls: 'btn-secondary', action: 'closeModalDirect()' },
+    { label: 'Save Stop', cls: 'btn-primary', action: `saveStopModal('${s.id}')` },
+  ]);
+  setTimeout(() => { makeImageField('mse-img', 'stops'); makeVideoField('mse-cf-id'); }, 30);
+}
+
+async function saveStopModal(stopId) {
+  const g = id => document.getElementById(id)?.value.trim() || '';
+  const payload = {
+    name: g('mse-name'),
+    dutch_name: g('mse-dutch'),
+    tagline: g('mse-tagline'),
+    photo_url: g('mse-img') || null,
+    address: g('mse-address'),
+    map_url: g('mse-map-url'),
+    longitude: parseFloat(g('mse-lng')) || null,
+    latitude: parseFloat(g('mse-lat')) || null,
+    stop_number: parseInt(g('mse-pos')) || 1,
+    opener_cloudflare_id: g('mse-cf-id') || null,
+    description: g('mse-desc'),
+    rudy_notes: g('mse-rudy'),
+  };
+  const { error } = await sb.from('stops').update(payload).eq('id', stopId);
+  if (error) { toast('Save failed: ' + error.message, 'error'); return; }
+  closeModalDirect();
+  toast('Stop saved', 'success');
+  await loadStops();
+  state.currentStop = state.stops.find(x => x.id === stopId) || state.currentStop;
+  document.getElementById('stops-title').textContent = state.currentStop?.name || '';
+  renderOverworld();
+  renderStopDetail();
+}
+
+function openSubstopEditModal(substopId) {
+  const ss = state.allSubstops.find(x => x.id === substopId);
+  if (!ss) return;
+  state.currentSubstop = ss;
+  const authorLabel = state.currentTour?.author_card_label || "Author's Notes";
+  openModal('Edit Waypoint', `
+    <div class="form-grid" style="margin-bottom:1rem;">
+      <div class="field"><label>Name</label><input type="text" id="mss-name" value="${escHtml(ss.name||'')}"></div>
+      <div class="field"><label>Tagline</label><input type="text" id="mss-tagline" value="${escHtml(ss.tagline||'')}"></div>
+    </div>
+    <div class="field" style="margin-bottom:1rem;"><label>Cover Image</label><input type="url" id="mss-img" value="${escHtml(ss.photo_url||'')}"></div>
+    <div class="form-grid" style="margin-bottom:1rem;">
+      <div class="field"><label>Google Maps URL</label><input type="url" id="mss-map-url" value="${escHtml(ss.map_url||'')}"></div>
+    </div>
+    <div class="form-grid" style="margin-bottom:1rem;">
+      <div class="field"><label>Longitude</label><input type="number" id="mss-lng" step="0.0001" value="${ss.longitude||''}"></div>
+      <div class="field"><label>Latitude</label><input type="number" id="mss-lat" step="0.0001" value="${ss.latitude||''}"></div>
+    </div>
+    <div class="field"><label>${escHtml(authorLabel)} Notes</label><textarea id="mss-rudy" rows="3">${escHtml(ss.rudy_notes||'')}</textarea></div>
+  `, [
+    { label: 'Cancel', cls: 'btn-secondary', action: 'closeModalDirect()' },
+    { label: 'Save Waypoint', cls: 'btn-primary', action: `saveSubstopModal('${ss.id}')` },
+  ]);
+  setTimeout(() => makeImageField('mss-img', 'substops'), 30);
+}
+
+async function saveSubstopModal(substopId) {
+  const g = id => document.getElementById(id)?.value.trim() || '';
+  const payload = {
+    name: g('mss-name'),
+    tagline: g('mss-tagline'),
+    photo_url: g('mss-img') || null,
+    map_url: g('mss-map-url'),
+    longitude: parseFloat(g('mss-lng')) || null,
+    latitude: parseFloat(g('mss-lat')) || null,
+    rudy_notes: g('mss-rudy'),
+  };
+  const { error } = await sb.from('substops').update(payload).eq('id', substopId);
+  if (error) { toast('Save failed: ' + error.message, 'error'); return; }
+  closeModalDirect();
+  toast('Waypoint saved', 'success');
+  await loadStops();
+  state.currentStop = state.stops.find(x => x.id === state.currentStop?.id) || state.currentStop;
+  renderStopDetail();
+}
+
+async function deleteSubstopAndRefresh(id) {
+  if (!confirm('Delete this waypoint and all its cards?')) return;
+  const { error } = await sb.from('substops').delete().eq('id', id);
+  if (error) { toast('Delete failed', 'error'); return; }
+  toast('Waypoint deleted', 'info');
+  state.allSubstops = state.allSubstops.filter(x => x.id !== id);
+  renderStopDetail();
+}
+
+// ── Substop drag (constrained above main stop block) ──
+function initSubstopDrag() {
+  const area = document.getElementById('substop-drag-area');
+  if (!area) return;
+
+  let dragging = null;
+  const getGroups = () => Array.from(area.querySelectorAll('.substop-group'));
+
+  area.addEventListener('pointerdown', e => {
+    const handle = e.target.closest('[data-drag-substop]');
+    if (!handle) return;
+    const row = handle.closest('.substop-group');
+    if (!row) return;
+    const rect = row.getBoundingClientRect();
+    const ghost = document.createElement('div');
+    ghost.className = 'touch-drag-ghost';
+    const ss = state.allSubstops.find(x => x.id === handle.dataset.dragSubstop);
+    ghost.textContent = ss?.name || 'Waypoint';
+    ghost.style.width = rect.width + 'px';
+    ghost.style.left = rect.left + 'px';
+    ghost.style.top = (e.clientY - 20) + 'px';
+    document.body.appendChild(ghost);
+    row.style.opacity = '0.35';
+    dragging = { row, ghost, substopId: handle.dataset.dragSubstop, startY: e.clientY };
+    e.preventDefault();
+  }, { passive: false });
+
+  document.addEventListener('pointermove', e => {
+    if (!dragging) return;
+    dragging.ghost.style.top = (e.clientY - 20) + 'px';
+    // Find which group we're hovering
+    const groups = getGroups();
+    document.querySelectorAll('.substop-group').forEach(g => g.style.borderTop = '');
+    const hovered = groups.find(g => {
+      const r = g.getBoundingClientRect();
+      return e.clientY >= r.top && e.clientY < r.bottom && g !== dragging.row;
+    });
+    if (hovered) hovered.style.borderTop = '2px solid rgba(255,107,53,0.7)';
+  });
+
+  document.addEventListener('pointerup', async e => {
+    if (!dragging) return;
+    const { row, ghost, substopId } = dragging;
+    dragging = null;
+    ghost.remove();
+    row.style.opacity = '';
+    document.querySelectorAll('.substop-group').forEach(g => g.style.borderTop = '');
+
+    const groups = getGroups();
+    const hovered = groups.find(g => {
+      const r = g.getBoundingClientRect();
+      return e.clientY >= r.top && e.clientY < r.bottom && g !== row;
+    });
+    if (!hovered) return;
+
+    // Reorder substops
+    const subs = state.allSubstops.filter(x => x.stop_id === state.currentStop.id)
+      .sort((a,b) => (a.position||a.global_position||0) - (b.position||b.global_position||0));
+    const fromIdx = subs.findIndex(x => x.id === substopId);
+    const toSubId = hovered.dataset.substopId;
+    const toIdx = subs.findIndex(x => x.id === toSubId);
+    if (fromIdx === -1 || toIdx === -1 || fromIdx === toIdx) return;
+
+    // Reorder array
+    const [moved] = subs.splice(fromIdx, 1);
+    subs.splice(toIdx, 0, moved);
+
+    // Write new positions to DB
+    const updates = subs.map((ss, i) =>
+      sb.from('substops').update({ position: i + 1, global_position: state.currentStop.stop_number - 1 + (i+1)*0.1 }).eq('id', ss.id)
+    );
+    await Promise.all(updates);
+    await loadStops();
+    state.currentStop = state.stops.find(x => x.id === state.currentStop.id) || state.currentStop;
+    renderStopDetail();
+    toast('Order saved', 'success');
+  });
+}
+
+// ── Card drag (within inline panel) ──
+function initCardDrag(blockType, blockId) {
+  const bodyId = `inline-cards-body-${blockType}-${blockId}`;
+  const body = document.getElementById(bodyId);
+  if (!body) return;
+
+  let dragging = null;
+
+  body.addEventListener('pointerdown', e => {
+    const handle = e.target.closest('.drag-handle');
+    if (!handle) return;
+    const row = handle.closest('.card-row');
+    if (!row) return;
+    const rect = row.getBoundingClientRect();
+    const ghost = document.createElement('div');
+    ghost.className = 'touch-drag-ghost';
+    const type = row.querySelector('.card-type-pill')?.textContent || '';
+    const preview = row.querySelector('.card-preview')?.textContent || '';
+    ghost.textContent = type + ' — ' + preview.slice(0,30);
+    ghost.style.width = rect.width + 'px';
+    ghost.style.left = rect.left + 'px';
+    ghost.style.top = (e.clientY - 20) + 'px';
+    document.body.appendChild(ghost);
+    row.style.opacity = '0.3';
+    dragging = { row, ghost, cardId: row.dataset.id, blockType, blockId };
+    e.preventDefault();
+  }, { passive: false });
+
+  document.addEventListener('pointermove', e => {
+    if (!dragging || dragging.blockType !== blockType || dragging.blockId !== blockId) return;
+    dragging.ghost.style.top = (e.clientY - 20) + 'px';
+    const rows = Array.from(body.querySelectorAll('.card-row'));
+    rows.forEach(r => r.style.borderTop = '');
+    const hovered = rows.find(r => {
+      const rect = r.getBoundingClientRect();
+      return e.clientY >= rect.top && e.clientY < rect.bottom && r !== dragging.row;
+    });
+    if (hovered) hovered.style.borderTop = '2px solid rgba(255,107,53,0.7)';
+  });
+
+  document.addEventListener('pointerup', async e => {
+    if (!dragging || dragging.blockType !== blockType || dragging.blockId !== blockId) return;
+    const { row, ghost, cardId, blockType: bt, blockId: bid } = dragging;
+    dragging = null;
+    ghost.remove();
+    row.style.opacity = '';
+    const rows = Array.from(body.querySelectorAll('.card-row'));
+    rows.forEach(r => r.style.borderTop = '');
+
+    const hovered = rows.find(r => {
+      const rect = r.getBoundingClientRect();
+      return e.clientY >= rect.top && e.clientY < rect.bottom && r !== row;
+    });
+    if (!hovered) return;
+
+    const cards = bt === 'stop' ? (state.inlineCards?.[bid]||[]) : (state.inlineSubstopCards?.[bid]||[]);
+    const fromIdx = cards.findIndex(c => c.id === cardId);
+    const toIdx = cards.findIndex(c => c.id === hovered.dataset.id);
+    if (fromIdx === -1 || toIdx === -1 || fromIdx === toIdx) return;
+
+    const reordered = [...cards];
+    const [moved] = reordered.splice(fromIdx, 1);
+    reordered.splice(toIdx, 0, moved);
+
+    const updates = reordered.map((c, i) => sb.from('cards').update({ position: i + 1 }).eq('id', c.id));
+    await Promise.all(updates);
+
+    const { data: fresh } = bt === 'stop'
+      ? await sb.from('cards').select('*').eq('stop_id', bid).order('position')
+      : await sb.from('cards').select('*').eq('substop_id', bid).order('position');
+    if (bt === 'stop') { if (!state.inlineCards) state.inlineCards={}; state.inlineCards[bid] = fresh||[]; }
+    else { if (!state.inlineSubstopCards) state.inlineSubstopCards={}; state.inlineSubstopCards[bid] = fresh||[]; }
+    renderStopDetail();
+    toast('Card order saved', 'success');
+  });
+}
+
+// ── renderStops compat shim (called from loadStops in some paths) ──
+function renderStops() {
+  // If we're in overworld view, re-render overworld
+  // If in stop detail view, re-render that
+  const overworldSection = document.getElementById('section-overworld');
+  if (overworldSection && overworldSection.classList.contains('active')) {
+    renderOverworld();
+  } else if (state.currentStop) {
+    renderStopDetail();
+  }
+}
+
+function openAddStopModal() {
+  const nextNum = (state.stops.length > 0 ? Math.max(...state.stops.map(s => s.stop_number||0)) + 1 : 1);
+  openModal('Add Main Stop', `
+    <div style="font-size:0.82rem;color:var(--text2);margin-bottom:1rem;line-height:1.55;">A main stop is a primary destination that appears on the overworld map. You can add waypoints once inside a stop.</div>
+    <div class="form-grid" style="margin-bottom:1rem;">
+      <div class="field"><label>Stop Name</label><input type="text" id="nas-name" placeholder="e.g. Erasmus Bridge"></div>
+      <div class="field"><label>Local / Dutch Name</label><input type="text" id="nas-dutch" placeholder="e.g. Erasmusbrug"></div>
+    </div>
+    <div class="field" style="margin-bottom:1rem;"><label>Tagline</label><input type="text" id="nas-tagline" placeholder="One punchy line about this stop"></div>
+    <div class="field" style="margin-bottom:1rem;"><label>Cover Image</label><input type="url" id="nas-img" placeholder="https://…"></div>
+    <div class="field"><label>Stop Order</label><input type="number" id="nas-pos" value="${nextNum}" min="1"></div>
+  `, [
+    { label: 'Cancel', cls: 'btn-secondary', action: 'closeModalDirect()' },
+    { label: 'Add Stop', cls: 'btn-primary', action: 'confirmAddMainStop()' },
+  ]);
+  setTimeout(() => makeImageField('nas-img', 'stops'), 30);
+}
+
+async function confirmAddMainStop() {
+  const g = id => document.getElementById(id)?.value.trim() || '';
+  if (!g('nas-name')) { toast('Stop name is required', 'error'); return; }
+  const payload = {
+    tour_id: state.currentTour.id,
+    name: g('nas-name'),
+    dutch_name: g('nas-dutch'),
+    tagline: g('nas-tagline'),
+    photo_url: g('nas-img') || null,
+    stop_number: parseInt(g('nas-pos')) || (state.stops.length + 1),
+  };
+  const { error } = await sb.from('stops').insert(payload);
+  if (error) { toast('Error adding stop: ' + error.message, 'error'); return; }
+  closeModalDirect();
+  toast('Stop added', 'success');
+  await loadStops();
+  renderOverworld();
 }
 
 function editStop(id) {
@@ -1895,7 +2701,10 @@ async function deleteStop(id) {
   toast('Stop deleted', 'info');
   state.stops = state.stops.filter(x => x.id !== id);
   state.allSubstops = state.allSubstops.filter(x => x.stop_id !== id);
-  renderStops();
+  // If we deleted the current stop, go back to overworld
+  if (state.currentStop?.id === id) { state.currentStop = null; state.expandedBlockId = null; }
+  renderOverworld();
+  showSection('overworld');
 }
 
 function updateSidebarStop() {
@@ -2864,11 +3673,14 @@ async function deleteSubstopPartner(id) {
 
 // ── Navigation helpers ──
 function returnToStops() {
-  // Clear both sidebars when returning to stops list
   state.currentSubstop = null;
-  const _ssss=document.getElementById('sidebar-substop-section'); if(_ssss)_ssss.style.display='none';
-  const _sss=document.getElementById('sidebar-stop-section'); if(_sss)_sss.style.display='none';
-  showSection('stops');
+  state.expandedBlockId = null;
+  if (state.currentTour) {
+    renderOverworld();
+    showSection('overworld');
+  } else {
+    showSection('tours');
+  }
 }
 
 // ── Tour Start / Finish editors ──
@@ -2896,8 +3708,8 @@ async function saveTourStart(e) {
   if (error) { toast('Save failed: ' + error.message, 'error'); return; }
   Object.assign(state.currentTour, payload);
   toast('Tour start saved', 'success');
-  await loadStops();
-  returnToStops();
+  renderOverworld();
+  showSection('overworld');
 }
 
 function editTourFinish() {
@@ -2913,8 +3725,8 @@ async function saveTourFinish(e) {
   if (error) { toast('Save failed: ' + error.message, 'error'); return; }
   Object.assign(state.currentTour, payload);
   toast('Tour finish saved', 'success');
-  await loadStops();
-  returnToStops();
+  renderOverworld();
+  showSection('overworld');
 }
 
 
