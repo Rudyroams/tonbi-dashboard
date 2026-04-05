@@ -658,21 +658,23 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .overworld-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.1rem;
+  grid-template-rows: repeat(3, 1fr);
+  gap: 1rem;
   margin-bottom: 0.75rem;
   flex: 1;
-  grid-template-rows: repeat(3, 1fr);
   overflow: hidden;
+  /* Each cell is square via align-content */
+  align-items: stretch;
 }
 .overworld-slot {
   border-radius: var(--radius);
-  display: flex; flex-direction: column; align-items: stretch;
-  cursor: pointer; position: relative; overflow: hidden;
+  overflow: hidden;
+  cursor: pointer; position: relative;
   transition: transform 0.12s, box-shadow 0.12s;
   user-select: none; -webkit-user-select: none;
   touch-action: none;
   -webkit-touch-callout: none;
-  aspect-ratio: 1; /* always square */
+  display: flex; flex-direction: column;
 }
 .overworld-slot:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.4); }
 .overworld-slot.filled {
@@ -699,29 +701,24 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   box-shadow: 0 0 0 2px rgba(255,107,53,0.4) !important;
 }
 .overworld-slot.dragging-source { opacity: 0.35; }
-/* Thumbnail fills top ~70% of the square tile */
+
+/* Thumbnail — fills all available space above the name strip */
+.overworld-slot-thumb-wrap {
+  flex: 1; position: relative; overflow: hidden; min-height: 0;
+}
 .overworld-slot-thumb {
-  position: absolute; top: 0; left: 0; right: 0;
-  height: 72%; object-fit: cover;
+  width: 100%; height: 100%; object-fit: cover; display: block;
   -webkit-user-drag: none; user-drag: none;
   pointer-events: none;
 }
 .overworld-slot-thumb-placeholder {
-  position: absolute; top: 0; left: 0; right: 0;
-  height: 72%; background: rgba(0,0,0,0.3);
+  width: 100%; height: 100%; background: rgba(0,0,0,0.3);
   display: flex; align-items: center; justify-content: center;
   pointer-events: none;
 }
-/* Subtle dark gradient so badge reads over image */
-.overworld-slot-img-fade {
-  position: absolute; top: 0; left: 0; right: 0; height: 72%;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.22) 100%);
-  pointer-events: none;
-}
-/* Number badge — centred over the image */
+/* Badge overlaid in centre of thumbnail wrap */
 .overworld-slot-num {
-  position: absolute;
-  top: 0; left: 0; right: 0; height: 72%;
+  position: absolute; inset: 0;
   display: flex; align-items: center; justify-content: center;
   pointer-events: none;
 }
@@ -732,17 +729,19 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   display: flex; align-items: center; justify-content: center;
   box-shadow: 0 2px 10px rgba(0,0,0,0.55), 0 0 0 2px rgba(255,255,255,0.18);
 }
-/* Name in bottom 28% */
+/* Name strip at bottom — fixed height */
 .overworld-slot-body {
-  position: absolute; bottom: 0; left: 0; right: 0; height: 28%;
+  flex-shrink: 0;
+  height: 32px;
   display: flex; align-items: center; justify-content: center;
   padding: 0 0.3rem;
-  background: linear-gradient(135deg,rgba(8,90,110,0.92) 0%,rgba(10,108,130,0.88) 100%);
+  background: linear-gradient(135deg,rgba(8,90,110,0.95) 0%,rgba(10,108,130,0.92) 100%);
   pointer-events: none;
+  border-top: 1px solid rgba(15,175,175,0.2);
 }
 .overworld-slot-name {
-  font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.72rem;
-  color: white; line-height: 1.2; text-align: center; word-break: break-word;
+  font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.7rem;
+  color: white; line-height: 1.15; text-align: center; word-break: break-word;
   pointer-events: none;
 }
 /* Actions — only delete */
@@ -787,7 +786,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 
 /* ── Inline card panel — attached to stop block ── */
 .inline-cards-panel {
-  border-radius: var(--radius) 0 var(--radius) var(--radius); /* rounded top-left, square top-right to attach to block */
+  border-radius: var(--radius) var(--radius) var(--radius) var(--radius);
   background: rgba(6,72,90,0.9);
   border: 1px solid rgba(15,195,195,0.35);
   border-top: none;
@@ -1948,16 +1947,17 @@ function renderOverworld() {
       ? `<img class="overworld-slot-thumb" src="${escHtml(s.photo_url)}" loading="lazy" onerror="this.style.display='none'" draggable="false">`
       : `<div class="overworld-slot-thumb-placeholder"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1.5" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>`;
     return `<div class="overworld-slot filled" data-slot="${i}" data-stop-id="${s.id}">
-      ${thumb}
-      <div class="overworld-slot-img-fade"></div>
-      <div class="overworld-slot-num"><div class="overworld-slot-num-inner">${s.stop_number}</div></div>
+      <div class="overworld-slot-thumb-wrap">
+        ${thumb}
+        <div class="overworld-slot-num"><div class="overworld-slot-num-inner">${s.stop_number}</div></div>
+      </div>
       <div class="overworld-slot-body">
         <div class="overworld-slot-name">${escHtml(s.name)}</div>
       </div>
       <div class="overworld-slot-actions" onclick="event.stopPropagation()">
         <button class="btn btn-ghost btn-icon btn-sm" onclick="deleteStop('${s.id}')" title="Delete"
           style="background:rgba(0,0,0,0.55);width:26px;height:26px;padding:0;border-radius:6px;">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="url(#trash-grad)" stroke-width="2.5" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><defs><linearGradient id="tg121225" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff3b30"/><stop offset="45%" stop-color="#ff6b35"/><stop offset="100%" stop-color="#ffcc00"/></linearGradient></defs><polyline points="3 6 5 6 21 6" stroke="url(#tg121225)"/><path d="M19 6l-1 14H6L5 6" stroke="url(#tg121225)"/><path d="M10 11v6" stroke="url(#tg121225)"/><path d="M14 11v6" stroke="url(#tg121225)"/><path d="M9 6V4h6v2" stroke="url(#tg121225)"/></svg>
         </button>
       </div>
     </div>`;
@@ -2182,7 +2182,7 @@ function renderStopDetail() {
     ? `<img class="stop-thumb" src="${escHtml(url)}" loading="lazy" onerror="this.style.display='none'">`
     : `<div class="stop-thumb-placeholder"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.5" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>`;
 
-  const trashIcon = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="url(#trash-grad)" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>`;
+  const trashIcon = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><defs><linearGradient id="tg13132" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff3b30"/><stop offset="45%" stop-color="#ff6b35"/><stop offset="100%" stop-color="#ffcc00"/></linearGradient></defs><polyline points="3 6 5 6 21 6" stroke="url(#tg13132)"/><path d="M19 6l-1 14H6L5 6" stroke="url(#tg13132)"/><path d="M10 11v6" stroke="url(#tg13132)"/><path d="M14 11v6" stroke="url(#tg13132)"/><path d="M9 6V4h6v2" stroke="url(#tg13132)"/></svg>`;
 
   const orangeArrow = `<div class="substop-connector"><svg width="14" height="18" viewBox="0 0 18 28" fill="none" stroke="rgba(255,107,53,0.5)" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="18"/><polyline points="4 13 9 19 14 13"/></svg></div>`;
 
@@ -2270,7 +2270,7 @@ function renderInlineCards(blockType, blockId) {
           <span class="card-preview">${escHtml(cardPreviewText(c))}</span>
           <div class="row-actions" onclick="event.stopPropagation()">
             <button class="btn btn-ghost btn-icon btn-sm" onclick="${deleteFn}">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="url(#trash-grad)" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><defs><linearGradient id="tg13132" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff3b30"/><stop offset="45%" stop-color="#ff6b35"/><stop offset="100%" stop-color="#ffcc00"/></linearGradient></defs><polyline points="3 6 5 6 21 6" stroke="url(#tg13132)"/><path d="M19 6l-1 14H6L5 6" stroke="url(#tg13132)"/><path d="M10 11v6" stroke="url(#tg13132)"/><path d="M14 11v6" stroke="url(#tg13132)"/><path d="M9 6V4h6v2" stroke="url(#tg13132)"/></svg>
             </button>
           </div>
         </div>`;
@@ -3020,7 +3020,7 @@ function renderCards() {
       <span class="card-preview">${escHtml(cardPreviewText(c))}</span>
       <div class="row-actions">
         <button class="btn btn-ghost btn-icon btn-sm" onclick="event.stopPropagation();deleteCard('${c.id}')">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="url(#trash-grad)" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><defs><linearGradient id="tg14142" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff3b30"/><stop offset="45%" stop-color="#ff6b35"/><stop offset="100%" stop-color="#ffcc00"/></linearGradient></defs><polyline points="3 6 5 6 21 6" stroke="url(#tg14142)"/><path d="M19 6l-1 14H6L5 6" stroke="url(#tg14142)"/><path d="M10 11v6" stroke="url(#tg14142)"/><path d="M14 11v6" stroke="url(#tg14142)"/><path d="M9 6V4h6v2" stroke="url(#tg14142)"/></svg>
         </button>
       </div>
     </div>`;
@@ -3401,7 +3401,7 @@ function renderPartners() {
       </div>
       <div class="row-actions">
         <button class="btn btn-ghost btn-icon btn-sm" onclick="deletePartner('${p.id}'">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="url(#trash-grad)" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><defs><linearGradient id="tg14142" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff3b30"/><stop offset="45%" stop-color="#ff6b35"/><stop offset="100%" stop-color="#ffcc00"/></linearGradient></defs><polyline points="3 6 5 6 21 6" stroke="url(#tg14142)"/><path d="M19 6l-1 14H6L5 6" stroke="url(#tg14142)"/><path d="M10 11v6" stroke="url(#tg14142)"/><path d="M14 11v6" stroke="url(#tg14142)"/><path d="M9 6V4h6v2" stroke="url(#tg14142)"/></svg>
         </button>
       </div>
     </div>
@@ -3680,7 +3680,7 @@ function renderSubstopCards() {
       <span class="card-preview">${escHtml(cardPreviewText(c))}</span>
       <div class="row-actions">
         <button class="btn btn-ghost btn-icon btn-sm" onclick="event.stopPropagation();deleteSubstopCard('${c.id}')">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="url(#trash-grad)" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><defs><linearGradient id="tg14142" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff3b30"/><stop offset="45%" stop-color="#ff6b35"/><stop offset="100%" stop-color="#ffcc00"/></linearGradient></defs><polyline points="3 6 5 6 21 6" stroke="url(#tg14142)"/><path d="M19 6l-1 14H6L5 6" stroke="url(#tg14142)"/><path d="M10 11v6" stroke="url(#tg14142)"/><path d="M14 11v6" stroke="url(#tg14142)"/><path d="M9 6V4h6v2" stroke="url(#tg14142)"/></svg>
         </button>
       </div>
     </div>`;
@@ -3802,7 +3802,7 @@ function renderSubstopPartners() {
       <div class="row-actions">
         <button class="btn btn-secondary btn-sm" onclick="editSubstopPartner('${p.id}')" style="background:rgba(50,18,78,0.7);border-color:rgba(130,65,210,0.45);color:rgba(215,165,255,0.95);">Edit</button>
         <button class="btn btn-ghost btn-icon btn-sm" onclick="deleteSubstopPartner('${p.id}')">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="url(#trash-grad)" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><defs><linearGradient id="tg14142" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff3b30"/><stop offset="45%" stop-color="#ff6b35"/><stop offset="100%" stop-color="#ffcc00"/></linearGradient></defs><polyline points="3 6 5 6 21 6" stroke="url(#tg14142)"/><path d="M19 6l-1 14H6L5 6" stroke="url(#tg14142)"/><path d="M10 11v6" stroke="url(#tg14142)"/><path d="M14 11v6" stroke="url(#tg14142)"/><path d="M9 6V4h6v2" stroke="url(#tg14142)"/></svg>
         </button>
       </div>
     </div>
@@ -4253,7 +4253,7 @@ async function loadAndShowAllPartners() {
       </div>
       <div class="row-actions">
         <button class="btn btn-ghost btn-icon btn-sm" onclick="event.stopPropagation();deletePartnerAndRefresh('${p.id}'" title="Delete partner">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="url(#trash-grad)" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><defs><linearGradient id="tg14142" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff3b30"/><stop offset="45%" stop-color="#ff6b35"/><stop offset="100%" stop-color="#ffcc00"/></linearGradient></defs><polyline points="3 6 5 6 21 6" stroke="url(#tg14142)"/><path d="M19 6l-1 14H6L5 6" stroke="url(#tg14142)"/><path d="M10 11v6" stroke="url(#tg14142)"/><path d="M14 11v6" stroke="url(#tg14142)"/><path d="M9 6V4h6v2" stroke="url(#tg14142)"/></svg>
         </button>
       </div>
     </div>`;
