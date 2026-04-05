@@ -1072,20 +1072,25 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
         <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(6,48,64,0.7) 0%,rgba(8,74,90,0.65) 30%,rgba(8,88,88,0.7) 60%,rgba(6,61,80,0.7) 100%);"></div>
       </div>
       <div style="position:relative;z-index:1;">
-      <div style="text-align:center;margin-bottom:1rem;">
-        <div id="overworld-tour-title" style="font-family:'Nunito',sans-serif;font-size:2rem;font-weight:900;color:white;line-height:1.05;margin-bottom:0.2rem;"></div>
-        <div style="font-family:'Nunito',sans-serif;font-size:0.75rem;font-weight:800;background:linear-gradient(160deg,#ff3b30 0%,#ff6b35 45%,#ffcc00 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-transform:uppercase;letter-spacing:0.14em;">Overworld Map</div>
-      </div>
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;">
-        <div style="display:flex;gap:0.5rem;">
-          <button class="btn btn-secondary btn-sm" onclick="_prevSection='overworld';showSection('tour-edit')" style="background:rgba(26,111,181,0.28);border-color:rgba(26,111,181,0.6);color:rgba(200,225,255,1);">Tour Settings</button>
-          <button class="btn btn-secondary btn-sm" onclick="loadAndShowAllPartners()" style="background:rgba(120,60,200,0.28);border-color:rgba(120,60,200,0.6);color:rgba(220,185,255,1);">Partners</button>
+        <!-- Tour title -->
+        <div style="text-align:center;margin-bottom:1rem;">
+          <div id="overworld-tour-title" style="font-family:'Nunito',sans-serif;font-size:2rem;font-weight:900;color:white;line-height:1.05;margin-bottom:0.2rem;"></div>
+          <div style="font-family:'Nunito',sans-serif;font-size:0.75rem;font-weight:800;background:linear-gradient(160deg,#ff3b30 0%,#ff6b35 45%,#ffcc00 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-transform:uppercase;letter-spacing:0.14em;">Overworld Map</div>
         </div>
-        <button class="btn btn-primary btn-sm" onclick="openAddStopModal()">+ Add Stop</button>
-      </div>
-      <div id="overworld-grid" class="overworld-grid"></div>
-      <!-- Tour Start / Finish quick blocks -->
-      <div id="overworld-start-finish"></div>
+        <!-- Tour Start — centred, Partners left, Tour Settings right -->
+        <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:0.5rem;align-items:center;margin-bottom:1rem;">
+          <div>
+            <button class="btn btn-secondary btn-sm" onclick="loadAndShowAllPartners()" style="background:rgba(120,60,200,0.28);border-color:rgba(120,60,200,0.6);color:rgba(220,185,255,1);width:100%;justify-content:center;">Partners</button>
+          </div>
+          <div id="overworld-tour-start-block"></div>
+          <div style="text-align:right;">
+            <button class="btn btn-secondary btn-sm" onclick="_prevSection='overworld';showSection('tour-edit')" style="background:rgba(26,111,181,0.28);border-color:rgba(26,111,181,0.6);color:rgba(200,225,255,1);width:100%;justify-content:center;">Tour Settings</button>
+          </div>
+        </div>
+        <!-- Stop grid -->
+        <div id="overworld-grid" class="overworld-grid"></div>
+        <!-- Tour Finish -->
+        <div id="overworld-tour-finish-block" style="margin-top:0.5rem;"></div>
       </div>
     </div>
 
@@ -1832,6 +1837,14 @@ async function loadStops() {
   ]);
   if (stopsRes.error) { toast('Error loading stops', 'error'); return; }
   state.stops = stopsRes.data || [];
+
+  // Auto-clean any stops with stop_number > 8 (out of range)
+  const outOfRange = state.stops.filter(s => s.stop_number > 8);
+  if (outOfRange.length) {
+    await Promise.all(outOfRange.map(s => sb.from('stops').delete().eq('id', s.id)));
+    state.stops = state.stops.filter(s => s.stop_number <= 8);
+    toast(`Removed ${outOfRange.length} stop(s) outside the 8-slot limit`, 'info');
+  }
   state.allSubstops = substopsRes.data || [];
   // Load all cards for all stops so partner badges work
   const stopIds = state.stops.map(s => s.id);
@@ -1875,18 +1888,18 @@ function renderOverworld() {
 
   grid.innerHTML = slots.map((s, i) => {
     if (!s) {
-      return `<div class="overworld-slot empty" data-slot="${i}">
-        <div style="display:flex;flex-direction:column;align-items:center;gap:0.35rem;opacity:0.25;">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          <div style="font-size:0.65rem;font-weight:600;color:white;">Slot ${i+1}</div>
+      // Empty slot — shows "+ Add Stop" button
+      return `<div class="overworld-slot empty" data-slot="${i}" onclick="openAddStopModal(${i+1})" style="cursor:pointer;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.4rem;opacity:0.45;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <div style="font-size:0.62rem;font-weight:700;color:white;letter-spacing:0.04em;">Add Stop</div>
         </div>
       </div>`;
     }
     const thumb = s.photo_url
       ? `<img class="overworld-slot-thumb" src="${escHtml(s.photo_url)}" loading="lazy" onerror="this.style.display='none'" draggable="false">`
       : `<div class="overworld-slot-thumb-placeholder"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>`;
-    return `<div class="overworld-slot filled" data-slot="${i}" data-stop-id="${s.id}"
-        onclick="openStopDetail('${s.id}')">
+    return `<div class="overworld-slot filled" data-slot="${i}" data-stop-id="${s.id}">
       ${thumb}
       <div class="overworld-slot-overlay"></div>
       <div class="overworld-slot-num">${s.stop_number}</div>
@@ -1907,28 +1920,30 @@ function renderOverworld() {
     </div>`;
   }).join('');
 
-  // Tour Start / Finish blocks
-  const sf = document.getElementById('overworld-start-finish');
-  if (sf) {
-    sf.innerHTML = `
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:0.5rem;">
-      <div style="background:linear-gradient(135deg,rgba(15,155,142,0.18),rgba(45,63,170,0.18));border:1px solid rgba(15,155,142,0.35);border-radius:var(--radius);padding:0.75rem 0.85rem;cursor:pointer;display:flex;align-items:center;gap:0.6rem;backdrop-filter:blur(12px);" onclick="editTourStart()">
-        <div style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#0f9b8e,#2d3faa);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-        </div>
-        <div style="flex:1;min-width:0;">
-          <div style="font-size:0.82rem;font-weight:700;color:var(--text);">Tour Start</div>
-          <div style="font-size:0.68rem;color:rgba(255,255,255,0.5);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(state.currentTour?.meeting_point_name || 'Set meeting point')}</div>
-        </div>
+  // Tour Start block (centred above grid, rendered in its own element)
+  const startEl = document.getElementById('overworld-tour-start-block');
+  if (startEl) {
+    startEl.innerHTML = `<div style="background:linear-gradient(135deg,rgba(15,155,142,0.22),rgba(45,63,170,0.22));border:1px solid rgba(15,155,142,0.4);border-radius:var(--radius);padding:0.6rem 0.85rem;cursor:pointer;display:flex;align-items:center;gap:0.6rem;backdrop-filter:blur(12px);white-space:nowrap;" onclick="editTourStart()">
+      <div style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#0f9b8e,#2d3faa);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
       </div>
-      <div style="background:linear-gradient(135deg,rgba(15,155,142,0.18),rgba(45,63,170,0.18));border:1px solid rgba(15,155,142,0.35);border-radius:var(--radius);padding:0.75rem 0.85rem;cursor:pointer;display:flex;align-items:center;gap:0.6rem;backdrop-filter:blur(12px);" onclick="editTourFinish()">
-        <div style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#0f9b8e,#2d3faa);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-        </div>
-        <div style="flex:1;min-width:0;">
-          <div style="font-size:0.82rem;font-weight:700;color:var(--text);">Tour Finish</div>
-          <div style="font-size:0.68rem;color:rgba(255,255,255,0.5);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(state.currentTour?.finish_message ? state.currentTour.finish_message.slice(0,40)+'…' : 'Set finish message')}</div>
-        </div>
+      <div style="min-width:0;">
+        <div style="font-size:0.78rem;font-weight:700;color:var(--text);">Tour Start</div>
+        <div style="font-size:0.62rem;color:rgba(255,255,255,0.5);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:120px;">${escHtml(state.currentTour?.meeting_point_name || 'Set meeting point')}</div>
+      </div>
+    </div>`;
+  }
+
+  // Tour Finish block (full width below grid)
+  const finishEl = document.getElementById('overworld-tour-finish-block');
+  if (finishEl) {
+    finishEl.innerHTML = `<div style="background:linear-gradient(135deg,rgba(15,155,142,0.18),rgba(45,63,170,0.18));border:1px solid rgba(15,155,142,0.35);border-radius:var(--radius);padding:0.75rem 0.85rem;cursor:pointer;display:flex;align-items:center;gap:0.6rem;backdrop-filter:blur(12px);" onclick="editTourFinish()">
+      <div style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#0f9b8e,#2d3faa);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:0.82rem;font-weight:700;color:var(--text);">Tour Finish</div>
+        <div style="font-size:0.68rem;color:rgba(255,255,255,0.5);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(state.currentTour?.finish_message ? state.currentTour.finish_message.replace(/<[^>]*>/g,'').slice(0,60)+'…' : 'Set finish message')}</div>
       </div>
     </div>`;
   }
@@ -1943,11 +1958,11 @@ function initOverworldDrag() {
   grid._dragInited = true;
 
   let drag = null;
+  const DRAG_THRESHOLD = 8; // px before drag activates
 
   function onDown(e) {
     const slot = e.target.closest('.overworld-slot.filled');
     if (!slot || e.target.closest('.overworld-slot-actions')) return;
-    // Prevent image pick-up on mobile
     e.preventDefault();
 
     const stopId = slot.dataset.stopId;
@@ -1955,71 +1970,102 @@ function initOverworldDrag() {
     const s = state.stops.find(x => x.id === stopId);
     const rect = slot.getBoundingClientRect();
 
+    // Store pending drag — don't activate until threshold exceeded
+    drag = {
+      stopId, fromSlot, slot, pointerId: e.pointerId,
+      startX: e.clientX, startY: e.clientY,
+      ghost: null, active: false,
+      slotW: rect.width, s
+    };
+    grid.setPointerCapture(e.pointerId);
+  }
+
+  function activateDrag(e) {
+    if (!drag || drag.active) return;
+    const s = drag.s;
     const ghost = document.createElement('div');
     ghost.className = 'overworld-drag-ghost';
-    ghost.innerHTML = `<div style="width:24px;height:24px;border-radius:50%;background:linear-gradient(160deg,#ff3b30,#ff6b35,#ffcc00);display:flex;align-items:center;justify-content:center;font-family:Nunito,sans-serif;font-weight:900;font-size:0.85rem;color:white;flex-shrink:0;">${s?.stop_number||''}</div><span>${escHtml(s?.name||'')}</span>`;
-    ghost.style.left = (e.clientX - rect.width / 2) + 'px';
-    ghost.style.top  = (e.clientY - 28) + 'px';
+    // Full-tile-width ghost with number + name
+    ghost.style.width = drag.slotW + 'px';
+    ghost.innerHTML = `
+      <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(160deg,#ff3b30,#ff6b35,#ffcc00);display:flex;align-items:center;justify-content:center;font-family:Nunito,sans-serif;font-weight:900;font-size:1rem;color:white;flex-shrink:0;">${s?.stop_number||''}</div>
+      <span style="font-size:0.9rem;font-weight:700;">${escHtml(s?.name||'')}</span>`;
+    ghost.style.left = (e.clientX - drag.slotW / 2) + 'px';
+    ghost.style.top  = (e.clientY - 30) + 'px';
     document.body.appendChild(ghost);
-
-    slot.classList.add('dragging-source');
-
-    // Capture pointer so we get move/up even outside the element
-    grid.setPointerCapture(e.pointerId);
-
-    drag = { stopId, fromSlot, ghost, slot, pointerId: e.pointerId };
+    drag.ghost = ghost;
+    drag.active = true;
+    drag.slot.classList.add('dragging-source');
   }
 
   function onMove(e) {
     if (!drag) return;
     e.preventDefault();
-    drag.ghost.style.left = (e.clientX - drag.ghost.offsetWidth / 2) + 'px';
-    drag.ghost.style.top  = (e.clientY - 28) + 'px';
 
-    grid.releasePointerCapture(drag.pointerId);
+    const dx = e.clientX - drag.startX;
+    const dy = e.clientY - drag.startY;
+
+    if (!drag.active && Math.hypot(dx, dy) > DRAG_THRESHOLD) {
+      activateDrag(e);
+    }
+
+    if (!drag.active) return;
+
+    drag.ghost.style.left = (e.clientX - drag.slotW / 2) + 'px';
+    drag.ghost.style.top  = (e.clientY - 30) + 'px';
+
+    // Temporarily release capture to hit-test, then recapture
+    try { grid.releasePointerCapture(drag.pointerId); } catch(_){}
     const el = document.elementFromPoint(e.clientX, e.clientY);
     try { grid.setPointerCapture(drag.pointerId); } catch(_){}
 
+    // Only highlight filled slots (no empty drops)
     document.querySelectorAll('.overworld-slot').forEach(s => s.classList.remove('drag-over-slot'));
-    const target = el?.closest('.overworld-slot');
+    const target = el?.closest('.overworld-slot.filled');
     if (target && target !== drag.slot) target.classList.add('drag-over-slot');
   }
 
   async function onUp(e) {
     if (!drag) return;
-    const { stopId, fromSlot, ghost, slot } = drag;
+    const { stopId, fromSlot, ghost, slot, active } = drag;
     drag = null;
 
-    ghost.remove();
+    if (ghost) ghost.remove();
     slot.classList.remove('dragging-source');
     document.querySelectorAll('.overworld-slot').forEach(s => s.classList.remove('drag-over-slot'));
-
-    // Find drop target via coordinates
     try { grid.releasePointerCapture(e.pointerId); } catch(_){}
+
+    if (!active) {
+      // Was a tap, not a drag — trigger the click action
+      openStopDetail(slot.dataset.stopId);
+      return;
+    }
+
+    // Find drop target — only filled slots
     const el = document.elementFromPoint(e.clientX, e.clientY);
-    const targetSlot = el?.closest('.overworld-slot');
+    const targetSlot = el?.closest('.overworld-slot.filled');
     if (!targetSlot || targetSlot === slot) return;
 
     const toSlot = parseInt(targetSlot.dataset.slot);
-    const toStopId = targetSlot.dataset.stopId || null;
-    const swapStop = toStopId ? state.stops.find(x => x.id === toStopId) : null;
+    const toStopId = targetSlot.dataset.stopId;
+    const swapStop = state.stops.find(x => x.id === toStopId);
+    if (!swapStop) return; // safety: only swap with filled slots
+
     const newNum = toSlot + 1;
     const oldNum = fromSlot + 1;
 
-    const updates = [sb.from('stops').update({ stop_number: newNum }).eq('id', stopId)];
-    if (swapStop) updates.push(sb.from('stops').update({ stop_number: oldNum }).eq('id', swapStop.id));
-
-    await Promise.all(updates);
+    await Promise.all([
+      sb.from('stops').update({ stop_number: newNum }).eq('id', stopId),
+      sb.from('stops').update({ stop_number: oldNum }).eq('id', swapStop.id),
+    ]);
     await loadStops();
     renderOverworld();
-    // No toast — silent save
   }
 
   grid.addEventListener('pointerdown', onDown, { passive: false });
   grid.addEventListener('pointermove', onMove, { passive: false });
   grid.addEventListener('pointerup', onUp);
   grid.addEventListener('pointercancel', onUp);
-  // Also block native image drag
   grid.addEventListener('dragstart', e => e.preventDefault());
 }
 
@@ -2636,17 +2682,24 @@ function renderStops() {
   }
 }
 
-function openAddStopModal() {
-  const nextNum = (state.stops.length > 0 ? Math.max(...state.stops.map(s => s.stop_number||0)) + 1 : 1);
-  openModal('Add Main Stop', `
-    <div style="font-size:0.82rem;color:var(--text2);margin-bottom:1rem;line-height:1.55;">A main stop is a primary destination that appears on the overworld map. You can add waypoints once inside a stop.</div>
+function openAddStopModal(slotNum) {
+  // slotNum = 1-based slot clicked, or find first free slot
+  const usedNums = new Set(state.stops.map(s => s.stop_number));
+  let targetSlot = slotNum;
+  if (!targetSlot) {
+    for (let i = 1; i <= 8; i++) { if (!usedNums.has(i)) { targetSlot = i; break; } }
+    if (!targetSlot) { toast('All 8 slots are taken', 'info'); return; }
+  }
+
+  openModal('Add Stop', `
+    <div style="font-size:0.82rem;color:var(--text2);margin-bottom:1rem;line-height:1.55;">This stop will go into <strong style="color:var(--text);">slot ${targetSlot}</strong> on the overworld map.</div>
     <div class="form-grid" style="margin-bottom:1rem;">
       <div class="field"><label>Stop Name</label><input type="text" id="nas-name" placeholder="e.g. Erasmus Bridge"></div>
       <div class="field"><label>Local / Dutch Name</label><input type="text" id="nas-dutch" placeholder="e.g. Erasmusbrug"></div>
     </div>
     <div class="field" style="margin-bottom:1rem;"><label>Tagline</label><input type="text" id="nas-tagline" placeholder="One punchy line about this stop"></div>
-    <div class="field" style="margin-bottom:1rem;"><label>Cover Image</label><input type="url" id="nas-img" placeholder="https://…"></div>
-    <div class="field"><label>Stop Order</label><input type="number" id="nas-pos" value="${nextNum}" min="1"></div>
+    <div class="field"><label>Cover Image</label><input type="url" id="nas-img" placeholder="https://…"></div>
+    <input type="hidden" id="nas-pos" value="${targetSlot}">
   `, [
     { label: 'Cancel', cls: 'btn-secondary', action: 'closeModalDirect()' },
     { label: 'Add Stop', cls: 'btn-primary', action: 'confirmAddMainStop()' },
@@ -2657,13 +2710,15 @@ function openAddStopModal() {
 async function confirmAddMainStop() {
   const g = id => document.getElementById(id)?.value.trim() || '';
   if (!g('nas-name')) { toast('Stop name is required', 'error'); return; }
+  const targetSlot = parseInt(document.getElementById('nas-pos')?.value) || 1;
+  if (targetSlot < 1 || targetSlot > 8) { toast('Invalid slot', 'error'); return; }
   const payload = {
     tour_id: state.currentTour.id,
     name: g('nas-name'),
     dutch_name: g('nas-dutch'),
     tagline: g('nas-tagline'),
     photo_url: g('nas-img') || null,
-    stop_number: parseInt(g('nas-pos')) || (state.stops.length + 1),
+    stop_number: targetSlot,
   };
   const { error } = await sb.from('stops').insert(payload);
   if (error) { toast('Error adding stop: ' + error.message, 'error'); return; }
