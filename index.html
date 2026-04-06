@@ -806,11 +806,15 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 }
 .inline-cards-body { padding: 0.5rem; }
 
-/* When a stop/substop block is expanded, square off its bottom corners */
-.stop-expanded-block .stop-row-main,
-.stop-expanded-block .substop-row {
+/* When main stop is expanded, square its bottom corners to attach to card panel */
+.stop-expanded-block .stop-row-main {
   border-bottom-left-radius: 0 !important;
   border-bottom-right-radius: 0 !important;
+}
+/* Substop expanded: only left-bottom squaredoff; right stays rounded to match card panel */
+.stop-expanded-block .substop-row {
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: var(--radius);
 }
 .edit-details-btn {
   font-size: 0.7rem; font-weight: 700; padding: 0.25rem 0.55rem;
@@ -1106,8 +1110,8 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
     <div class="section" id="section-overworld" style="position:relative;height:calc(100vh - var(--header-h));overflow:hidden;">
       <!-- Map background -->
       <div style="position:fixed;inset:0;top:var(--header-h);z-index:0;pointer-events:none;overflow:hidden;">
-        <img src="https://rudyroams.github.io/tonbi-rotterdam/images/map-state-0.png" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center top;opacity:0.18;filter:saturate(0.7);">
-        <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(6,48,64,0.7) 0%,rgba(8,74,90,0.65) 30%,rgba(8,88,88,0.7) 60%,rgba(6,61,80,0.7) 100%);"></div>
+        <img src="https://rudyroams.github.io/tonbi-rotterdam/images/map-state-0.png" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center top;opacity:0.35;filter:saturate(0.8);">
+        <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(6,48,64,0.55) 0%,rgba(8,74,90,0.5) 30%,rgba(8,88,88,0.55) 60%,rgba(6,61,80,0.55) 100%);"></div>
       </div>
       <div style="position:relative;z-index:1;height:100%;display:flex;flex-direction:column;padding:0.85rem 1rem 0.6rem;box-sizing:border-box;overflow:hidden;">
         <!-- Tour title -->
@@ -1921,20 +1925,22 @@ function renderOverworld() {
   const grid = document.getElementById('overworld-grid');
   if (!grid) return;
 
-  const slots = [];
-  for (let i = 0; i < MAX_SLOTS; i++) {
-    const stop = state.stops.find(s => (s.stop_number - 1) === i);
-    slots.push(stop || null);
-  }
+  // Snake pattern: slot index → stop_number
+  // Row 0: stops 1,2 (left→right); Row 1: stops 4,3 (snake reverses); Row 2: stops 5,6
+  const SLOT_TO_STOP = [1, 2, 4, 3, 5, 6];
+  const STOP_TO_SLOT = {};
+  SLOT_TO_STOP.forEach((sn, si) => { STOP_TO_SLOT[sn] = si; });
 
-  // Find the first empty slot index
+  const slots = SLOT_TO_STOP.map(stopNum => state.stops.find(s => s.stop_number === stopNum) || null);
+
+  // Find the first empty slot index (in snake order)
   const firstEmptyIndex = slots.findIndex(s => s === null);
 
   grid.innerHTML = slots.map((s, i) => {
     if (!s) {
       const isNext = i === firstEmptyIndex;
       if (isNext) {
-        return `<div class="overworld-slot empty next-slot" data-slot="${i}" onclick="openAddStopModal(${i+1})">
+        return `<div class="overworld-slot empty next-slot" data-slot="${i}" onclick="openAddStopModal(${SLOT_TO_STOP[i]})">
           <div style="display:flex;flex-direction:column;align-items:center;gap:0.3rem;">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,107,53,0.7)" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             <div style="font-size:0.62rem;font-weight:700;color:rgba(255,107,53,0.7);letter-spacing:0.03em;">Add Stop</div>
@@ -1957,7 +1963,7 @@ function renderOverworld() {
       <div class="overworld-slot-actions" onclick="event.stopPropagation()">
         <button class="btn btn-ghost btn-icon btn-sm" onclick="deleteStop('${s.id}')" title="Delete"
           style="background:rgba(0,0,0,0.55);width:26px;height:26px;padding:0;border-radius:6px;">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><defs><linearGradient id="tg121225" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff3b30"/><stop offset="45%" stop-color="#ff6b35"/><stop offset="100%" stop-color="#ffcc00"/></linearGradient></defs><polyline points="3 6 5 6 21 6" stroke="url(#tg121225)"/><path d="M19 6l-1 14H6L5 6" stroke="url(#tg121225)"/><path d="M10 11v6" stroke="url(#tg121225)"/><path d="M14 11v6" stroke="url(#tg121225)"/><path d="M9 6V4h6v2" stroke="url(#tg121225)"/></svg>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ff7a35" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
         </button>
       </div>
     </div>`;
@@ -2094,8 +2100,10 @@ function initOverworldDrag() {
     const swapStop = state.stops.find(x => x.id === toStopId);
     if (!swapStop) return; // safety: only swap with filled slots
 
-    const newNum = toSlot + 1;
-    const oldNum = fromSlot + 1;
+    // Use snake mapping: slot index → stop_number
+    const SLOT_TO_STOP = [1, 2, 4, 3, 5, 6];
+    const newNum = SLOT_TO_STOP[toSlot];
+    const oldNum = SLOT_TO_STOP[fromSlot];
 
     await Promise.all([
       sb.from('stops').update({ stop_number: newNum }).eq('id', stopId),
@@ -2182,7 +2190,7 @@ function renderStopDetail() {
     ? `<img class="stop-thumb" src="${escHtml(url)}" loading="lazy" onerror="this.style.display='none'">`
     : `<div class="stop-thumb-placeholder"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.5" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>`;
 
-  const trashIcon = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><defs><linearGradient id="tg13132" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff3b30"/><stop offset="45%" stop-color="#ff6b35"/><stop offset="100%" stop-color="#ffcc00"/></linearGradient></defs><polyline points="3 6 5 6 21 6" stroke="url(#tg13132)"/><path d="M19 6l-1 14H6L5 6" stroke="url(#tg13132)"/><path d="M10 11v6" stroke="url(#tg13132)"/><path d="M14 11v6" stroke="url(#tg13132)"/><path d="M9 6V4h6v2" stroke="url(#tg13132)"/></svg>`;
+  const trashIcon = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ff7a35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>`;
 
   const orangeArrow = `<div class="substop-connector"><svg width="14" height="18" viewBox="0 0 18 28" fill="none" stroke="rgba(255,107,53,0.5)" stroke-width="2" stroke-linecap="round"><line x1="9" y1="0" x2="9" y2="18"/><polyline points="4 13 9 19 14 13"/></svg></div>`;
 
@@ -2270,7 +2278,7 @@ function renderInlineCards(blockType, blockId) {
           <span class="card-preview">${escHtml(cardPreviewText(c))}</span>
           <div class="row-actions" onclick="event.stopPropagation()">
             <button class="btn btn-ghost btn-icon btn-sm" onclick="${deleteFn}">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><defs><linearGradient id="tg13132" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff3b30"/><stop offset="45%" stop-color="#ff6b35"/><stop offset="100%" stop-color="#ffcc00"/></linearGradient></defs><polyline points="3 6 5 6 21 6" stroke="url(#tg13132)"/><path d="M19 6l-1 14H6L5 6" stroke="url(#tg13132)"/><path d="M10 11v6" stroke="url(#tg13132)"/><path d="M14 11v6" stroke="url(#tg13132)"/><path d="M9 6V4h6v2" stroke="url(#tg13132)"/></svg>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ff7a35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
             </button>
           </div>
         </div>`;
@@ -3020,7 +3028,7 @@ function renderCards() {
       <span class="card-preview">${escHtml(cardPreviewText(c))}</span>
       <div class="row-actions">
         <button class="btn btn-ghost btn-icon btn-sm" onclick="event.stopPropagation();deleteCard('${c.id}')">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><defs><linearGradient id="tg14142" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff3b30"/><stop offset="45%" stop-color="#ff6b35"/><stop offset="100%" stop-color="#ffcc00"/></linearGradient></defs><polyline points="3 6 5 6 21 6" stroke="url(#tg14142)"/><path d="M19 6l-1 14H6L5 6" stroke="url(#tg14142)"/><path d="M10 11v6" stroke="url(#tg14142)"/><path d="M14 11v6" stroke="url(#tg14142)"/><path d="M9 6V4h6v2" stroke="url(#tg14142)"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff7a35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
         </button>
       </div>
     </div>`;
@@ -3401,7 +3409,7 @@ function renderPartners() {
       </div>
       <div class="row-actions">
         <button class="btn btn-ghost btn-icon btn-sm" onclick="deletePartner('${p.id}'">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><defs><linearGradient id="tg14142" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff3b30"/><stop offset="45%" stop-color="#ff6b35"/><stop offset="100%" stop-color="#ffcc00"/></linearGradient></defs><polyline points="3 6 5 6 21 6" stroke="url(#tg14142)"/><path d="M19 6l-1 14H6L5 6" stroke="url(#tg14142)"/><path d="M10 11v6" stroke="url(#tg14142)"/><path d="M14 11v6" stroke="url(#tg14142)"/><path d="M9 6V4h6v2" stroke="url(#tg14142)"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff7a35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
         </button>
       </div>
     </div>
@@ -3680,7 +3688,7 @@ function renderSubstopCards() {
       <span class="card-preview">${escHtml(cardPreviewText(c))}</span>
       <div class="row-actions">
         <button class="btn btn-ghost btn-icon btn-sm" onclick="event.stopPropagation();deleteSubstopCard('${c.id}')">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><defs><linearGradient id="tg14142" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff3b30"/><stop offset="45%" stop-color="#ff6b35"/><stop offset="100%" stop-color="#ffcc00"/></linearGradient></defs><polyline points="3 6 5 6 21 6" stroke="url(#tg14142)"/><path d="M19 6l-1 14H6L5 6" stroke="url(#tg14142)"/><path d="M10 11v6" stroke="url(#tg14142)"/><path d="M14 11v6" stroke="url(#tg14142)"/><path d="M9 6V4h6v2" stroke="url(#tg14142)"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff7a35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
         </button>
       </div>
     </div>`;
@@ -3802,7 +3810,7 @@ function renderSubstopPartners() {
       <div class="row-actions">
         <button class="btn btn-secondary btn-sm" onclick="editSubstopPartner('${p.id}')" style="background:rgba(50,18,78,0.7);border-color:rgba(130,65,210,0.45);color:rgba(215,165,255,0.95);">Edit</button>
         <button class="btn btn-ghost btn-icon btn-sm" onclick="deleteSubstopPartner('${p.id}')">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><defs><linearGradient id="tg14142" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff3b30"/><stop offset="45%" stop-color="#ff6b35"/><stop offset="100%" stop-color="#ffcc00"/></linearGradient></defs><polyline points="3 6 5 6 21 6" stroke="url(#tg14142)"/><path d="M19 6l-1 14H6L5 6" stroke="url(#tg14142)"/><path d="M10 11v6" stroke="url(#tg14142)"/><path d="M14 11v6" stroke="url(#tg14142)"/><path d="M9 6V4h6v2" stroke="url(#tg14142)"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff7a35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
         </button>
       </div>
     </div>
@@ -4253,7 +4261,7 @@ async function loadAndShowAllPartners() {
       </div>
       <div class="row-actions">
         <button class="btn btn-ghost btn-icon btn-sm" onclick="event.stopPropagation();deletePartnerAndRefresh('${p.id}'" title="Delete partner">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><defs><linearGradient id="tg14142" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff3b30"/><stop offset="45%" stop-color="#ff6b35"/><stop offset="100%" stop-color="#ffcc00"/></linearGradient></defs><polyline points="3 6 5 6 21 6" stroke="url(#tg14142)"/><path d="M19 6l-1 14H6L5 6" stroke="url(#tg14142)"/><path d="M10 11v6" stroke="url(#tg14142)"/><path d="M14 11v6" stroke="url(#tg14142)"/><path d="M9 6V4h6v2" stroke="url(#tg14142)"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff7a35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
         </button>
       </div>
     </div>`;
