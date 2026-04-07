@@ -2097,18 +2097,39 @@ function initOverworldDrag() {
 
     const toSlot = parseInt(targetSlot.dataset.slot);
     const toStopId = targetSlot.dataset.stopId;
-    const swapStop = state.stops.find(x => x.id === toStopId);
-    if (!swapStop) return; // safety: only swap with filled slots
+    if (!toStopId) return;
 
-    // Use snake mapping: slot index → stop_number
+    // Snake mapping: slot index → stop_number
     const SLOT_TO_STOP = [1, 2, 4, 3, 5, 6];
-    const newNum = SLOT_TO_STOP[toSlot];
-    const oldNum = SLOT_TO_STOP[fromSlot];
+    const fromNum = SLOT_TO_STOP[fromSlot];
+    const toNum   = SLOT_TO_STOP[toSlot];
+    if (fromNum === toNum) return;
 
-    await Promise.all([
-      sb.from('stops').update({ stop_number: newNum }).eq('id', stopId),
-      sb.from('stops').update({ stop_number: oldNum }).eq('id', swapStop.id),
-    ]);
+    // Build ordered list of all stops by their current snake position
+    // Only reorder stops that exist — empty slots between are ignored
+    const orderedStops = [...state.stops]
+      .filter(s => s.stop_number >= 1 && s.stop_number <= 6)
+      .sort((a, b) => {
+        const ai = SLOT_TO_STOP.indexOf(a.stop_number);
+        const bi = SLOT_TO_STOP.indexOf(b.stop_number);
+        return ai - bi;
+      });
+
+    // Find indices in the ordered list
+    const fromIdx = orderedStops.findIndex(s => s.id === stopId);
+    const toIdx   = orderedStops.findIndex(s => s.id === toStopId);
+    if (fromIdx === -1 || toIdx === -1) return;
+
+    // Remove dragged stop and insert at target position (cascade)
+    const [moved] = orderedStops.splice(fromIdx, 1);
+    orderedStops.splice(toIdx, 0, moved);
+
+    // Reassign stop_numbers in snake order, preserving occupied slots only
+    // Map back: the i-th stop in ordered list gets SLOT_TO_STOP[i] as its stop_number
+    const updates = orderedStops.map((s, i) =>
+      sb.from('stops').update({ stop_number: SLOT_TO_STOP[i] }).eq('id', s.id)
+    );
+    await Promise.all(updates);
     await loadStops();
     renderOverworld();
   }
