@@ -978,12 +978,9 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   </div>
 
   <div class="header-right">
-    <div class="conn-status">
-      <div class="conn-dot" id="conn-dot"></div>
-<span id="conn-label" style="display:none;"></span>
-    </div>
-    <button class="btn btn-ghost btn-sm" onclick="showSection('settings')" title="Settings">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    <button class="btn btn-secondary btn-sm" onclick="loadAndShowAllPartners()" style="background:rgba(120,60,200,0.28);border-color:rgba(120,60,200,0.6);color:rgba(220,185,255,1);">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Partners
     </button>
   </div>
 </div>
@@ -1005,6 +1002,17 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
       </div>
       <div id="tours-list" style="display:flex;flex-direction:column;gap:0;">
         <div class="loading-row"><div class="spinner"></div> Loading tours…</div>
+      </div>
+      <!-- Settings + connection status — bottom right of tours page -->
+      <div style="display:flex;align-items:center;justify-content:flex-end;gap:0.6rem;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border);">
+        <div class="conn-status" style="display:flex;align-items:center;gap:0.4rem;font-size:0.75rem;color:var(--text2);">
+          <div class="conn-dot" id="conn-dot"></div>
+          <span id="conn-label" style="font-size:0.72rem;color:var(--text3);"></span>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="showSection('settings')" title="Settings" style="color:var(--text3);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Settings
+        </button>
       </div>
     </div>
 
@@ -1163,8 +1171,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
           <div id="overworld-tour-title" style="font-family:'Nunito',sans-serif;font-size:1.5rem;font-weight:900;color:white;line-height:1.1;margin-bottom:0.1rem;"></div>
           <div style="font-family:'Nunito',sans-serif;font-size:0.65rem;font-weight:800;background:linear-gradient(160deg,#ff3b30 0%,#ff6b35 45%,#ffcc00 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-transform:uppercase;letter-spacing:0.12em;">Overworld Map</div>
         </div>
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.6rem;">
-          <button class="btn btn-secondary btn-sm" onclick="loadAndShowAllPartners()" style="background:rgba(120,60,200,0.28);border-color:rgba(120,60,200,0.6);color:rgba(220,185,255,1);font-size:0.75rem;padding:0.35rem 0.6rem;">Partners</button>
+        <div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:0.6rem;">
           <button class="btn btn-secondary btn-sm" onclick="_prevSection='overworld';showSection('tour-edit')" style="background:rgba(26,111,181,0.28);border-color:rgba(26,111,181,0.6);color:rgba(200,225,255,1);font-size:0.75rem;padding:0.35rem 0.6rem;">Tour Settings</button>
         </div>
         <!-- Stop grid -->
@@ -1428,15 +1435,12 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
       <div class="page-header">
         <div>
           <div class="page-title">Partners</div>
-          <div class="page-subtitle">All partners across this tour</div>
+          <div class="page-subtitle">All partners across all tours, grouped by city</div>
         </div>
-        <div style="display:flex;gap:0.5rem;align-items:center;">
-          <button class="btn btn-secondary btn-sm" onclick="if(state.currentTour){showSection('overworld')}" style="background:rgba(26,111,181,0.18);border-color:rgba(26,111,181,0.35);color:rgba(150,200,255,0.95);">← Map</button>
-          <button class="btn btn-primary btn-sm" onclick="openPartnerModal()">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Add Partner
-          </button>
-        </div>
+        <button class="btn btn-primary btn-sm" onclick="openPartnerModal()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Partner
+        </button>
       </div>
       <div id="all-partners-list" style="display:flex;flex-direction:column;gap:0.5rem;">
         <div class="loading-row"><div class="spinner"></div> Loading partners…</div>
@@ -3262,8 +3266,8 @@ async function editCard(id) {
 
 // Pre-load partners for current tour before opening card editor (needed for partner card type)
 async function ensurePartnersLoaded() {
-  if (!state.currentTour) return;
-  const { data } = await sb.from('partners').select('*').eq('tour_id', state.currentTour.id).order('name');
+  // Partners are now global — fetch all regardless of tour
+  const { data } = await sb.from('partners').select('*').order('city', { nullsFirst: false }).order('name');
   state.partners = data || [];
 }
 
@@ -3330,10 +3334,8 @@ async function openPartnerSection(stopId) {
 }
 
 async function loadPartners() {
-  if (!state.currentStop || !state.currentTour) return;
-  document.getElementById('partners-subtitle').textContent = state.currentStop.name;
-  // Always load all tour partners (not just this stop) so dropdown is complete
-  const { data, error } = await sb.from('partners').select('*').eq('tour_id', state.currentTour.id).order('name');
+  // Partners are global — fetch all regardless of tour
+  const { data, error } = await sb.from('partners').select('*').order('city', { nullsFirst: false }).order('name');
   if (error) { toast('Error loading partners', 'error'); return; }
   state.partners = data || [];
   renderPartners();
@@ -3371,6 +3373,10 @@ function openPartnerModal(id) {
       <div class="field"><label>Partner Name</label><input type="text" id="pd-name" value="${escHtml(p?.name||'')}"></div>
       <div class="field"><label>Type / Category</label><input type="text" id="pd-type" placeholder="e.g. Street Food, Café" value="${escHtml(p?.partner_type||'')}"></div>
     </div>
+    <div class="form-grid" style="margin-bottom:1rem;">
+      <div class="field"><label>City</label><input type="text" id="pd-city" placeholder="e.g. Rotterdam" value="${escHtml(p?.city||'')}"><div class="field-hint">Used to group partners across tours.</div></div>
+      <div class="field"><label>Location</label><input type="text" id="pd-location" value="${escHtml(p?.location||'')}"></div>
+    </div>
     <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(120,60,200,0.12);border:1px solid rgba(160,80,255,0.25);border-radius:var(--radius-sm);padding:0.75rem 1rem;margin-bottom:1rem;">
       <div>
         <div style="font-size:0.85rem;font-weight:700;color:rgba(215,165,255,0.95);">Show in Partners List</div>
@@ -3380,7 +3386,6 @@ function openPartnerModal(id) {
     </div>
     <div class="field" style="margin-bottom:1rem;"><label>Description</label><textarea id="pd-desc" rows="3">${escHtml(p?.description||'')}</textarea></div>
     <div class="form-grid" style="margin-bottom:1rem;">
-      <div class="field"><label>Location</label><input type="text" id="pd-location" value="${escHtml(p?.location||'')}"></div>
       <div class="field"><label>Google Maps URL</label><input type="url" id="pd-map-url" value="${escHtml(p?.map_url||'')}"></div>
     </div>
     <div class="form-grid" style="margin-bottom:1rem;">
@@ -3430,8 +3435,9 @@ async function editPartner(id) {
 async function savePartner(id) {
   const g = (eid) => document.getElementById(eid)?.value || '';
   const payload = {
-    tour_id: state.currentTour.id,
-    stop_id: state.currentStop?.id || null,
+    tour_id: null,   // Partners are now global — not tied to a specific tour
+    stop_id: null,
+    city: g('pd-city').trim() || null,
     name: g('pd-name'),
     partner_type: g('pd-type'),
     description: g('pd-desc'),
@@ -4120,53 +4126,66 @@ function initImageFields() {
 
 // ── All Partners (tour-wide overview) ──
 async function loadAndShowAllPartners() {
-  if (!state.currentTour) { toast('Open a tour first', 'info'); return; }
   showSection('all-partners');
   const el = document.getElementById('all-partners-list');
   el.innerHTML = `<div class="loading-row"><div class="spinner"></div> Loading…</div>`;
 
-  // Fetch all stops for stop name lookup
-  const { data: stops } = await sb.from('stops').select('id,name,stop_number').eq('tour_id', state.currentTour.id).order('stop_number');
-  const stopMap = Object.fromEntries((stops||[]).map(s => [s.id, s]));
+  // Fetch all partners globally
+  const { data: partners, error } = await sb.from('partners').select('*').order('city', { nullsFirst: false }).order('name');
+  if (error) { el.innerHTML = `<div style="padding:2rem;text-align:center;color:var(--red);">Error loading partners</div>`; return; }
 
-  // Fetch partners, then fetch partner cards via stop_ids
-  const { data: partners } = await sb.from('partners').select('*').eq('tour_id', state.currentTour.id).order('name');
-  const stopIds = (stops||[]).map(s => s.id);
-  const livePartnerIds = new Set();
-  if (stopIds.length) {
-    const { data: partnerCards } = await sb.from('cards').select('partner_id').in('stop_id', stopIds).eq('card_type', 'partner').not('partner_id', 'is', null);
-    (partnerCards||[]).forEach(c => { if(c.partner_id) livePartnerIds.add(c.partner_id); });
-  }
+  // Fetch all partner cards to determine LIVE status
+  const { data: partnerCards } = await sb.from('cards').select('partner_id').eq('card_type', 'partner').not('partner_id', 'is', null);
+  const livePartnerIds = new Set((partnerCards||[]).map(c => c.partner_id).filter(Boolean));
 
   if (!partners || !partners.length) {
-    el.innerHTML = `<div style="padding:2rem;text-align:center;color:var(--text3);">No partners yet. Add partners via a stop's Cards section.</div>`;
+    el.innerHTML = `<div style="padding:2rem;text-align:center;color:var(--text3);">No partners yet. Click "+ Add Partner" to create one.</div>`;
     return;
   }
 
-  el.innerHTML = partners.map(p => {
-    const hasCard = livePartnerIds.has(p.id);
-    const isLive = p.featured || hasCard;
-    return `
-    <div class="partner-row" style="cursor:pointer;" onclick="editPartner('${p.id}')">
-      ${p.photo_url ? `<img class="partner-thumb" src="${escHtml(p.photo_url)}" loading="lazy">` :
-        `<div class="partner-thumb" style="background:var(--surface3);border-radius:8px;display:flex;align-items:center;justify-content:center;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.5" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-        </div>`}
-      <div class="partner-info" style="flex:1;min-width:0;">
-        <div style="display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap;">
-          <div class="partner-name">${escHtml(p.name)}</div>
-          ${isLive ? `<div style="display:inline-flex;align-items:center;gap:0.25rem;font-size:0.58rem;font-weight:800;color:rgba(100,220,140,0.95);background:rgba(52,199,89,0.15);border:1px solid rgba(52,199,89,0.35);border-radius:99px;padding:0.1rem 0.45rem;letter-spacing:0.06em;"><span style="width:5px;height:5px;border-radius:50%;background:rgba(52,199,89,0.9);display:inline-block;box-shadow:0 0 4px rgba(52,199,89,0.7);"></span>LIVE</div>` : ''}
-        </div>
-        <div class="partner-type" style="color:rgba(255,255,255,0.65);">${escHtml(p.partner_type||'')}</div>
-        ${p.offer_text ? `<div style="font-size:0.72rem;color:var(--orange);margin-top:0.15rem;">🏷 ${escHtml(p.offer_text)}</div>` : ''}
+  // Group by city
+  const groups = {};
+  partners.forEach(p => {
+    const city = p.city || '— No city set —';
+    if (!groups[city]) groups[city] = [];
+    groups[city].push(p);
+  });
+
+  const cityIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`;
+
+  el.innerHTML = Object.entries(groups).map(([city, cityPartners]) => `
+    <div style="margin-bottom:1.5rem;">
+      <div style="display:flex;align-items:center;gap:0.4rem;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);margin-bottom:0.5rem;padding:0 0.1rem;">
+        ${cityIcon} ${escHtml(city)}
+        <span style="font-weight:400;text-transform:none;letter-spacing:0;opacity:0.6;">(${cityPartners.length})</span>
       </div>
-      <div class="row-actions">
-        <button class="btn btn-ghost btn-icon btn-sm" onclick="event.stopPropagation();deletePartnerAndRefresh('${p.id}'" title="Delete partner">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff7a35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-        </button>
+      <div style="display:flex;flex-direction:column;gap:0.4rem;">
+        ${cityPartners.map(p => {
+          const isLive = p.featured || livePartnerIds.has(p.id);
+          return `
+          <div class="partner-row" style="cursor:pointer;" onclick="editPartner('${p.id}')">
+            ${p.photo_url ? `<img class="partner-thumb" src="${escHtml(p.photo_url)}" loading="lazy">` :
+              `<div class="partner-thumb" style="background:var(--surface3);border-radius:8px;display:flex;align-items:center;justify-content:center;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.5" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+              </div>`}
+            <div class="partner-info" style="flex:1;min-width:0;">
+              <div style="display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap;">
+                <div class="partner-name">${escHtml(p.name)}</div>
+                ${isLive ? `<div style="display:inline-flex;align-items:center;gap:0.25rem;font-size:0.58rem;font-weight:800;color:rgba(100,220,140,0.95);background:rgba(52,199,89,0.15);border:1px solid rgba(52,199,89,0.35);border-radius:99px;padding:0.1rem 0.45rem;letter-spacing:0.06em;"><span style="width:5px;height:5px;border-radius:50%;background:rgba(52,199,89,0.9);display:inline-block;box-shadow:0 0 4px rgba(52,199,89,0.7);"></span>LIVE</div>` : ''}
+              </div>
+              <div class="partner-type" style="color:rgba(255,255,255,0.65);">${escHtml(p.partner_type||'')}</div>
+              ${p.offer_text ? `<div style="font-size:0.72rem;color:var(--orange);margin-top:0.15rem;">🏷 ${escHtml(p.offer_text)}</div>` : ''}
+            </div>
+            <div class="row-actions">
+              <button class="btn btn-ghost btn-icon btn-sm" onclick="event.stopPropagation();deletePartnerAndRefresh('${p.id}')" title="Delete partner">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff7a35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+              </button>
+            </div>
+          </div>`;
+        }).join('')}
       </div>
-    </div>`;
-  }).join('');
+    </div>
+  `).join('');
 }
 
 async function deletePartnerAndRefresh(id) {
@@ -4174,7 +4193,7 @@ async function deletePartnerAndRefresh(id) {
   const { error } = await sb.from('partners').delete().eq('id', id);
   if (error) { toast('Delete failed', 'error'); return; }
   toast('Partner deleted', 'info');
-  await ensurePartnersLoaded();
+  state.partners = state.partners.filter(x => x.id !== id);
   await loadAndShowAllPartners();
 }
 
