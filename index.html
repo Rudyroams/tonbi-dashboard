@@ -1083,6 +1083,51 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
         </div>
 
         <div class="panel">
+          <div class="panel-header"><div class="panel-title">Meeting Point</div></div>
+          <div class="panel-body">
+            <div class="field" style="margin-bottom:1rem;">
+              <label>Location Name</label>
+              <input type="text" id="tf-meeting-name" placeholder="e.g. De Boeg Monument">
+            </div>
+            <div class="field" style="margin-bottom:1rem;">
+              <label>Address</label>
+              <input type="text" id="tf-meeting-address" placeholder="Street address shown on intro screen">
+            </div>
+            <div class="field">
+              <label>Google Maps URL</label>
+              <input type="url" id="tf-meeting-map-url" placeholder="https://maps.google.com/?q=…">
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Intro Screen</div></div>
+          <div class="panel-body">
+            <div class="field" style="margin-bottom:1rem;">
+              <label>Tour Introduction</label>
+              <textarea id="tf-intro-desc" rows="3" placeholder="A brief description shown on the intro screen before the tour begins…"></textarea>
+              <div class="field-hint">Keep it short and atmospheric — one or two sentences.</div>
+            </div>
+            <div class="field">
+              <label>Safety Notes <span style="font-weight:400;color:var(--text3);">(optional)</span></label>
+              <textarea id="tf-safety-notes" rows="3" placeholder="e.g. This tour includes cobblestone streets. Wear sturdy shoes."></textarea>
+              <div class="field-hint">Tonbi's standard safety guidelines are always shown. Add any tour-specific notes here.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Finish Message</div></div>
+          <div class="panel-body">
+            <div class="field">
+              <label>Completion Message</label>
+              <textarea id="tf-finish-msg" rows="4" placeholder="Congratulations on completing the tour! …"></textarea>
+              <div class="field-hint">Shown on the final screen when the traveller finishes the tour. HTML supported.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
           <div class="panel-header">
             <div class="panel-title">Publishing</div>
           </div>
@@ -1114,25 +1159,16 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
         <div style="position:absolute;inset:0;background:rgba(6,30,46,0.62);"></div>
       </div>
       <div style="position:relative;z-index:1;height:100%;display:flex;flex-direction:column;padding:0.85rem 1rem 0.6rem;box-sizing:border-box;overflow:hidden;">
-        <!-- Tour title -->
         <div style="text-align:center;margin-bottom:0.6rem;">
           <div id="overworld-tour-title" style="font-family:'Nunito',sans-serif;font-size:1.5rem;font-weight:900;color:white;line-height:1.1;margin-bottom:0.1rem;"></div>
           <div style="font-family:'Nunito',sans-serif;font-size:0.65rem;font-weight:800;background:linear-gradient(160deg,#ff3b30 0%,#ff6b35 45%,#ffcc00 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-transform:uppercase;letter-spacing:0.12em;">Overworld Map</div>
         </div>
-        <!-- Tour Start — centred, Partners left, Tour Settings right -->
-        <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:0.4rem;align-items:center;margin-bottom:0.6rem;">
-          <div>
-            <button class="btn btn-secondary btn-sm" onclick="loadAndShowAllPartners()" style="background:rgba(120,60,200,0.28);border-color:rgba(120,60,200,0.6);color:rgba(220,185,255,1);width:100%;justify-content:center;font-size:0.75rem;padding:0.35rem 0.6rem;">Partners</button>
-          </div>
-          <div id="overworld-tour-start-block"></div>
-          <div style="text-align:right;">
-            <button class="btn btn-secondary btn-sm" onclick="_prevSection='overworld';showSection('tour-edit')" style="background:rgba(26,111,181,0.28);border-color:rgba(26,111,181,0.6);color:rgba(200,225,255,1);width:100%;justify-content:center;font-size:0.75rem;padding:0.35rem 0.6rem;">Tour Settings</button>
-          </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.6rem;">
+          <button class="btn btn-secondary btn-sm" onclick="loadAndShowAllPartners()" style="background:rgba(120,60,200,0.28);border-color:rgba(120,60,200,0.6);color:rgba(220,185,255,1);font-size:0.75rem;padding:0.35rem 0.6rem;">Partners</button>
+          <button class="btn btn-secondary btn-sm" onclick="_prevSection='overworld';showSection('tour-edit')" style="background:rgba(26,111,181,0.28);border-color:rgba(26,111,181,0.6);color:rgba(200,225,255,1);font-size:0.75rem;padding:0.35rem 0.6rem;">Tour Settings</button>
         </div>
         <!-- Stop grid -->
         <div id="overworld-grid" class="overworld-grid"></div>
-        <!-- Tour Finish -->
-        <div id="overworld-tour-finish-block" style="margin-top:0.4rem;flex-shrink:0;"></div>
       </div>
     </div>
 
@@ -1387,90 +1423,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
     </div>
 
     <!-- TOUR START section -->
-    <div class="section" id="section-tour-start">
-      <div class="page-header">
-        <div>
-          <div class="page-title">Tour Start</div>
-          <div class="page-subtitle">Meeting point and intro screen content</div>
-        </div>
-      </div>
-      <form id="tour-start-form" onsubmit="saveTourStart(event)">
-        <div class="panel">
-          <div class="panel-header"><div class="panel-title">Meeting Point</div></div>
-          <div class="panel-body">
-            <div class="field" style="margin-bottom:1rem;">
-              <label>Location Name</label>
-              <input type="text" id="ts-meeting-name" placeholder="e.g. De Boeg Monument">
-            </div>
-            <div class="field" style="margin-bottom:1rem;">
-              <label>Address</label>
-              <input type="text" id="ts-meeting-address" placeholder="Street address shown on intro screen">
-            </div>
-            <div class="field">
-              <label>Google Maps URL</label>
-              <input type="url" id="ts-meeting-map-url" placeholder="https://maps.google.com/?q=…">
-            </div>
-          </div>
-        </div>
-        <div class="panel">
-          <div class="panel-header"><div class="panel-title">Intro Screen</div></div>
-          <div class="panel-body">
-            <div class="field">
-              <label>Tour Introduction</label>
-              <textarea id="ts-intro-desc" rows="4" placeholder="A brief description shown on the intro screen before the tour begins…"></textarea>
-              <div class="field-hint">Keep it short and atmospheric — one or two sentences.</div>
-            </div>
-          </div>
-        </div>
-        <div class="panel">
-          <div class="panel-header"><div class="panel-title">Safety Guidelines</div></div>
-          <div class="panel-body">
-            <div class="field-hint" style="margin-bottom:1rem;">Tonbi's standard safety guidelines are always shown. Add any tour-specific notes below — terrain, climate, physical requirements etc.</div>
-            <div class="field">
-              <label>Your Safety Notes (optional)</label>
-              <textarea id="ts-safety-notes" rows="4" placeholder="e.g. This tour includes cobblestone streets. Wear sturdy shoes. Some sections may not be suitable for pushchairs."></textarea>
-            </div>
-          </div>
-          <div class="panel-footer">
-            <button type="button" class="btn btn-secondary" onclick="showSection('overworld')">Cancel</button>
-            <button type="submit" class="btn btn-primary">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-              Save
-            </button>
-          </div>
-        </div>
-      </form>
-    </div>
-
-    <!-- TOUR FINISH section -->
-    <div class="section" id="section-tour-finish">
-      <div class="page-header">
-        <div>
-          <div class="page-title">Tour Finish</div>
-          <div class="page-subtitle">Shown when the tour is completed</div>
-        </div>
-      </div>
-      <form id="tour-finish-form" onsubmit="saveTourFinish(event)">
-        <div class="panel">
-          <div class="panel-header"><div class="panel-title">Finish Message</div></div>
-          <div class="panel-body">
-            <div class="field">
-              <label>Completion Message</label>
-              <textarea id="tf-finish-message" rows="6" placeholder="Congratulations on completing the tour! …"></textarea>
-              <div class="field-hint">Shown on the final screen when the traveller finishes the tour. HTML supported.</div>
-            </div>
-          </div>
-          <div class="panel-footer">
-            <button type="button" class="btn btn-secondary" onclick="showSection('overworld')">Cancel</button>
-            <button type="submit" class="btn btn-primary">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-              Save
-            </button>
-          </div>
-        </div>
-      </form>
-    </div>
-
     <!-- ALL PARTNERS section -->
     <div class="section" id="section-all-partners">
       <div class="page-header">
@@ -1692,7 +1644,7 @@ function setConnStatus(ok) {
 }
 
 // ── Navigation ──
-const SECTIONS = ['tours', 'tour-edit', 'overworld', 'stops', 'stop-edit', 'cards', 'partners', 'substop-edit', 'substop-cards', 'substop-partners', 'tour-start', 'tour-finish', 'all-partners', 'settings'];
+const SECTIONS = ['tours', 'tour-edit', 'overworld', 'stops', 'stop-edit', 'cards', 'partners', 'substop-edit', 'substop-cards', 'substop-partners', 'all-partners', 'settings'];
 
 function showSection(name) {
   SECTIONS.forEach(s => {
@@ -1732,10 +1684,6 @@ function updateBreadcrumb(section) {
     html = toursLink + arrow + mapLink + arrow + stopsLink + arrow + `<span>Cards</span>`;
   } else if (['substop-edit','substop-cards','substop-partners'].includes(section)) {
     html = toursLink + arrow + mapLink + arrow + stopsLink + arrow + `<span>Cards</span>`;
-  } else if (section === 'tour-start') {
-    html = toursLink + arrow + mapLink + arrow + `<span>Tour Start</span>`;
-  } else if (section === 'tour-finish') {
-    html = toursLink + arrow + mapLink + arrow + `<span>Tour Finish</span>`;
   } else if (section === 'settings') {
     html = toursLink + arrow + `<span>Settings</span>`;
   }
@@ -1808,6 +1756,12 @@ function editTour(id) {
   document.getElementById('tf-img').value = t.photo_url || '';
   document.getElementById('tf-author-label').value = t.author_card_label || '';
   document.getElementById('tf-published').classList.toggle('on', !!t.published);
+  document.getElementById('tf-meeting-name').value = t.meeting_point_name || '';
+  document.getElementById('tf-meeting-address').value = t.meeting_point_address || '';
+  document.getElementById('tf-meeting-map-url').value = t.meeting_point_map_url || '';
+  document.getElementById('tf-intro-desc').value = t.intro_description || '';
+  document.getElementById('tf-safety-notes').value = t.safety_notes || '';
+  document.getElementById('tf-finish-msg').value = t.finish_message || '';
   showSection('tour-edit');
   setTimeout(() => makeImageField('tf-img', 'tours'), 30);
 }
@@ -1826,6 +1780,12 @@ async function saveTour(e) {
     duration: document.getElementById('tf-duration')?.value.trim() || null,
     author_card_label: document.getElementById('tf-author-label').value.trim(),
     published: document.getElementById('tf-published').classList.contains('on'),
+    meeting_point_name:    document.getElementById('tf-meeting-name').value.trim() || null,
+    meeting_point_address: document.getElementById('tf-meeting-address').value.trim() || null,
+    meeting_point_map_url: document.getElementById('tf-meeting-map-url').value.trim() || null,
+    intro_description:     document.getElementById('tf-intro-desc').value.trim() || null,
+    safety_notes:          document.getElementById('tf-safety-notes').value.trim() || null,
+    finish_message:        document.getElementById('tf-finish-msg').value.trim() || null,
   };
 
   let error;
@@ -1969,34 +1929,6 @@ function renderOverworld() {
     </div>`;
   }).join('');
 
-  // Tour Start block (centred above grid, rendered in its own element)
-  const startEl = document.getElementById('overworld-tour-start-block');
-  if (startEl) {
-    startEl.innerHTML = `<div style="background:linear-gradient(135deg,rgba(15,155,142,0.22),rgba(45,63,170,0.22));border:1px solid rgba(15,155,142,0.4);border-radius:var(--radius);padding:0.6rem 0.85rem;cursor:pointer;display:flex;align-items:center;gap:0.6rem;backdrop-filter:blur(12px);white-space:nowrap;" onclick="editTourStart()">
-      <div style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#0f9b8e,#2d3faa);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-      </div>
-      <div style="min-width:0;">
-        <div style="font-size:0.78rem;font-weight:700;color:var(--text);">Tour Start</div>
-        <div style="font-size:0.62rem;color:rgba(255,255,255,0.5);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:120px;">${escHtml(state.currentTour?.meeting_point_name || 'Set meeting point')}</div>
-      </div>
-    </div>`;
-  }
-
-  // Tour Finish block (full width below grid)
-  const finishEl = document.getElementById('overworld-tour-finish-block');
-  if (finishEl) {
-    finishEl.innerHTML = `<div style="background:linear-gradient(135deg,rgba(15,155,142,0.18),rgba(45,63,170,0.18));border:1px solid rgba(15,155,142,0.35);border-radius:var(--radius);padding:0.75rem 0.85rem;cursor:pointer;display:flex;align-items:center;gap:0.6rem;backdrop-filter:blur(12px);" onclick="editTourFinish()">
-      <div style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#0f9b8e,#2d3faa);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-      </div>
-      <div style="flex:1;min-width:0;">
-        <div style="font-size:0.82rem;font-weight:700;color:var(--text);">Tour Finish</div>
-        <div style="font-size:0.68rem;color:rgba(255,255,255,0.5);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(state.currentTour?.finish_message ? state.currentTour.finish_message.replace(/<[^>]*>/g,'').slice(0,60)+'…' : 'Set finish message')}</div>
-      </div>
-    </div>`;
-  }
-
   initOverworldDrag();
 }
 
@@ -2097,38 +2029,33 @@ function initOverworldDrag() {
 
     const toSlot = parseInt(targetSlot.dataset.slot);
     const toStopId = targetSlot.dataset.stopId;
-    if (!toStopId) return;
+    if (!toStopId || toSlot === fromSlot) return;
 
-    // Snake mapping: slot index → stop_number
+    // Snake mapping: visual slot index → stop_number
     const SLOT_TO_STOP = [1, 2, 4, 3, 5, 6];
-    const fromNum = SLOT_TO_STOP[fromSlot];
-    const toNum   = SLOT_TO_STOP[toSlot];
-    if (fromNum === toNum) return;
 
-    // Build ordered list of all stops by their current snake position
-    // Only reorder stops that exist — empty slots between are ignored
-    const orderedStops = [...state.stops]
+    // Sort all existing stops by their current visual slot index
+    const ordered = [...state.stops]
       .filter(s => s.stop_number >= 1 && s.stop_number <= 6)
-      .sort((a, b) => {
-        const ai = SLOT_TO_STOP.indexOf(a.stop_number);
-        const bi = SLOT_TO_STOP.indexOf(b.stop_number);
-        return ai - bi;
-      });
+      .sort((a, b) => SLOT_TO_STOP.indexOf(a.stop_number) - SLOT_TO_STOP.indexOf(b.stop_number));
 
-    // Find indices in the ordered list
-    const fromIdx = orderedStops.findIndex(s => s.id === stopId);
-    const toIdx   = orderedStops.findIndex(s => s.id === toStopId);
-    if (fromIdx === -1 || toIdx === -1) return;
+    // fromIdx / toIdx within the ordered array (not slot indices)
+    const fromIdx = ordered.findIndex(s => s.id === stopId);
+    const toIdx   = ordered.findIndex(s => s.id === toStopId);
+    if (fromIdx === -1 || toIdx === -1 || fromIdx === toIdx) return;
 
-    // Remove dragged stop and insert at target position (cascade)
-    const [moved] = orderedStops.splice(fromIdx, 1);
-    orderedStops.splice(toIdx, 0, moved);
+    // Cascade: remove from current position, insert at target position
+    const reordered = [...ordered];
+    const [moved] = reordered.splice(fromIdx, 1);
+    reordered.splice(toIdx, 0, moved);
 
-    // Reassign stop_numbers in snake order, preserving occupied slots only
-    // Map back: the i-th stop in ordered list gets SLOT_TO_STOP[i] as its stop_number
-    const updates = orderedStops.map((s, i) =>
-      sb.from('stops').update({ stop_number: SLOT_TO_STOP[i] }).eq('id', s.id)
-    );
+    // Each stop gets the stop_number for its new position in the snake order
+    // Only update stops whose stop_number actually changed
+    const updates = reordered
+      .map((s, i) => ({ id: s.id, newNum: SLOT_TO_STOP[i], oldNum: s.stop_number }))
+      .filter(x => x.newNum !== x.oldNum)
+      .map(x => sb.from('stops').update({ stop_number: x.newNum }).eq('id', x.id));
+
     await Promise.all(updates);
     await loadStops();
     renderOverworld();
@@ -3914,53 +3841,6 @@ function returnToStops() {
     showSection('tours');
   }
 }
-
-// ── Tour Start / Finish editors ──
-function editTourStart() {
-  if (!state.currentTour) return;
-  const t = state.currentTour;
-  document.getElementById('ts-meeting-name').value = t.meeting_point_name || '';
-  document.getElementById('ts-meeting-address').value = t.meeting_point_address || '';
-  document.getElementById('ts-meeting-map-url').value = t.meeting_point_map_url || '';
-  document.getElementById('ts-intro-desc').value = t.intro_description || '';
-  document.getElementById('ts-safety-notes').value = t.safety_notes || '';
-  showSection('tour-start');
-}
-
-async function saveTourStart(e) {
-  e.preventDefault();
-  const payload = {
-    meeting_point_name:    document.getElementById('ts-meeting-name').value.trim(),
-    meeting_point_address: document.getElementById('ts-meeting-address').value.trim(),
-    meeting_point_map_url: document.getElementById('ts-meeting-map-url').value.trim(),
-    intro_description:     document.getElementById('ts-intro-desc').value.trim(),
-    safety_notes:          document.getElementById('ts-safety-notes').value.trim(),
-  };
-  const { error } = await sb.from('tours').update(payload).eq('id', state.currentTour.id);
-  if (error) { toast('Save failed: ' + error.message, 'error'); return; }
-  Object.assign(state.currentTour, payload);
-  toast('Tour start saved', 'success');
-  renderOverworld();
-  showSection('overworld');
-}
-
-function editTourFinish() {
-  if (!state.currentTour) return;
-  document.getElementById('tf-finish-message').value = state.currentTour.finish_message || '';
-  showSection('tour-finish');
-}
-
-async function saveTourFinish(e) {
-  e.preventDefault();
-  const payload = { finish_message: document.getElementById('tf-finish-message').value.trim() };
-  const { error } = await sb.from('tours').update(payload).eq('id', state.currentTour.id);
-  if (error) { toast('Save failed: ' + error.message, 'error'); return; }
-  Object.assign(state.currentTour, payload);
-  toast('Tour finish saved', 'success');
-  renderOverworld();
-  showSection('overworld');
-}
-
 
 // ── Video Upload via Cloudflare Stream (Edge Function) ──
 const EDGE_FN_URL = 'https://gwvwzyzondplicgeubrc.supabase.co/functions/v1/cloudflare-upload-url';
