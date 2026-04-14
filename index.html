@@ -1244,15 +1244,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
                 <input type="url" id="sf-map-url" placeholder="https://maps.google.com/?q=…">
               </div>
             </div>
-            <div class="form-grid cols-3">
-              <div class="field">
-                <label>Longitude</label>
-                <input type="number" id="sf-lng" placeholder="4.4871" step="0.0001">
-              </div>
-              <div class="field">
-                <label>Latitude</label>
-                <input type="number" id="sf-lat" placeholder="51.9090" step="0.0001">
-              </div>
+            <div class="form-grid">
               <div class="field">
                 <label>Stop Order</label>
                 <input type="number" id="sf-position" placeholder="1" min="1">
@@ -1364,12 +1356,8 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
         <div class="panel">
           <div class="panel-header"><div class="panel-title">Location</div></div>
           <div class="panel-body">
-            <div class="form-grid" style="margin-bottom:1rem;">
+            <div class="form-grid">
               <div class="field"><label>Google Maps URL</label><input type="url" id="ssf-map-url" placeholder="https://maps.google.com/?q=…"></div>
-            </div>
-            <div class="form-grid cols-3">
-              <div class="field"><label>Longitude</label><input type="number" id="ssf-lng" placeholder="4.4871" step="0.0001"></div>
-              <div class="field"><label>Latitude</label><input type="number" id="ssf-lat" placeholder="51.9090" step="0.0001"></div>
             </div>
           </div>
         </div>
@@ -2097,10 +2085,6 @@ function openAddSubstopForCurrentStop() {
       <div class="field"><label>Name</label><input type="text" id="ns-name" placeholder="e.g. Hidden Alley"></div>
       <div class="field"><label>Tagline</label><input type="text" id="ns-tagline" placeholder="One punchy line"></div>
       <div class="field"><label>Cover Image</label><input type="url" id="ns-img" placeholder="https://…"></div>
-      <div class="form-grid">
-        <div class="field"><label>Longitude</label><input type="number" id="ns-lng" step="0.0001"></div>
-        <div class="field"><label>Latitude</label><input type="number" id="ns-lat" step="0.0001"></div>
-      </div>
       <div class="field"><label>Google Maps URL</label><input type="url" id="ns-map-url"></div>
     </div>
   `, [
@@ -2115,15 +2099,17 @@ async function confirmAddSubstopInline() {
   const g = id => document.getElementById(id)?.value.trim() || '';
   const subs = state.allSubstops.filter(x => x.stop_id === state.currentStop.id);
   const globalPos = state.currentStop.stop_number - 0.5 - (subs.length * 0.1);
+  const mapUrl = g('ns-map-url');
+  const coords = extractCoordsFromMapUrl(mapUrl);
   const payload = {
     stop_id: state.currentStop.id,
     global_position: globalPos,
     name: g('ns-name'),
     tagline: g('ns-tagline'),
     photo_url: g('ns-img'),
-    map_url: g('ns-map-url'),
-    longitude: parseFloat(g('ns-lng')) || null,
-    latitude: parseFloat(g('ns-lat')) || null,
+    map_url: mapUrl,
+    longitude: coords?.lng || null,
+    latitude: coords?.lat || null,
   };
   const { error } = await sb.from('substops').insert(payload);
   if (error) { toast('Error adding waypoint: ' + error.message, 'error'); return; }
@@ -2422,9 +2408,7 @@ function openStopEditModal(stopId) {
       <div class="field"><label>Address</label><input type="text" id="mse-address" value="${escHtml(s.address||'')}"></div>
       <div class="field"><label>Google Maps URL</label><input type="url" id="mse-map-url" value="${escHtml(s.map_url||'')}"></div>
     </div>
-    <div class="form-grid cols-3" style="margin-bottom:1rem;">
-      <div class="field"><label>Longitude</label><input type="number" id="mse-lng" step="0.0001" value="${s.longitude||''}"></div>
-      <div class="field"><label>Latitude</label><input type="number" id="mse-lat" step="0.0001" value="${s.latitude||''}"></div>
+    <div class="form-grid" style="margin-bottom:1rem;">
       <div class="field"><label>Stop Order</label><input type="number" id="mse-pos" min="1" value="${s.stop_number||''}"></div>
     </div>
     <div class="field" style="margin-bottom:1rem;"><label>Opener Video (Cloudflare ID)</label><input type="text" id="mse-cf-id" value="${escHtml(s.opener_cloudflare_id||'')}"></div>
@@ -2439,15 +2423,17 @@ function openStopEditModal(stopId) {
 
 async function saveStopModal(stopId) {
   const g = id => document.getElementById(id)?.value.trim() || '';
+  const mapUrl = g('mse-map-url');
+  const coords = extractCoordsFromMapUrl(mapUrl);
   const payload = {
     name: g('mse-name'),
     dutch_name: g('mse-dutch'),
     tagline: g('mse-tagline'),
     photo_url: g('mse-img') || null,
     address: g('mse-address'),
-    map_url: g('mse-map-url'),
-    longitude: parseFloat(g('mse-lng')) || null,
-    latitude: parseFloat(g('mse-lat')) || null,
+    map_url: mapUrl,
+    longitude: coords?.lng || null,
+    latitude: coords?.lat || null,
     stop_number: parseInt(g('mse-pos')) || 1,
     opener_cloudflare_id: g('mse-cf-id') || null,
     description: g('mse-desc'),
@@ -2478,10 +2464,6 @@ function openSubstopEditModal(substopId) {
     <div class="form-grid" style="margin-bottom:1rem;">
       <div class="field"><label>Google Maps URL</label><input type="url" id="mss-map-url" value="${escHtml(ss.map_url||'')}"></div>
     </div>
-    <div class="form-grid" style="margin-bottom:1rem;">
-      <div class="field"><label>Longitude</label><input type="number" id="mss-lng" step="0.0001" value="${ss.longitude||''}"></div>
-      <div class="field"><label>Latitude</label><input type="number" id="mss-lat" step="0.0001" value="${ss.latitude||''}"></div>
-    </div>
     <div class="field"><label>${escHtml(authorLabel)} Notes</label><textarea id="mss-rudy" rows="3">${escHtml(ss.rudy_notes||'')}</textarea></div>
   `, [
     { label: 'Cancel', cls: 'btn-secondary', action: 'closeModalDirect()' },
@@ -2492,13 +2474,15 @@ function openSubstopEditModal(substopId) {
 
 async function saveSubstopModal(substopId) {
   const g = id => document.getElementById(id)?.value.trim() || '';
+  const mapUrl = g('mss-map-url');
+  const coords = extractCoordsFromMapUrl(mapUrl);
   const payload = {
     name: g('mss-name'),
     tagline: g('mss-tagline'),
     photo_url: g('mss-img') || null,
-    map_url: g('mss-map-url'),
-    longitude: parseFloat(g('mss-lng')) || null,
-    latitude: parseFloat(g('mss-lat')) || null,
+    map_url: mapUrl,
+    longitude: coords?.lng || null,
+    latitude: coords?.lat || null,
     rudy_notes: g('mss-rudy'),
   };
   const { error } = await sb.from('substops').update(payload).eq('id', substopId);
@@ -2548,18 +2532,9 @@ function initSubstopDrag() {
     const substopId = row.dataset.substopId;
     if (!substopId) return;
     e.preventDefault();
-    const rect = row.getBoundingClientRect();
-    const ss = state.allSubstops.find(x => x.id === substopId);
-    const ghost = document.createElement('div');
-    ghost.className = 'touch-drag-ghost';
-    ghost.textContent = ss?.name || 'Sub-stop';
-    ghost.style.width = rect.width + 'px';
-    ghost.style.left = rect.left + 'px';
-    ghost.style.top = (e.clientY - 20) + 'px';
-    document.body.appendChild(ghost);
-    row.style.opacity = '0.35';
     area.setPointerCapture(e.pointerId);
-    dragging = { row, ghost, substopId, startY: e.clientY, startX: e.clientX, active: false, pointerId: e.pointerId };
+    // Store pending drag — don't create ghost until threshold exceeded
+    dragging = { row, ghost: null, substopId, startY: e.clientY, startX: e.clientX, active: false, pointerId: e.pointerId };
   }, { passive: false });
 
   area.addEventListener('pointermove', e => {
@@ -2568,6 +2543,18 @@ function initSubstopDrag() {
 
     if (!dragging.active && Math.abs(e.clientY - dragging.startY) > DRAG_THRESHOLD) {
       dragging.active = true;
+      // Create ghost now that drag is confirmed
+      const ss = state.allSubstops.find(x => x.id === dragging.substopId);
+      const rect = dragging.row.getBoundingClientRect();
+      const ghost = document.createElement('div');
+      ghost.className = 'touch-drag-ghost';
+      ghost.textContent = ss?.name || 'Sub-stop';
+      ghost.style.width = rect.width + 'px';
+      ghost.style.left = rect.left + 'px';
+      ghost.style.top = (e.clientY - 20) + 'px';
+      document.body.appendChild(ghost);
+      dragging.ghost = ghost;
+      dragging.row.style.opacity = '0.35';
     }
     if (!dragging.active) return;
 
@@ -2605,12 +2592,16 @@ function initSubstopDrag() {
     if (!dragging) return;
     const { row, ghost, substopId, active } = dragging;
     dragging = null;
-    ghost.remove();
+    if (ghost) ghost.remove();
     row.style.opacity = '';
     clearHighlights();
     try { area.releasePointerCapture(e.pointerId); } catch(_){}
 
-    if (!active) return;
+    if (!active) {
+      // Was a tap, not a drag — trigger the click action
+      toggleInlineCards('ss-' + substopId, 'substop', substopId);
+      return;
+    }
 
     const groups = getGroups();
     const subs = state.allSubstops.filter(x => x.stop_id === state.currentStop.id)
@@ -2807,8 +2798,6 @@ function editStop(id) {
   document.getElementById('sf-img').value = s.photo_url || '';
   document.getElementById('sf-address').value = s.address || '';
   document.getElementById('sf-map-url').value = s.map_url || '';
-  document.getElementById('sf-lng').value = s.longitude || '';
-  document.getElementById('sf-lat').value = s.latitude || '';
   document.getElementById('sf-position').value = s.stop_number || '';
   document.getElementById('sf-transition-cf-id').value = s.opener_cloudflare_id || '';
   document.getElementById('sf-desc').value = s.description || '';
@@ -2825,8 +2814,8 @@ function updateAuthorLabel() {
 
 async function saveStop(e) {
   e.preventDefault();
-  const lng = parseFloat(document.getElementById('sf-lng').value);
-  const lat = parseFloat(document.getElementById('sf-lat').value);
+  const mapUrl = document.getElementById('sf-map-url').value.trim();
+  const coords = extractCoordsFromMapUrl(mapUrl);
   const payload = {
     tour_id: state.currentTour.id,
     name: document.getElementById('sf-name').value.trim(),
@@ -2834,9 +2823,9 @@ async function saveStop(e) {
     tagline: document.getElementById('sf-tagline').value.trim(),
     photo_url: document.getElementById('sf-img').value.trim(),
     address: document.getElementById('sf-address').value.trim(),
-    map_url: document.getElementById('sf-map-url').value.trim(),
-    longitude: lng || null,
-    latitude: lat || null,
+    map_url: mapUrl,
+    longitude: coords?.lng || null,
+    latitude: coords?.lat || null,
     stop_number: parseInt(document.getElementById('sf-position').value) || 1,
     opener_cloudflare_id: document.getElementById('sf-transition-cf-id').value.trim() || null,
     description: document.getElementById('sf-desc').value.trim(),
@@ -3504,7 +3493,7 @@ function newSubstop() {
   document.getElementById('sse-page-title').textContent = 'New Sub-stop';
   const sss2 = document.getElementById('sidebar-substop-section');
   if (sss2) sss2.style.display = 'none';
-  ['ssf-name','ssf-tagline','ssf-img','ssf-map-url','ssf-lng','ssf-lat','ssf-rudy'].forEach(id => {
+  ['ssf-name','ssf-tagline','ssf-img','ssf-map-url','ssf-rudy'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
@@ -3522,8 +3511,6 @@ function editSubstop(id) {
   document.getElementById('ssf-tagline').value = ss.tagline || '';
   document.getElementById('ssf-img').value = ss.photo_url || '';
   document.getElementById('ssf-map-url').value = ss.map_url || '';
-  document.getElementById('ssf-lng').value = ss.longitude || '';
-  document.getElementById('ssf-lat').value = ss.latitude || '';
   document.getElementById('ssf-rudy').value = ss.rudy_notes || '';
   updateSubstopAuthorLabel();
   showSection('substop-edit');
@@ -3542,8 +3529,8 @@ function updateSidebarSubstop() {
 
 async function saveSubstop(e) {
   e.preventDefault();
-  const lng = parseFloat(document.getElementById('ssf-lng').value);
-  const lat = parseFloat(document.getElementById('ssf-lat').value);
+  const mapUrl = document.getElementById('ssf-map-url').value.trim();
+  const coords = extractCoordsFromMapUrl(mapUrl);
 
   // Determine parent stop and global_position
   // New substops go before the last main stop by default
@@ -3557,9 +3544,9 @@ async function saveSubstop(e) {
     name: document.getElementById('ssf-name').value.trim(),
     tagline: document.getElementById('ssf-tagline').value.trim(),
     photo_url: document.getElementById('ssf-img').value.trim(),
-    map_url: document.getElementById('ssf-map-url').value.trim(),
-    longitude: lng || null,
-    latitude: lat || null,
+    map_url: mapUrl,
+    longitude: coords?.lng || null,
+    latitude: coords?.lat || null,
     rudy_notes: document.getElementById('ssf-rudy').value.trim(),
   };
 
@@ -4291,6 +4278,32 @@ function toast(msg, type = 'info') {
 }
 
 // ── Utilities ──
+function extractCoordsFromMapUrl(url) {
+  // Extract latitude and longitude from various Google Maps URL formats
+  if (!url) return null;
+  let m;
+  // Format: /@lat,lng,zoom
+  m = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+  if (m) return { lat: parseFloat(m[1]), lng: parseFloat(m[2]) };
+  // Format: ?q=lat,lng or &q=lat,lng
+  m = url.match(/[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/);
+  if (m) return { lat: parseFloat(m[1]), lng: parseFloat(m[2]) };
+  // Format: ?ll=lat,lng
+  m = url.match(/[?&]ll=(-?\d+\.\d+),(-?\d+\.\d+)/);
+  if (m) return { lat: parseFloat(m[1]), lng: parseFloat(m[2]) };
+  // Format: /place/.../@lat,lng (already caught above)
+  // Format: maps?...&sll=lat,lng
+  m = url.match(/[?&]sll=(-?\d+\.\d+),(-?\d+\.\d+)/);
+  if (m) return { lat: parseFloat(m[1]), lng: parseFloat(m[2]) };
+  // Format: !3d<lat>!4d<lng> (Google Maps embed/short URLs)
+  m = url.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/);
+  if (m) return { lat: parseFloat(m[1]), lng: parseFloat(m[2]) };
+  // Format: /dir/lat,lng or destination=lat,lng
+  m = url.match(/destination=(-?\d+\.\d+),(-?\d+\.\d+)/);
+  if (m) return { lat: parseFloat(m[1]), lng: parseFloat(m[2]) };
+  return null;
+}
+
 function escHtml(s) {
   if (!s) return '';
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
