@@ -2531,18 +2531,19 @@ function initSubstopDrag() {
     if (e.target.closest('button') || e.target.closest('.row-actions') || e.target.closest('.edit-details-btn')) return;
     const substopId = row.dataset.substopId;
     if (!substopId) return;
-    e.preventDefault();
-    area.setPointerCapture(e.pointerId);
-    // Store pending drag — don't create ghost until threshold exceeded
-    dragging = { row, ghost: null, substopId, startY: e.clientY, startX: e.clientX, active: false, pointerId: e.pointerId };
-  }, { passive: false });
+    // Don't preventDefault or setPointerCapture yet — allow tap to work on mobile
+    // Store pending drag — don't activate until threshold exceeded
+    dragging = { row, ghost: null, substopId, startY: e.clientY, startX: e.clientX, active: false, pointerId: e.pointerId, prevented: false };
+  }, { passive: true });
 
   area.addEventListener('pointermove', e => {
     if (!dragging) return;
-    e.preventDefault();
 
-    if (!dragging.active && Math.abs(e.clientY - dragging.startY) > DRAG_THRESHOLD) {
+    if (!dragging.active && Math.hypot(e.clientX - dragging.startX, e.clientY - dragging.startY) > DRAG_THRESHOLD) {
       dragging.active = true;
+      dragging.prevented = true;
+      e.preventDefault();
+      try { area.setPointerCapture(dragging.pointerId); } catch(_){}
       // Create ghost now that drag is confirmed
       const ss = state.allSubstops.find(x => x.id === dragging.substopId);
       const rect = dragging.row.getBoundingClientRect();
@@ -2557,6 +2558,7 @@ function initSubstopDrag() {
       dragging.row.style.opacity = '0.35';
     }
     if (!dragging.active) return;
+    e.preventDefault();
 
     dragging.ghost.style.top = (e.clientY - 20) + 'px';
 
@@ -2590,7 +2592,7 @@ function initSubstopDrag() {
 
   async function onUp(e) {
     if (!dragging) return;
-    const { row, ghost, substopId, active } = dragging;
+    const { row, ghost, substopId, active, prevented } = dragging;
     dragging = null;
     if (ghost) ghost.remove();
     row.style.opacity = '';
@@ -2598,8 +2600,8 @@ function initSubstopDrag() {
     try { area.releasePointerCapture(e.pointerId); } catch(_){}
 
     if (!active) {
-      // Was a tap, not a drag — trigger the click action
-      toggleInlineCards('ss-' + substopId, 'substop', substopId);
+      // Was a tap, not a drag — onclick on the substop-row handles it naturally
+      // (we didn't preventDefault on pointerdown, so click event will fire)
       return;
     }
 
