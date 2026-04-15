@@ -1103,7 +1103,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
             </div>
             <div class="field">
               <label>Google Maps URL</label>
-              <input type="url" id="tf-meeting-map-url" placeholder="https://maps.google.com/?q=…">
+              <input type="url" id="tf-meeting-map-url" placeholder="Paste full URL (not short goo.gl links)">
             </div>
           </div>
         </div>
@@ -1241,7 +1241,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
               </div>
               <div class="field">
                 <label>Google Maps URL</label>
-                <input type="url" id="sf-map-url" placeholder="https://maps.google.com/?q=…">
+                <input type="url" id="sf-map-url" placeholder="Paste full URL (not short goo.gl links)">
               </div>
             </div>
             <div class="form-grid">
@@ -1257,8 +1257,8 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
           <div class="panel-header"><div class="panel-title">Stop Opener Video</div></div>
           <div class="panel-body">
             <div class="field">
-              <label>Cloudflare Video ID</label>
-              <input type="text" id="sf-transition-cf-id" placeholder="Cloudflare video ID">
+              <label>Video ID</label>
+              <input type="text" id="sf-transition-cf-id" placeholder="Video ID">
               <div class="field-hint">A cinematic intro video shown as the very first card when entering this stop. Optional. Add description videos via the Cards section.</div>
             </div>
           </div>
@@ -1357,7 +1357,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
           <div class="panel-header"><div class="panel-title">Location</div></div>
           <div class="panel-body">
             <div class="form-grid">
-              <div class="field"><label>Google Maps URL</label><input type="url" id="ssf-map-url" placeholder="https://maps.google.com/?q=…"></div>
+              <div class="field"><label>Google Maps URL</label><input type="url" id="ssf-map-url" placeholder="Paste full URL (not short goo.gl links)"></div>
             </div>
           </div>
         </div>
@@ -2085,7 +2085,7 @@ function openAddSubstopForCurrentStop() {
       <div class="field"><label>Name</label><input type="text" id="ns-name" placeholder="e.g. Hidden Alley"></div>
       <div class="field"><label>Tagline</label><input type="text" id="ns-tagline" placeholder="One punchy line"></div>
       <div class="field"><label>Cover Image</label><input type="url" id="ns-img" placeholder="https://…"></div>
-      <div class="field"><label>Google Maps URL</label><input type="url" id="ns-map-url"></div>
+      <div class="field"><label>Google Maps URL</label><input type="url" id="ns-map-url" placeholder="Paste full URL (not short goo.gl links)"><div class="field-hint">Open the place in Google Maps in your browser, then copy the URL from the address bar.</div></div>
     </div>
   `, [
     { label: 'Cancel', cls: 'btn-secondary', action: 'closeModalDirect()' },
@@ -2408,10 +2408,7 @@ function openStopEditModal(stopId) {
       <div class="field"><label>Address</label><input type="text" id="mse-address" value="${escHtml(s.address||'')}"></div>
       <div class="field"><label>Google Maps URL</label><input type="url" id="mse-map-url" value="${escHtml(s.map_url||'')}"></div>
     </div>
-    <div class="form-grid" style="margin-bottom:1rem;">
-      <div class="field"><label>Stop Order</label><input type="number" id="mse-pos" min="1" value="${s.stop_number||''}"></div>
-    </div>
-    <div class="field" style="margin-bottom:1rem;"><label>Opener Video (Cloudflare ID)</label><input type="text" id="mse-cf-id" value="${escHtml(s.opener_cloudflare_id||'')}"></div>
+    <div class="field" style="margin-bottom:1rem;"><label>Opener Video</label><input type="text" id="mse-cf-id" value="${escHtml(s.opener_cloudflare_id||'')}"></div>
     <div class="field" style="margin-bottom:1rem;"><label>Description</label><textarea id="mse-desc" rows="3">${escHtml(s.description||'')}</textarea></div>
     <div class="field"><label>${escHtml(authorLabel)} Notes</label><textarea id="mse-rudy" rows="3">${escHtml(s.rudy_notes||'')}</textarea></div>
   `, [
@@ -2434,7 +2431,7 @@ async function saveStopModal(stopId) {
     map_url: mapUrl,
     longitude: coords?.lng || null,
     latitude: coords?.lat || null,
-    stop_number: parseInt(g('mse-pos')) || 1,
+    stop_number: state.stops.find(x => x.id === stopId)?.stop_number || 1,
     opener_cloudflare_id: g('mse-cf-id') || null,
     description: g('mse-desc'),
     rudy_notes: g('mse-rudy'),
@@ -3065,7 +3062,7 @@ async function editCard(id) {
     case 'transition':
       fields = `
         <div class="field">
-          <label>Cloudflare Video ID</label>
+          <label>Video ID</label>
           <input type="text" id="cd-cf-id" value="${escHtml(card.cloudflare_id||'')}" oninput="updateCfPreview('cd-cf-preview',this.value)">
 
         </div>`;
@@ -3080,7 +3077,7 @@ async function editCard(id) {
     case 'desc':
       fields = `
         <div class="field" style="margin-bottom:1rem;">
-          <label>Cloudflare Video ID</label>
+          <label>Video ID</label>
           <input type="text" id="cd-cf-id" value="${escHtml(card.cloudflare_id||'')}" oninput="updateCfPreview('cd-cf-preview',this.value)">
 
         </div>
@@ -3784,7 +3781,7 @@ function openSubstopPartnerModal(id) {
       <div class="field"><label>Offer Code</label><input type="text" id="ssp-code" value="${escHtml(p?.discount_code||'')}"></div>
       <div class="field"><label>Main Image</label><input type="url" id="ssp-img" value="${escHtml(p?.photo_url||'')}"></div>
     </div>
-    <div class="field"><label>Cloudflare Video ID (optional)</label><input type="text" id="ssp-cf-id" value="${escHtml(p?.cloudflare_id||'')}"></div>
+    <div class="field"><label>Video ID (optional)</label><input type="text" id="ssp-cf-id" value="${escHtml(p?.cloudflare_id||'')}"></div>
   `, [
     { label: 'Cancel', cls: 'btn-secondary', action: 'closeModalDirect()' },
     { label: p ? 'Save Partner' : 'Add Partner', cls: 'btn-primary', action: `saveSubstopPartner('${p?.id||''}')` },
@@ -3892,7 +3889,7 @@ function makeVideoField(inputId) {
   // ID row (hidden by default)
   const idRow = document.createElement('div');
   idRow.className = 'media-url-row';
-  input.placeholder = 'Cloudflare video ID';
+  input.placeholder = 'Video ID';
   idRow.appendChild(input);
   wrap.appendChild(idRow);
 
@@ -4280,48 +4277,18 @@ function toast(msg, type = 'info') {
 }
 
 // ── Utilities ──
-// Resolve shortened Google Maps URLs (maps.app.goo.gl, goo.gl/maps) by following redirects
-async function resolveMapUrl(url) {
-  if (!url) return url;
-  // Only resolve known short URL domains
-  if (!/maps\.app\.goo\.gl|goo\.gl\/maps/i.test(url)) return url;
-  try {
-    // Follow redirects — the final URL should contain coordinates
-    const resp = await fetch(url, { redirect: 'follow', mode: 'cors' });
-    const finalUrl = resp.url;
-    if (finalUrl && finalUrl !== url) return finalUrl;
-    // If CORS blocks us, try reading the HTML body for a redirect meta or coordinates
-    const html = await resp.text();
-    // Look for content="...;url=..." meta refresh
-    const metaMatch = html.match(/content=["'][^"']*url=(https:\/\/www\.google\.com\/maps[^"'\s]+)/i);
-    if (metaMatch) return metaMatch[1];
-    // Look for embedded coords in the page content
-    const coordMatch = html.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
-    if (coordMatch) return url; // extraction will work on original if coords found in body
-  } catch(e) {
-    console.log('resolveMapUrl failed (CORS):', e.message);
-    // Try alternative: use a no-cors opaque redirect to at least detect the target
-    try {
-      const resp2 = await fetch(url, { redirect: 'follow', mode: 'no-cors' });
-      // Can't read the URL in no-cors mode, but we tried
-    } catch(_){}
-  }
-  return url;
+function isShortMapUrl(url) {
+  return url && /maps\.app\.goo\.gl|goo\.gl\/maps/i.test(url);
 }
 
-// Extract coords from a map URL, with async short-URL resolution
+// Extract coords from a map URL — warns if short URL detected
 async function resolveAndExtractCoords(url) {
   if (!url) return null;
-  // First try direct extraction
   let coords = extractCoordsFromMapUrl(url);
   if (coords) return coords;
-  // If it's a short URL, try resolving it
-  if (/maps\.app\.goo\.gl|goo\.gl\/maps/i.test(url)) {
-    const resolved = await resolveMapUrl(url);
-    if (resolved !== url) {
-      coords = extractCoordsFromMapUrl(resolved);
-      if (coords) return coords;
-    }
+  // Short URLs can't be resolved client-side (CORS blocked by Google)
+  if (isShortMapUrl(url)) {
+    toast('Short Google Maps URL detected — coordinates could not be extracted. Please paste the full URL from your browser address bar instead.', 'error');
   }
   return null;
 }
