@@ -2100,7 +2100,7 @@ async function confirmAddSubstopInline() {
   const subs = state.allSubstops.filter(x => x.stop_id === state.currentStop.id);
   const globalPos = state.currentStop.stop_number - 0.5 - (subs.length * 0.1);
   const mapUrl = g('ns-map-url');
-  const coords = extractCoordsFromMapUrl(mapUrl);
+  const coords = await resolveAndExtractCoords(mapUrl);
   const payload = {
     stop_id: state.currentStop.id,
     global_position: globalPos,
@@ -2424,7 +2424,7 @@ function openStopEditModal(stopId) {
 async function saveStopModal(stopId) {
   const g = id => document.getElementById(id)?.value.trim() || '';
   const mapUrl = g('mse-map-url');
-  const coords = extractCoordsFromMapUrl(mapUrl);
+  const coords = await resolveAndExtractCoords(mapUrl);
   const payload = {
     name: g('mse-name'),
     dutch_name: g('mse-dutch'),
@@ -2475,7 +2475,7 @@ function openSubstopEditModal(substopId) {
 async function saveSubstopModal(substopId) {
   const g = id => document.getElementById(id)?.value.trim() || '';
   const mapUrl = g('mss-map-url');
-  const coords = extractCoordsFromMapUrl(mapUrl);
+  const coords = await resolveAndExtractCoords(mapUrl);
   const payload = {
     name: g('mss-name'),
     tagline: g('mss-tagline'),
@@ -2817,7 +2817,7 @@ function updateAuthorLabel() {
 async function saveStop(e) {
   e.preventDefault();
   const mapUrl = document.getElementById('sf-map-url').value.trim();
-  const coords = extractCoordsFromMapUrl(mapUrl);
+  const coords = await resolveAndExtractCoords(mapUrl);
   const payload = {
     tour_id: state.currentTour.id,
     name: document.getElementById('sf-name').value.trim(),
@@ -3532,7 +3532,7 @@ function updateSidebarSubstop() {
 async function saveSubstop(e) {
   e.preventDefault();
   const mapUrl = document.getElementById('ssf-map-url').value.trim();
-  const coords = extractCoordsFromMapUrl(mapUrl);
+  const coords = await resolveAndExtractCoords(mapUrl);
 
   // Determine parent stop and global_position
   // New substops go before the last main stop by default
@@ -4280,6 +4280,52 @@ function toast(msg, type = 'info') {
 }
 
 // ── Utilities ──
+// Resolve shortened Google Maps URLs (maps.app.goo.gl, goo.gl/maps) by following redirects
+async function resolveMapUrl(url) {
+  if (!url) return url;
+  // Only resolve known short URL domains
+  if (!/maps\.app\.goo\.gl|goo\.gl\/maps/i.test(url)) return url;
+  try {
+    // Follow redirects — the final URL should contain coordinates
+    const resp = await fetch(url, { redirect: 'follow', mode: 'cors' });
+    const finalUrl = resp.url;
+    if (finalUrl && finalUrl !== url) return finalUrl;
+    // If CORS blocks us, try reading the HTML body for a redirect meta or coordinates
+    const html = await resp.text();
+    // Look for content="...;url=..." meta refresh
+    const metaMatch = html.match(/content=["'][^"']*url=(https:\/\/www\.google\.com\/maps[^"'\s]+)/i);
+    if (metaMatch) return metaMatch[1];
+    // Look for embedded coords in the page content
+    const coordMatch = html.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+    if (coordMatch) return url; // extraction will work on original if coords found in body
+  } catch(e) {
+    console.log('resolveMapUrl failed (CORS):', e.message);
+    // Try alternative: use a no-cors opaque redirect to at least detect the target
+    try {
+      const resp2 = await fetch(url, { redirect: 'follow', mode: 'no-cors' });
+      // Can't read the URL in no-cors mode, but we tried
+    } catch(_){}
+  }
+  return url;
+}
+
+// Extract coords from a map URL, with async short-URL resolution
+async function resolveAndExtractCoords(url) {
+  if (!url) return null;
+  // First try direct extraction
+  let coords = extractCoordsFromMapUrl(url);
+  if (coords) return coords;
+  // If it's a short URL, try resolving it
+  if (/maps\.app\.goo\.gl|goo\.gl\/maps/i.test(url)) {
+    const resolved = await resolveMapUrl(url);
+    if (resolved !== url) {
+      coords = extractCoordsFromMapUrl(resolved);
+      if (coords) return coords;
+    }
+  }
+  return null;
+}
+
 function extractCoordsFromMapUrl(url) {
   // Extract latitude and longitude from various Google Maps URL formats
   if (!url) return null;
