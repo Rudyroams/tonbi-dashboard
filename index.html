@@ -2547,29 +2547,32 @@ function initSubstopDrag() {
     if (e.target.closest('button') || e.target.closest('.row-actions') || e.target.closest('.edit-details-btn')) return;
     const substopId = row.dataset.substopId;
     if (!substopId) return;
-    e.preventDefault();
-    const rect = row.getBoundingClientRect();
-    const ss = state.allSubstops.find(x => x.id === substopId);
-    const ghost = document.createElement('div');
-    ghost.className = 'touch-drag-ghost';
-    ghost.textContent = ss?.name || 'Sub-stop';
-    ghost.style.width = rect.width + 'px';
-    ghost.style.left = rect.left + 'px';
-    ghost.style.top = (e.clientY - 20) + 'px';
-    document.body.appendChild(ghost);
-    row.style.opacity = '0.35';
-    area.setPointerCapture(e.pointerId);
-    dragging = { row, ghost, substopId, startY: e.clientY, startX: e.clientX, active: false, pointerId: e.pointerId };
+    // Don't preventDefault or capture here — let clicks pass through on desktop
+    dragging = { row, ghost: null, substopId, startY: e.clientY, startX: e.clientX, active: false, pointerId: e.pointerId };
   }, { passive: false });
 
   area.addEventListener('pointermove', e => {
     if (!dragging) return;
-    e.preventDefault();
 
     if (!dragging.active && Math.abs(e.clientY - dragging.startY) > DRAG_THRESHOLD) {
       dragging.active = true;
+      // Now that we know it's a drag, create ghost and capture pointer
+      e.preventDefault();
+      const rect = dragging.row.getBoundingClientRect();
+      const ss = state.allSubstops.find(x => x.id === dragging.substopId);
+      const ghost = document.createElement('div');
+      ghost.className = 'touch-drag-ghost';
+      ghost.textContent = ss?.name || 'Sub-stop';
+      ghost.style.width = rect.width + 'px';
+      ghost.style.left = rect.left + 'px';
+      ghost.style.top = (e.clientY - 20) + 'px';
+      document.body.appendChild(ghost);
+      dragging.ghost = ghost;
+      dragging.row.style.opacity = '0.35';
+      try { area.setPointerCapture(dragging.pointerId); } catch(_){}
     }
     if (!dragging.active) return;
+    e.preventDefault();
 
     dragging.ghost.style.top = (e.clientY - 20) + 'px';
 
@@ -2605,7 +2608,7 @@ function initSubstopDrag() {
     if (!dragging) return;
     const { row, ghost, substopId, active } = dragging;
     dragging = null;
-    ghost.remove();
+    if (ghost) ghost.remove();
     row.style.opacity = '';
     clearHighlights();
     try { area.releasePointerCapture(e.pointerId); } catch(_){}
@@ -2670,24 +2673,28 @@ function initCardDrag(blockType, blockId) {
     const row = e.target.closest('.card-row');
     if (!row) return;
     if (e.target.closest('button') || e.target.closest('.row-actions')) return;
-    const rect = row.getBoundingClientRect();
-    const ghost = document.createElement('div');
-    ghost.className = 'touch-drag-ghost';
-    const type = row.querySelector('.card-type-pill')?.textContent || '';
-    const preview = row.querySelector('.card-preview')?.textContent || '';
-    ghost.textContent = type + (preview ? ' — ' + preview.slice(0,28) : '');
-    ghost.style.width = rect.width + 'px';
-    ghost.style.left = rect.left + 'px';
-    ghost.style.top = (e.clientY - 20) + 'px';
-    document.body.appendChild(ghost);
-    row.style.opacity = '0.3';
-    dragging = { row, ghost, cardId: row.dataset.id, blockType, blockId, startY: e.clientY, active: false };
-    e.preventDefault();
+    // Don't preventDefault here — let clicks pass through on desktop
+    dragging = { row, ghost: null, cardId: row.dataset.id, blockType, blockId, startY: e.clientY, active: false };
   }, { passive: false });
 
   document.addEventListener('pointermove', e => {
     if (!dragging || dragging.blockType !== blockType || dragging.blockId !== blockId) return;
-    if (!dragging.active && Math.abs(e.clientY - dragging.startY) > 6) dragging.active = true;
+    if (!dragging.active && Math.abs(e.clientY - dragging.startY) > 6) {
+      dragging.active = true;
+      // Now create the ghost
+      const rect = dragging.row.getBoundingClientRect();
+      const ghost = document.createElement('div');
+      ghost.className = 'touch-drag-ghost';
+      const type = dragging.row.querySelector('.card-type-pill')?.textContent || '';
+      const preview = dragging.row.querySelector('.card-preview')?.textContent || '';
+      ghost.textContent = type + (preview ? ' — ' + preview.slice(0,28) : '');
+      ghost.style.width = rect.width + 'px';
+      ghost.style.left = rect.left + 'px';
+      ghost.style.top = (e.clientY - 20) + 'px';
+      document.body.appendChild(ghost);
+      dragging.ghost = ghost;
+      dragging.row.style.opacity = '0.3';
+    }
     if (!dragging.active) return;
     dragging.ghost.style.top = (e.clientY - 20) + 'px';
     const rows = Array.from(body.querySelectorAll('.card-row'));
@@ -2703,7 +2710,7 @@ function initCardDrag(blockType, blockId) {
     if (!dragging || dragging.blockType !== blockType || dragging.blockId !== blockId) return;
     const { row, ghost, cardId, blockType: bt, blockId: bid, active } = dragging;
     dragging = null;
-    ghost.remove();
+    if (ghost) ghost.remove();
     row.style.opacity = '';
     const rows = Array.from(body.querySelectorAll('.card-row'));
     rows.forEach(r => r.style.borderTop = '');
